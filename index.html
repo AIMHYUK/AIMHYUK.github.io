@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JJH Portfolio</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #f78166;
+      --text: #e6edf3;
+      --muted: #8b949e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+    .badge-row {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── SECTION ── */
+    section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+    section:last-child { border-bottom: none; }
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 28px;
+      color: var(--accent);
+    }
+
+    /* ── PROJECT CARD ── */
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+    .project-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .project-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .project-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      color: var(--accent);
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+    }
+    .tag.red {
+      background: rgba(247, 129, 102, 0.1);
+      border-color: rgba(247, 129, 102, 0.3);
+      color: var(--accent2);
+    }
+    .project-desc {
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    /* ── FEATURE LIST ── */
+    .feature-group { margin-bottom: 20px; }
+    .feature-group-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      padding-left: 2px;
+    }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .feature-list li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+    .code-block pre {
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      color: #c9d1d9;
+      white-space: pre;
+    }
+    .code-block .comment { color: #6e7681; }
+    .code-block .keyword { color: #ff7b72; }
+    .code-block .string  { color: #a5d6ff; }
+    .code-block .func    { color: #d2a8ff; }
+
+    /* ── TECH TABLE ── */
+    .tech-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+    .tech-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #1c2128;
+      color: var(--muted);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+    }
+    .tech-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      vertical-align: top;
+    }
+    .tech-table td:first-child {
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .tech-table tr:last-child td { border-bottom: none; }
+
+    /* ── FLOW ── */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .flow-step {
+      background: #1c2128;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .flow-arrow { color: var(--border); font-size: 1rem; }
+
+    /* ── LINKS ── */
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .link-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>안녕하세요, <span>JJH</span>입니다</h1>
+  <p>언리얼 엔진 기반 멀티플레이어 게임 개발을 공부하고 있습니다.</p>
+  <div class="badge-row">
+    <span class="badge">Unreal Engine 5</span>
+    <span class="badge">C++</span>
+    <span class="badge">OnlineSubsystem</span>
+    <span class="badge">Multiplayer</span>
+  </div>
+</div>
+
+<!-- PROJECT -->
+<div class="container">
+  <section>
+    <div class="section-title">Projects</div>
+
+    <div class="project-card">
+      <div class="project-header">
+        <div class="project-title">KingSejong</div>
+        <div class="project-meta">
+          <span class="tag">Unreal Engine 5.6</span>
+          <span class="tag">C++</span>
+          <span class="tag red">Team 3인</span>
+        </div>
+      </div>
+      <p class="project-desc">
+        조선 시대를 배경으로 한 온라인 멀티플레이어 미니게임 모음입니다.
+        플레이어들은 로비에서 방을 만들고 달리기 · 토론 · 배틀 세 가지 미니게임 중 하나를 선택해 함께 플레이합니다.
+        <br><br>
+        <strong style="color:var(--text)">본인 담당 파트 :</strong> 세션 시스템 전반 · 로비 UI · 달리기 미니게임 · 캐릭터 선택
+      </p>
+
+      <!-- 1. 세션 시스템 -->
+      <div class="feature-group">
+        <div class="feature-group-title">1. 멀티플레이어 세션 시스템</div>
+        <ul class="feature-list">
+          <li>OnlineSubsystem을 직접 연동하여 세션 생성 · 탐색 · 접속 · 파괴 전 과정 구현</li>
+          <li>Steam / LAN 환경 자동 감지 및 분기 처리</li>
+          <li>Steam 서버에 한글 방 이름을 저장하기 위한 Base64 인코딩 / 디코딩 적용</li>
+          <li>서버 RPC → Multicast RPC → Client RPC 구조로 세션 퇴장 시 모든 플레이어 동시 로비 복귀</li>
+          <li>네트워크 장애(서버 종료) 시 OnNetworkFailure 콜백으로 클라이언트 자동 복귀</li>
+        </ul>
+
+        <div class="code-block"><pre><span class="comment">// 한글 방 이름을 Steam 서버에 안전하게 저장하기 위한 Base64 인코딩</span>
+FString roomname = <span class="func">StringBase64Encode</span>(RoomName);
+SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="string">"Room_Name"</span>), roomname,
+    EOnlineDataAdvertisementType::<span class="keyword">ViaOnlineServiceAndPing</span>);</pre></div>
+      </div>
+
+      <!-- 2. 로비 UI -->
+      <div class="feature-group">
+        <div class="feature-group-title">2. 로비 UI</div>
+        <ul class="feature-list">
+          <li>WidgetSwitcher로 방 만들기 / 방 찾기 화면 전환</li>
+          <li>게임 종류(달리기 · 토론 · 배틀) 체크박스 — 하나만 선택되도록 상호 배타 처리</li>
+          <li>슬라이더로 최대 인원 실시간 설정</li>
+          <li>세션 탐색 결과를 델리게이트로 수신 후 스크롤박스에 슬롯 위젯 동적 생성</li>
+          <li>방 미선택 상태에서 입장 버튼 클릭 시 크래시 방지 처리</li>
+        </ul>
+      </div>
+
+      <!-- 3. 달리기 미니게임 -->
+      <div class="feature-group">
+        <div class="feature-group-title">3. 달리기 미니게임</div>
+        <ul class="feature-list">
+          <li>결승선(FinishLine) — OnComponentBeginOverlap으로 통과 감지, 게임모드에 순서 전달</li>
+          <li>결승선 통과 순서대로 초성 퀴즈 기회 부여, 오답 시 다음 플레이어로 자동 전환</li>
+          <li>퀴즈 답변 중 나머지 플레이어는 답변자 폰을 자동 관전하도록 전환</li>
+          <li>DataTable에서 랜덤 퀴즈 선택 후 Multicast RPC로 모든 클라이언트에 동기화</li>
+          <li>RPC로 특정 타이밍에 플레이어 입력 활성화 / 비활성화 제어</li>
+          <li>승리 / 패배 몽타주 재생 및 엔드게임 UI 전환</li>
+        </ul>
+
+        <div style="margin-top: 14px;">
+          <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">게임 흐름</div>
+          <div class="flow">
+            <div class="flow-step">모든 플레이어 입장</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">카운트다운 후 달리기</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">결승선 통과 순서 기록</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">초성 퀴즈 (순서 기반)</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">정답자 승리 / 결과 화면</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">로비 복귀</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 캐릭터 선택 -->
+      <div class="feature-group">
+        <div class="feature-group-title">4. 캐릭터 선택 시스템</div>
+        <ul class="feature-list">
+          <li>이전 / 다음 버튼으로 스켈레탈 메시 실시간 교체 및 프리뷰</li>
+          <li>선택 확정 시 메시 인덱스를 GameInstance에 저장해 게임 내내 유지</li>
+          <li>선택 완료 후 마우스 숨김 및 게임 입력 모드로 전환</li>
+        </ul>
+      </div>
+
+      <!-- 핵심 기술 -->
+      <div class="feature-group">
+        <div class="feature-group-title">핵심 기술</div>
+        <table class="tech-table">
+          <tr>
+            <th>기술</th>
+            <th>적용 내용</th>
+          </tr>
+          <tr>
+            <td>OnlineSubsystem</td>
+            <td>Steam / LAN 세션 전 과정 직접 구현 (IOnlineSessionInterface)</td>
+          </tr>
+          <tr>
+            <td>RPC</td>
+            <td>Server · Multicast · Client RPC로 게임 상태 동기화</td>
+          </tr>
+          <tr>
+            <td>Delegate</td>
+            <td>세션 탐색 완료 이벤트 비동기 처리 후 UI 업데이트</td>
+          </tr>
+          <tr>
+            <td>Base64</td>
+            <td>한글 방 이름을 Steam 서버에 저장하는 인코딩 문제 해결</td>
+          </tr>
+          <tr>
+            <td>DataTable</td>
+            <td>런타임에 퀴즈 데이터 랜덤 선택</td>
+          </tr>
+          <tr>
+            <td>UMG / WidgetSwitcher</td>
+            <td>로비 화면 전환 및 동적 슬롯 위젯 생성</td>
+          </tr>
+        </table>
+      </div>
+
+      <a class="link-btn" href="https://github.com/hjs101/KingSejong" target="_blank">
+        &#128279; 팀 레포지토리 보기
+      </a>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section>
+    <div class="section-title">Contact</div>
+    <ul class="feature-list">
+      <li>GitHub &nbsp;— <a href="https://github.com/AIMHYUK" target="_blank" style="color:var(--accent)">github.com/AIMHYUK</a></li>
+    </ul>
+  </section>
+</div>
+
+<footer>
+  &copy; 2024 JJH. Built with GitHub Pages.
+</footer>
+
+</body>
+</html>

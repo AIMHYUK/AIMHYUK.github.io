@@ -638,6 +638,30 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
             <li>Morph Target 제어를 애니메이션과 연동하여 실시간 표정 변화 반영</li>
             <li>Mocopi 기반 전신 모션 캡처 데이터를 UDP 소켓으로 수신하여 VRM 모델 뼈대에 적용</li>
           </ul>
+          <div class="code-block"><pre><span class="comment">// [AudienceServerComponent_KMK.cpp]
+// 로컬 플레이어가 선택한 메시 번호를 서버 RPC로 전달</span>
+<span class="func">ServerRPC_ChangeMyMesh</span>( gi-&gt;playerMeshNum );
+
+<span class="comment">// 서버 → 모든 클라이언트에 메시 동기화 (MulticastRPC)</span>
+<span class="keyword">void</span> UAudienceServerComponent_KMK::<span class="func">MultiRPC_ChangeMyMesh_Implementation</span>( int32 num )
+{
+    <span class="keyword">auto</span>* TargetMesh = Cast&lt;AHSW_ThirdPersonCharacter&gt;( <span class="func">GetOwner</span>() );
+    <span class="keyword">if</span> (num &gt;= 0 &amp;&amp; num &lt;= 1)
+    {
+        <span class="comment">// 관객 메시 교체</span>
+        TargetMesh-&gt;<span class="func">GetMesh</span>()-&gt;<span class="func">SetSkeletalMesh</span>( audienceMesh[num] );
+        UMaterialInstanceDynamic* meshMat = TargetMesh-&gt;<span class="func">ChangeMyMeshMat</span>( num );
+        TargetMesh-&gt;<span class="func">GetMesh</span>()-&gt;<span class="func">SetMaterial</span>( 0, meshMat );
+    }
+}
+
+<span class="comment">// [Dummy_KMK.cpp]
+// DynamicMaterial 스칼라 파라미터로 표정(Morph Target) 실시간 제어</span>
+<span class="keyword">void</span> ADummy_KMK::<span class="func">SetFace</span>( <span class="keyword">float</span> faceValue )
+{
+    <span class="keyword">if</span> (FaceDynamicMat)
+        FaceDynamicMat-&gt;<span class="func">SetScalarParameterValue</span>( <span class="string">TEXT("jswFaceChange")</span>, faceValue );
+}</pre></div>
         </div>
         <div class="feature-group">
           <div class="feature-group-title">3. RemoCap UDP/OSC 본 데이터 손실 초기화</div>
@@ -647,6 +671,15 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
             <li>패킷 수신 누락 시 이전 프레임 데이터를 유지하던 문제를 초기 상태 리셋 로직으로 교체하여 포즈 고착 현상 제거</li>
             <li>100ms 폴링 간격 백그라운드 스레드에서 연속 수신 처리, 메인 스레드와 안전 동기화</li>
           </ul>
+          <!-- Blueprint 구현 — 이미지/GIF 플레이스홀더 -->
+          <div style="margin-top:14px; border:2px dashed var(--border); border-radius:8px; padding:24px 20px; text-align:center; background:#0d1117;">
+            <div style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">블루프린트 구성도 / 시연 GIF</div>
+            <div style="width:100%; max-width:480px; height:220px; background:#1c2128; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; border:1px solid var(--border);">
+              <div style="font-size:1.5rem; opacity:0.3;">&#128247;</div>
+              <div style="font-size:0.8rem; color:var(--muted); opacity:0.6;">이미지 또는 GIF를 여기에 추가하세요</div>
+              <div style="font-size:0.75rem; color:var(--muted); opacity:0.4;">ex) &lt;img src="your-image.png" ... /&gt;</div>
+            </div>
+          </div>
         </div>
         <div class="feature-group">
           <div class="feature-group-title">4. 무대 설정 UI</div>
@@ -658,6 +691,52 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
             <li>0.3초 지연 타이머로 UI 버튼 은닉 후 씬 캡처 — 버튼이 썸네일에 찍히는 문제 해결</li>
             <li>스테이지 이름 입력 후 썸네일 + 설정 정보를 HTTP Multipart로 서버 업로드</li>
           </ul>
+          <div class="code-block"><pre><span class="comment">// [HttpActor_KMK.cpp]
+// ① 썸네일 이미지를 Multipart/form-data로 서버 업로드</span>
+<span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqMultipartCapturedURL</span>( FStageInfo&amp; Stage, <span class="keyword">const</span> FString&amp; ImagePath )
+{
+    TSharedRef&lt;IHttpRequest&gt; Req = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();
+    Req-&gt;<span class="func">SetURL</span>( <span class="string">TEXT("http://back.reward-factory.shop:8123/api/v1/files/upload")</span> );
+    Req-&gt;<span class="func">SetVerb</span>( <span class="string">TEXT("POST")</span> );
+
+    TArray&lt;<span class="keyword">uint8</span>&gt; FileData;
+    FFileHelper::<span class="func">LoadFileToArray</span>( FileData, *ImagePath );
+
+    FString Boundary = <span class="string">"---------------------------boundary_string"</span>;
+    FString FileHeader = <span class="string">"Content-Disposition: form-data; name=\"file\"; filename=\""</span>
+                         + FPaths::<span class="func">GetCleanFilename</span>(ImagePath)
+                         + <span class="string">TEXT("\"\r\nContent-Type: image/png\r\n\r\n")</span>;
+
+    TArray&lt;<span class="keyword">uint8</span>&gt; PostData;
+    PostData.<span class="func">Append</span>( (uint8*)TCHAR_TO_ANSI(*(FString(<span class="string">"--"</span>) + Boundary + <span class="string">"\r\n"</span>)) , ... );
+    PostData.<span class="func">Append</span>( (uint8*)TCHAR_TO_ANSI(*FileHeader), FileHeader.<span class="func">Len</span>() );
+    PostData.<span class="func">Append</span>( FileData );
+
+    Req-&gt;<span class="func">SetHeader</span>( <span class="string">TEXT("Content-Type")</span>,
+        FString::Printf(<span class="string">TEXT("multipart/form-data; boundary=%s")</span>, *Boundary) );
+    Req-&gt;<span class="func">SetContent</span>( PostData );
+    Req-&gt;<span class="func">ProcessRequest</span>();
+}
+
+<span class="comment">// ② 업로드 완료 후 반환된 이미지 URL을 포함한 무대 정보를 JSON으로 POST</span>
+<span class="keyword">void</span> AHttpActor_KMK::<span class="func">OnReqMultipartCapturedURL</span>( ..., FStageInfo* Stage )
+{
+    Stage-&gt;img = Response-&gt;<span class="func">GetContentAsString</span>();  <span class="comment">// 서버 반환 URL 저장</span>
+    <span class="func">ReqStageInfo</span>( *Stage );                          <span class="comment">// 무대 정보 JSON 전송</span>
+}
+
+<span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqStageInfo</span>( <span class="keyword">const</span> FStageInfo&amp; Stage )
+{
+    FString JsonString;
+    FJsonObjectConverter::<span class="func">UStructToJsonObjectString</span>( Stage, JsonString );
+
+    TSharedRef&lt;IHttpRequest&gt; Req = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();
+    Req-&gt;<span class="func">SetURL</span>( <span class="string">TEXT("http://back.reward-factory.shop:8123/api/v1/stages")</span> );
+    Req-&gt;<span class="func">SetVerb</span>( <span class="string">TEXT("POST")</span> );
+    Req-&gt;<span class="func">SetHeader</span>( <span class="string">TEXT("Content-Type")</span>, <span class="string">TEXT("application/json")</span> );
+    Req-&gt;<span class="func">SetContentAsString</span>( JsonString );
+    Req-&gt;<span class="func">ProcessRequest</span>();
+}</pre></div>
           <div style="margin-top: 14px;">
             <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">UI 플로우</div>
             <div class="flow">

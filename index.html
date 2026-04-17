@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JJH Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { background: '#0d1117', primaryColor: '#1c2128', primaryTextColor: '#e6edf3', primaryBorderColor: '#30363d', lineColor: '#58a6ff', secondaryColor: '#161b22', tertiaryColor: '#1c2128' } });</script>
   <style>
     :root {
       --bg: #0d1117;
@@ -449,6 +451,119 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
               <td>로비 화면 전환 및 동적 슬롯 위젯 생성</td>
             </tr>
           </table>
+        </div>
+
+        <!-- 시스템 흐름도 -->
+        <div class="feature-group">
+          <div class="feature-group-title">시스템 흐름도</div>
+
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">세션 전체 생명주기</div>
+            <div class="mermaid">
+flowchart TD
+    A([게임 시작]) --> B[로비 맵 로드]
+    B --> C[UJJH_GameInstance::LoadMenu]
+    C --> D{플레이어 선택}
+    D -->|방 만들기| E[카테고리 선택]
+    E --> F[방 이름 & 인원수 설정]
+    F --> G[CreateSession 호출]
+    G --> H[OnlineSubsystem::CreateSession]
+    H --> I{OnMyCreateSessionComplete}
+    I -->|Run| J[ServerTravel — RunningMap]
+    I -->|Battle| K[ServerTravel — BattleMap]
+    I -->|Talk| L[ServerTravel — CommunityMap]
+    D -->|방 찾기| M[FindOtherSessions 호출]
+    M --> N[SessionInterface::FindSessions]
+    N --> O[OnMyFindSessionComplete]
+    O --> P[방 목록 슬롯 표시]
+    P --> Q[플레이어 방 선택]
+    Q --> R[SessionInterface::JoinSession]
+    R --> S[ClientTravel to 게임맵]
+    J & K & L --> T[게임 맵 로드 완료]
+    S --> T
+    T --> U[GameMode::PostLogin]
+    U --> V{RequiredPlayerCount 도달?}
+    V -->|No| U
+    V -->|Yes| W[3초 후 게임 시작]
+    W --> X[게임 진행]
+    X --> Y[EndGame / DestroySession]
+    Y --> Z[로비로 복귀]
+    Z --> B
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">인게임 퀴즈 RPC 흐름 (Run 모드)</div>
+            <div class="mermaid">
+sequenceDiagram
+    participant GM as RunningGameMode (서버)
+    participant RC_S as RunnerController (서버)
+    participant RC_C as RunnerController (클라이언트)
+    participant QW as UQuizWidget
+
+    GM->>GM: StartQuiz() / SelectRandomQuizData()
+    GM->>RC_C: MulticastSendQuizData(FWordsData)
+    RC_C->>RC_C: ClientDisableInput()
+    RC_C->>QW: ClientCreateQuizWidget(QuizData)
+    QW->>QW: ShowInitials() — 초성 & 뜻 표시
+    Note over GM: 플레이어 결승선 통과
+    GM->>RC_C: ClientShowAnswerTextBox()
+    RC_C->>RC_C: ClientAbleInput()
+    RC_C->>RC_S: ServerSubmitAnswer(UserAnswer)
+    RC_S->>GM: CheckAnswer(UserAnswer, Player)
+    alt 정답
+        GM->>RC_C: MulticastShowTeachSpeak(true)
+        GM->>RC_C: ClientSwitchToEndWidget()
+        GM->>RC_C: ClientReturnToLobby()
+    else 오답
+        GM->>RC_C: MulticastShowTeachSpeak(false)
+        GM->>GM: MoveToNextPlayer()
+        GM->>RC_C: ClientShowAnswerTextBox() (다음 플레이어)
+    end
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">세션 퇴장 / 종료 흐름</div>
+            <div class="mermaid">
+flowchart TD
+    A([퇴장 요청]) --> B{NetMode 확인}
+    B -->|NM_Client| C[ClientLeaveSession 직접 호출]
+    B -->|NM_ListenServer| D[ServerRPCExitSession 호출]
+    D --> E[SessionInterface::DestroySession]
+    E --> F[MulticastRPCExitSession — 전체 전파]
+    F --> G{각 클라이언트 NetMode}
+    G -->|NM_Client| C
+    C --> I[DestroySession — 로컬 세션 정리]
+    I --> J[ClientTravel]
+    J --> K([로비 맵 복귀])
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">클래스 책임 구조</div>
+            <div class="mermaid">
+graph TB
+    subgraph 세션관리
+        GI[UJJH_GameInstance<br/>세션 생성·검색·참가·삭제]
+    end
+    subgraph 게임로직_서버
+        GM[RunningGameModeBase<br/>퀴즈 시작·채점·게임 종료]
+    end
+    subgraph 네트워크통신
+        RC[RunnerController<br/>Client/Server RPC 허브]
+    end
+    subgraph UI_클라이언트
+        LW[ULobbyWidget]
+        QW[UQuizWidget]
+    end
+    GI -->|ServerTravel| GM
+    GI -->|ClientTravel| RC
+    GM -->|Multicast RPC| RC
+    RC -->|Client RPC| QW
+    LW -->|ILobbyInterface| GI
+            </div>
+          </div>
         </div>
 
         <a class="link-btn" href="https://github.com/hjs101/KingSejong" target="_blank" onclick="event.stopPropagation()">

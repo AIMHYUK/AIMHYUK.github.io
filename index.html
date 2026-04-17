@@ -856,49 +856,143 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
         <!-- 3. 퀘스트 시스템 -->
         <div class="feature-group">
           <div class="feature-group-title">3. 장소 기반 퀘스트 시스템</div>
-          <ul class="feature-list">
-            <li>퀘스트 상태를 5단계 FSM(<code style="color:var(--accent);font-size:0.85em">Inactive → Running → WaitForCompletion → Complete / Cancel</code>)으로 관리 — 각 상태 전환 시 이벤트 발행으로 UI와 완전 분리</li>
-            <li><code style="color:var(--accent);font-size:0.85em">Quest → TaskGroup[] → QuestTask[]</code> 3계층 구조로 복수 목표를 순차 진행, 각 TaskGroup 완료 시 <code style="color:var(--accent);font-size:0.85em">QuestAction</code>을 실행해 다음 Yarn 대화 노드 전환 등 부수효과 처리</li>
-            <li><code style="color:var(--accent);font-size:0.85em">QuestManager.ReceiveReport(category, target, count)</code> 단일 진입점으로 모든 활성 퀘스트에 진행 상황을 브로드캐스트, 카테고리·대상 매칭만으로 태스크를 완료 처리</li>
-            <li><code style="color:var(--accent);font-size:0.85em">QuestCondition[]</code> 배열 조건이 모두 통과될 때만 퀘스트를 수락 가능하게 하여 선행 퀘스트 의존성 표현</li>
-            <li>캐릭터→캐릭터 방식에서 <strong>장소(PlaceInteractable)→장소</strong> 방식으로 설계를 전환 — 플레이어가 장소에 도착해 상호작용하면 대화 후 퀘스트 자동 등록·보고</li>
-            <li>Yarn Spinner <code style="color:var(--accent);font-size:0.85em">SetPlaceYarnStartNodeQuestAction</code>으로 퀘스트 진행에 따라 NPC 대화 분기를 인스펙터에서 드롭다운으로 설정 가능</li>
-          </ul>
-          <div class="code-block"><pre><span class="comment">// QuestManager — 단일 진입점 보고로 모든 활성 퀘스트에 브로드캐스트</span>
+
+          <!-- 데이터 구조 트리 -->
+          <div style="margin:14px 0 20px;">
+            <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">인스펙터 데이터 구조 — 코드 수정 없이 데이터만 바꿔 새 퀘스트 제작 가능</div>
+            <div style="background:#010409; border:1px solid var(--border); border-radius:8px; padding:16px 20px; font-family:'Cascadia Code','Fira Code',monospace; font-size:0.82rem; line-height:2;">
+              <span style="color:#ff7b72;">Quest</span> <span style="color:#6e7681;">(ScriptableObject)</span><br>
+              <span style="color:#c9d1d9;">├─ </span><span style="color:#f78166;">TaskGroup</span><span style="color:#6e7681;">[0]</span><br>
+              <span style="color:#c9d1d9;">│&nbsp;&nbsp;&nbsp;├─ </span><span style="color:#79c0ff;">QuestTask</span><span style="color:#c9d1d9;">&nbsp;&nbsp;category: </span><span style="color:#a5d6ff;">"DELIVERY_ACCEPT"</span><span style="color:#c9d1d9;">&nbsp;&nbsp;target: </span><span style="color:#a5d6ff;">A장소</span><br>
+              <span style="color:#c9d1d9;">│&nbsp;&nbsp;&nbsp;└─ </span><span style="color:#d2a8ff;">QuestAction</span><span style="color:#c9d1d9;">&nbsp;&nbsp;→ Yarn 대화 노드 변경</span><br>
+              <span style="color:#c9d1d9;">└─ </span><span style="color:#f78166;">TaskGroup</span><span style="color:#6e7681;">[1]</span><br>
+              <span style="color:#c9d1d9;">&nbsp;&nbsp;&nbsp;&nbsp;└─ </span><span style="color:#79c0ff;">QuestTask</span><span style="color:#c9d1d9;">&nbsp;&nbsp;category: </span><span style="color:#a5d6ff;">"DELIVERY_COMPLETE"</span><span style="color:#c9d1d9;">&nbsp;&nbsp;target: </span><span style="color:#a5d6ff;">B장소</span>
+            </div>
+          </div>
+
+          <!-- 런타임 흐름 다이어그램 -->
+          <div style="font-size:0.8rem; color:var(--muted); margin-bottom:14px;">런타임 흐름</div>
+
+          <!-- Step 1 -->
+          <div style="display:flex; gap:14px;">
+            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+              <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">1</div>
+              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
+            </div>
+            <div style="padding-bottom:16px; flex:1;">
+              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">씬 시작 — 퀘스트 등록</div>
+              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+                씬에 배치된 <code style="color:var(--accent2);font-size:0.82em;">QuestGiver</code> 컴포넌트가 <code style="color:var(--accent2);font-size:0.82em;">QuestManager.Register(quest)</code> 호출<br>
+                → Quest를 Clone해 <code style="color:var(--accent);font-size:0.82em;">_activeQuests</code>에 추가, state: <span style="color:var(--accent);">Inactive → Running</span>, 첫 TaskGroup 시작
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div style="display:flex; gap:14px;">
+            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+              <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent2); flex-shrink:0;">2</div>
+              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
+            </div>
+            <div style="padding-bottom:16px; flex:1;">
+              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">플레이어 행동 — 배달 수락</div>
+              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+                플레이어가 A장소에서 배달을 수락 → <code style="color:var(--accent2);font-size:0.82em;">DeliveryManager.AcceptDelivery()</code> 내부에서<br>
+                <code style="color:var(--accent);font-size:0.82em;">QuestManager.ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_ACCEPT"</span>, A장소, 1)</code> 호출
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div style="display:flex; gap:14px;">
+            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+              <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">3</div>
+              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
+            </div>
+            <div style="padding-bottom:16px; flex:1;">
+              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestManager — 전체 브로드캐스트</div>
+              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+                <code style="color:var(--accent2);font-size:0.82em;">_activeQuests</code>를 순회하며 모든 활성 퀘스트에 <code style="color:var(--accent2);font-size:0.82em;">quest.ReceiveReport()</code> 전달<br>
+                → 매칭 여부와 상관없이 일단 전부 찔러봄. 맞는 것만 반응
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div style="display:flex; gap:14px;">
+            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+              <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent2); flex-shrink:0;">4</div>
+              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
+            </div>
+            <div style="padding-bottom:16px; flex:1;">
+              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestTask — 카테고리 · 타겟 매칭</div>
+              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+                각 QuestTask가 <code style="color:var(--accent2);font-size:0.82em;">IsTarget(category, target)</code>으로 자신에게 해당되는지 확인<br>
+                인스펙터에서 <code style="color:#a5d6ff;font-size:0.82em;">category = "DELIVERY_ACCEPT"</code>, <code style="color:#a5d6ff;font-size:0.82em;">target = A장소</code>로 설정된 Task만 반응
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div style="display:flex; gap:14px;">
+            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+              <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">5</div>
+              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
+            </div>
+            <div style="padding-bottom:16px; flex:1;">
+              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">TaskGroup 완료 → QuestAction 실행</div>
+              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+                <code style="color:var(--accent2);font-size:0.82em;">CurrentSuccess++</code> → needSuccess 달성 → TaskState: <span style="color:var(--accent);">Complete</span><br>
+                TaskGroup의 모든 Task 완료 시 <code style="color:var(--accent2);font-size:0.82em;">ExecuteQuestActions()</code> 실행 (Yarn 노드 변경 등)<br>
+                → 다음 TaskGroup[1] 시작, state: <span style="color:var(--accent);">Running</span> 유지
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 6 -->
+          <div style="display:flex; gap:14px;">
+            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+              <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent2); flex-shrink:0;">6</div>
+            </div>
+            <div style="padding-bottom:4px; flex:1;">
+              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">배달 완료 → 퀘스트 종료</div>
+              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+                B장소 도착 후 <code style="color:var(--accent2);font-size:0.82em;">DeliveryManager.CompleteDelivery()</code><br>
+                → <code style="color:var(--accent);font-size:0.82em;">ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_COMPLETE"</span>, B장소, 1)</code> → TaskGroup[1] 완료<br>
+                → 마지막 TaskGroup이므로 state: <span style="color:var(--accent);">WaitForCompletion → Complete</span>, <code style="color:var(--accent2);font-size:0.82em;">OnCompleted</code> 이벤트 발행
+              </div>
+            </div>
+          </div>
+
+          <!-- 핵심 설명 박스 -->
+          <div style="background:#1c2128; border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:12px 16px; margin:20px 0 16px;">
+            <div style="font-size:0.85rem; color:var(--text); font-weight:600; margin-bottom:5px;">핵심 — 왜 이 구조인가?</div>
+            <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+              <code style="color:var(--accent2);">DeliveryManager</code>는 퀘스트의 존재를 모릅니다. <code style="color:var(--accent2);">QuestManager</code>는 배달의 존재를 모릅니다.<br>
+              <code style="color:var(--accent);">"DELIVERY_ACCEPT"</code> 라는 <strong style="color:var(--text);">문자열 카테고리</strong>만으로 두 시스템이 연결됩니다.<br>
+              새 퀘스트를 추가할 때 코드를 건드리지 않고 <strong style="color:var(--text);">인스펙터에서 category · target만 설정</strong>하면 됩니다.
+            </div>
+          </div>
+
+          <div class="code-block"><pre><span class="comment">// QuestTask — category + target 두 조건이 모두 일치해야 반응</span>
+<span class="keyword">public bool</span> <span class="func">IsTarget</span>(<span class="keyword">string</span> categoryStr, IdentifiedObject target)
+    => <span class="func">HasCategory</span>(categoryStr)
+    &amp;&amp; targets.<span class="func">Any</span>(x => x.<span class="func">IsSameAs</span>(target))
+    &amp;&amp; IsComplete == <span class="keyword">false</span>;
+
+<span class="comment">// QuestManager — 모든 활성 퀘스트에 브로드캐스트, 매칭은 각 Task가 판단</span>
 <span class="keyword">public void</span> <span class="func">ReceiveReport</span>(<span class="keyword">string</span> category, IdentifiedObject target, <span class="keyword">int</span> successCount)
 {
     <span class="keyword">foreach</span> (<span class="keyword">var</span> quest <span class="keyword">in</span> _activeQuests.<span class="func">ToArray</span>())
         quest.<span class="func">ReceiveReport</span>(category, target, successCount);
 }
 
-<span class="comment">// Quest — TaskGroup 완료 시 다음 그룹 전환 또는 완료 대기 상태 진입</span>
-<span class="keyword">if</span> (CurrentTaskGroup.IsComplete)
+<span class="comment">// DeliveryManager — 퀘스트 존재를 모른 채 카테고리 문자열만 전달</span>
+<span class="keyword">public void</span> <span class="func">AcceptDelivery</span>(Location pickupLocation, DeliveryInfo info)
 {
-    CurrentTaskGroup.<span class="func">ExecuteQuestActions</span>();   <span class="comment">// Yarn 노드 전환 등</span>
-
-    <span class="keyword">if</span> (_currentTaskGroupIndex + 1 == taskGroups.Length)
-        _state = QuestState.WaitForCompletion;
-    <span class="keyword">else</span>
-    {
-        CurrentTaskGroup.<span class="func">End</span>();
-        _currentTaskGroupIndex++;
-        CurrentTaskGroup.<span class="func">Start</span>();
-    }
+    ...
+    QuestManager.Instance.<span class="func">ReceiveReport</span>(<span class="string">"DELIVERY_ACCEPT"</span>, info.PickupLocation, 1);
 }</pre></div>
-          <div style="margin-top: 14px;">
-            <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">퀘스트 흐름</div>
-            <div class="flow">
-              <div class="flow-step">장소 도착 · 상호작용</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">Yarn Spinner 대화</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">QuestManager.Register</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">TaskGroup 순차 진행</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">완료 · 보상 처리</div>
-            </div>
-          </div>
         </div>
 
         <!-- 핵심 기술 -->

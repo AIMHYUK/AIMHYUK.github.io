@@ -81,6 +81,12 @@
       border-radius: 12px;
       padding: 28px 32px;
       margin-bottom: 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .project-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(88, 166, 255, 0.15);
     }
     .project-header {
       display: flex;
@@ -114,8 +120,59 @@
     }
     .project-desc {
       color: var(--muted);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       font-size: 0.95rem;
+    }
+    .project-role {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    /* ── TOGGLE BUTTON ── */
+    .card-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: none;
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      border-radius: 6px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, border-color 0.2s;
+      user-select: none;
+    }
+    .card-toggle:hover {
+      background: rgba(88, 166, 255, 0.08);
+      border-color: var(--accent);
+    }
+    .card-toggle-icon {
+      display: inline-block;
+      transition: transform 0.25s;
+      font-style: normal;
+      line-height: 1;
+    }
+    .project-card.expanded .card-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    /* ── DETAIL SECTION ── */
+    .card-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      border-top: 0px solid var(--border);
+      margin-top: 0;
+    }
+    .project-card.expanded .card-detail {
+      max-height: 9999px;
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+      padding-top: 20px;
     }
 
     /* ── FEATURE LIST ── */
@@ -257,7 +314,9 @@
   <section>
     <div class="section-title">Projects</div>
 
-    <div class="project-card">
+    <!-- ── KingSejong ── -->
+    <div class="project-card" onclick="toggleCard(this)">
+      <!-- 요약 (항상 표시) -->
       <div class="project-header">
         <div class="project-title">KingSejong</div>
         <div class="project-meta">
@@ -269,121 +328,128 @@
       <p class="project-desc">
         조선 시대를 배경으로 한 온라인 멀티플레이어 미니게임 모음입니다.
         플레이어들은 로비에서 방을 만들고 달리기 · 토론 · 배틀 세 가지 미니게임 중 하나를 선택해 함께 플레이합니다.
-        <br><br>
-        <strong style="color:var(--text)">본인 담당 파트 :</strong> 세션 시스템 전반 · 로비 UI · 달리기 미니게임 · 캐릭터 선택
       </p>
+      <p class="project-role">
+        <strong style="color:var(--text)">담당 파트 :</strong> 세션 시스템 전반 · 로비 UI · 달리기 미니게임 · 캐릭터 선택
+      </p>
+      <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
+        <span class="card-toggle-text">자세히 보기</span>
+        <i class="card-toggle-icon">▾</i>
+      </button>
 
-      <!-- 1. 세션 시스템 -->
-      <div class="feature-group">
-        <div class="feature-group-title">1. 멀티플레이어 세션 시스템</div>
-        <ul class="feature-list">
-          <li>OnlineSubsystem을 직접 연동하여 세션 생성 · 탐색 · 접속 · 파괴 전 과정 구현</li>
-          <li>Steam / LAN 환경 자동 감지 및 분기 처리</li>
-          <li>Steam 서버에 한글 방 이름을 저장하기 위한 Base64 인코딩 / 디코딩 적용</li>
-          <li>서버 RPC → Multicast RPC → Client RPC 구조로 세션 퇴장 시 모든 플레이어 동시 로비 복귀</li>
-          <li>네트워크 장애(서버 종료) 시 OnNetworkFailure 콜백으로 클라이언트 자동 복귀</li>
-        </ul>
-
-        <div class="code-block"><pre><span class="comment">// 한글 방 이름을 Steam 서버에 안전하게 저장하기 위한 Base64 인코딩</span>
+      <!-- 상세 (클릭 시 표시) -->
+      <div class="card-detail">
+        <!-- 1. 세션 시스템 -->
+        <div class="feature-group">
+          <div class="feature-group-title">1. 멀티플레이어 세션 시스템</div>
+          <ul class="feature-list">
+            <li>OnlineSubsystem을 직접 연동하여 세션 생성 · 탐색 · 접속 · 파괴 전 과정 구현</li>
+            <li>Steam / LAN 환경 자동 감지 및 분기 처리</li>
+            <li>Steam 서버에 한글 방 이름을 저장하기 위한 Base64 인코딩 / 디코딩 적용</li>
+            <li>서버 RPC → Multicast RPC → Client RPC 구조로 세션 퇴장 시 모든 플레이어 동시 로비 복귀</li>
+            <li>네트워크 장애(서버 종료) 시 OnNetworkFailure 콜백으로 클라이언트 자동 복귀</li>
+          </ul>
+          <div class="code-block"><pre><span class="comment">// 한글 방 이름을 Steam 서버에 안전하게 저장하기 위한 Base64 인코딩</span>
 FString roomname = <span class="func">StringBase64Encode</span>(RoomName);
 SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="string">"Room_Name"</span>), roomname,
     EOnlineDataAdvertisementType::<span class="keyword">ViaOnlineServiceAndPing</span>);</pre></div>
-      </div>
+        </div>
 
-      <!-- 2. 로비 UI -->
-      <div class="feature-group">
-        <div class="feature-group-title">2. 로비 UI</div>
-        <ul class="feature-list">
-          <li>WidgetSwitcher로 방 만들기 / 방 찾기 화면 전환</li>
-          <li>게임 종류(달리기 · 토론 · 배틀) 체크박스 — 하나만 선택되도록 상호 배타 처리</li>
-          <li>슬라이더로 최대 인원 실시간 설정</li>
-          <li>세션 탐색 결과를 델리게이트로 수신 후 스크롤박스에 슬롯 위젯 동적 생성</li>
-          <li>방 미선택 상태에서 입장 버튼 클릭 시 크래시 방지 처리</li>
-        </ul>
-      </div>
+        <!-- 2. 로비 UI -->
+        <div class="feature-group">
+          <div class="feature-group-title">2. 로비 UI</div>
+          <ul class="feature-list">
+            <li>WidgetSwitcher로 방 만들기 / 방 찾기 화면 전환</li>
+            <li>게임 종류(달리기 · 토론 · 배틀) 체크박스 — 하나만 선택되도록 상호 배타 처리</li>
+            <li>슬라이더로 최대 인원 실시간 설정</li>
+            <li>세션 탐색 결과를 델리게이트로 수신 후 스크롤박스에 슬롯 위젯 동적 생성</li>
+            <li>방 미선택 상태에서 입장 버튼 클릭 시 크래시 방지 처리</li>
+          </ul>
+        </div>
 
-      <!-- 3. 달리기 미니게임 -->
-      <div class="feature-group">
-        <div class="feature-group-title">3. 달리기 미니게임</div>
-        <ul class="feature-list">
-          <li>결승선(FinishLine) — OnComponentBeginOverlap으로 통과 감지, 게임모드에 순서 전달</li>
-          <li>결승선 통과 순서대로 초성 퀴즈 기회 부여, 오답 시 다음 플레이어로 자동 전환</li>
-          <li>퀴즈 답변 중 나머지 플레이어는 답변자 폰을 자동 관전하도록 전환</li>
-          <li>DataTable에서 랜덤 퀴즈 선택 후 Multicast RPC로 모든 클라이언트에 동기화</li>
-          <li>RPC로 특정 타이밍에 플레이어 입력 활성화 / 비활성화 제어</li>
-          <li>승리 / 패배 몽타주 재생 및 엔드게임 UI 전환</li>
-        </ul>
-
-        <div style="margin-top: 14px;">
-          <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">게임 흐름</div>
-          <div class="flow">
-            <div class="flow-step">모든 플레이어 입장</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">카운트다운 후 달리기</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">결승선 통과 순서 기록</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">초성 퀴즈 (순서 기반)</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">정답자 승리 / 결과 화면</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">로비 복귀</div>
+        <!-- 3. 달리기 미니게임 -->
+        <div class="feature-group">
+          <div class="feature-group-title">3. 달리기 미니게임</div>
+          <ul class="feature-list">
+            <li>결승선(FinishLine) — OnComponentBeginOverlap으로 통과 감지, 게임모드에 순서 전달</li>
+            <li>결승선 통과 순서대로 초성 퀴즈 기회 부여, 오답 시 다음 플레이어로 자동 전환</li>
+            <li>퀴즈 답변 중 나머지 플레이어는 답변자 폰을 자동 관전하도록 전환</li>
+            <li>DataTable에서 랜덤 퀴즈 선택 후 Multicast RPC로 모든 클라이언트에 동기화</li>
+            <li>RPC로 특정 타이밍에 플레이어 입력 활성화 / 비활성화 제어</li>
+            <li>승리 / 패배 몽타주 재생 및 엔드게임 UI 전환</li>
+          </ul>
+          <div style="margin-top: 14px;">
+            <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">게임 흐름</div>
+            <div class="flow">
+              <div class="flow-step">모든 플레이어 입장</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">카운트다운 후 달리기</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">결승선 통과 순서 기록</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">초성 퀴즈 (순서 기반)</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">정답자 승리 / 결과 화면</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">로비 복귀</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 4. 캐릭터 선택 -->
-      <div class="feature-group">
-        <div class="feature-group-title">4. 캐릭터 선택 시스템</div>
-        <ul class="feature-list">
-          <li>이전 / 다음 버튼으로 스켈레탈 메시 실시간 교체 및 프리뷰</li>
-          <li>선택 확정 시 메시 인덱스를 GameInstance에 저장해 게임 내내 유지</li>
-          <li>선택 완료 후 마우스 숨김 및 게임 입력 모드로 전환</li>
-        </ul>
-      </div>
+        <!-- 4. 캐릭터 선택 -->
+        <div class="feature-group">
+          <div class="feature-group-title">4. 캐릭터 선택 시스템</div>
+          <ul class="feature-list">
+            <li>이전 / 다음 버튼으로 스켈레탈 메시 실시간 교체 및 프리뷰</li>
+            <li>선택 확정 시 메시 인덱스를 GameInstance에 저장해 게임 내내 유지</li>
+            <li>선택 완료 후 마우스 숨김 및 게임 입력 모드로 전환</li>
+          </ul>
+        </div>
 
-      <!-- 핵심 기술 -->
-      <div class="feature-group">
-        <div class="feature-group-title">핵심 기술</div>
-        <table class="tech-table">
-          <tr>
-            <th>기술</th>
-            <th>적용 내용</th>
-          </tr>
-          <tr>
-            <td>OnlineSubsystem</td>
-            <td>Steam / LAN 세션 전 과정 직접 구현 (IOnlineSessionInterface)</td>
-          </tr>
-          <tr>
-            <td>RPC</td>
-            <td>Server · Multicast · Client RPC로 게임 상태 동기화</td>
-          </tr>
-          <tr>
-            <td>Delegate</td>
-            <td>세션 탐색 완료 이벤트 비동기 처리 후 UI 업데이트</td>
-          </tr>
-          <tr>
-            <td>Base64</td>
-            <td>한글 방 이름을 Steam 서버에 저장하는 인코딩 문제 해결</td>
-          </tr>
-          <tr>
-            <td>DataTable</td>
-            <td>런타임에 퀴즈 데이터 랜덤 선택</td>
-          </tr>
-          <tr>
-            <td>UMG / WidgetSwitcher</td>
-            <td>로비 화면 전환 및 동적 슬롯 위젯 생성</td>
-          </tr>
-        </table>
-      </div>
+        <!-- 핵심 기술 -->
+        <div class="feature-group">
+          <div class="feature-group-title">핵심 기술</div>
+          <table class="tech-table">
+            <tr>
+              <th>기술</th>
+              <th>적용 내용</th>
+            </tr>
+            <tr>
+              <td>OnlineSubsystem</td>
+              <td>Steam / LAN 세션 전 과정 직접 구현 (IOnlineSessionInterface)</td>
+            </tr>
+            <tr>
+              <td>RPC</td>
+              <td>Server · Multicast · Client RPC로 게임 상태 동기화</td>
+            </tr>
+            <tr>
+              <td>Delegate</td>
+              <td>세션 탐색 완료 이벤트 비동기 처리 후 UI 업데이트</td>
+            </tr>
+            <tr>
+              <td>Base64</td>
+              <td>한글 방 이름을 Steam 서버에 저장하는 인코딩 문제 해결</td>
+            </tr>
+            <tr>
+              <td>DataTable</td>
+              <td>런타임에 퀴즈 데이터 랜덤 선택</td>
+            </tr>
+            <tr>
+              <td>UMG / WidgetSwitcher</td>
+              <td>로비 화면 전환 및 동적 슬롯 위젯 생성</td>
+            </tr>
+          </table>
+        </div>
 
-      <a class="link-btn" href="https://github.com/hjs101/KingSejong" target="_blank">
-        &#128279; 팀 레포지토리 보기
-      </a>
-    </div>
+        <a class="link-btn" href="https://github.com/hjs101/KingSejong" target="_blank" onclick="event.stopPropagation()">
+          &#128279; 팀 레포지토리 보기
+        </a>
+      </div><!-- /card-detail -->
+    </div><!-- /project-card KingSejong -->
 
-    <!-- ISEKIRO -->
-    <div class="project-card">
+    <!-- ── ISEKIRO ── -->
+    <div class="project-card" onclick="toggleCard(this)">
+      <!-- 요약 (항상 표시) -->
       <div class="project-header">
         <div class="project-title">Isekiro</div>
         <div class="project-meta">
@@ -396,99 +462,109 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
         세키로(Sekiro: Shadows Die Twice) 스타일의 3인칭 액션 게임입니다.
         패리 · 자세 게이지 · 처형 등 세키로의 핵심 전투 메커니즘을 언리얼 엔진 C++로 직접 구현했습니다.
       </p>
+      <p class="project-role">
+        <strong style="color:var(--text)">담당 파트 :</strong> 보스 AI FSM · 타겟 락온 · 그래플링 훅 · 패링 시스템
+      </p>
+      <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
+        <span class="card-toggle-text">자세히 보기</span>
+        <i class="card-toggle-icon">▾</i>
+      </button>
 
-      <!-- 시연 영상 -->
-      <div class="feature-group">
-        <div class="feature-group-title">시연 영상</div>
-        <a href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="display:inline-block; margin-top:6px;">
-          <img src="https://img.youtube.com/vi/BzzkD_gu2F0/hqdefault.jpg"
-               alt="Isekiro Demo"
-               style="width:100%; max-width:480px; border-radius:8px; border:1px solid var(--border);" />
-        </a>
-      </div>
+      <!-- 상세 (클릭 시 표시) -->
+      <div class="card-detail">
+        <!-- 시연 영상 -->
+        <div class="feature-group">
+          <div class="feature-group-title">시연 영상</div>
+          <a href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="display:inline-block; margin-top:6px;" onclick="event.stopPropagation()">
+            <img src="https://img.youtube.com/vi/BzzkD_gu2F0/hqdefault.jpg"
+                 alt="Isekiro Demo"
+                 style="width:100%; max-width:480px; border-radius:8px; border:1px solid var(--border);" />
+          </a>
+        </div>
 
-      <!-- 1. 보스 AI FSM -->
-      <div class="feature-group">
-        <div class="feature-group-title">1. 보스 AI — 컴포넌트 기반 FSM</div>
-        <ul class="feature-list">
-          <li><code style="color:var(--accent);font-size:0.85em">UFSMComponent</code>로 보스 행동 상태를 관리하는 핵심 컴포넌트 설계</li>
-          <li>각 상태를 <code style="color:var(--accent);font-size:0.85em">UStateObject</code> 클래스로 분리 — Start / End / Interrupt 인터페이스 통일</li>
-          <li>플레이어와의 거리에 따라 근거리(NEAR) / 원거리(FAR) 공간 분리 후 상태 선택</li>
-          <li>공격받을수록 회피(Dodge) 확률이 점진적으로 증가하는 적응형 AI</li>
-          <li>Block / Parry 확률을 상태별로 독립 설정 가능</li>
-        </ul>
+        <!-- 1. 보스 AI FSM -->
+        <div class="feature-group">
+          <div class="feature-group-title">1. 보스 AI — 컴포넌트 기반 FSM</div>
+          <ul class="feature-list">
+            <li><code style="color:var(--accent);font-size:0.85em">UFSMComponent</code>로 보스 행동 상태를 관리하는 핵심 컴포넌트 설계</li>
+            <li>각 상태를 <code style="color:var(--accent);font-size:0.85em">UStateObject</code> 클래스로 분리 — Start / End / Interrupt 인터페이스 통일</li>
+            <li>플레이어와의 거리에 따라 근거리(NEAR) / 원거리(FAR) 공간 분리 후 상태 선택</li>
+            <li>공격받을수록 회피(Dodge) 확률이 점진적으로 증가하는 적응형 AI</li>
+            <li>Block / Parry 확률을 상태별로 독립 설정 가능</li>
+          </ul>
+          <div style="margin-top:14px; overflow-x:auto;">
+            <table class="tech-table" style="min-width:420px;">
+              <tr><th>카테고리</th><th>상태</th></tr>
+              <tr><td>반응 (Stun)</td><td>Hit, Block, Parry, Deflected</td></tr>
+              <tr><td>근거리 공격</td><td>NormalAttack, CounterAttack, Strafe</td></tr>
+              <tr><td>원거리 공격</td><td>DistanceAttack, ThrustAttack, Run, PatternAttack, LungeAttack</td></tr>
+              <tr><td>전환</td><td>Dodge, DodgeAttack, Jump, JumpStrike, JumpFire</td></tr>
+              <tr><td>기타</td><td>Death</td></tr>
+            </table>
+          </div>
+        </div>
 
-        <div style="margin-top:14px; overflow-x:auto;">
-          <table class="tech-table" style="min-width:420px;">
-            <tr><th>카테고리</th><th>상태</th></tr>
-            <tr><td>반응 (Stun)</td><td>Hit, Block, Parry, Deflected</td></tr>
-            <tr><td>근거리 공격</td><td>NormalAttack, CounterAttack, Strafe</td></tr>
-            <tr><td>원거리 공격</td><td>DistanceAttack, ThrustAttack, Run, PatternAttack, LungeAttack</td></tr>
-            <tr><td>전환</td><td>Dodge, DodgeAttack, Jump, JumpStrike, JumpFire</td></tr>
-            <tr><td>기타</td><td>Death</td></tr>
+        <!-- 2. 타겟 락온 -->
+        <div class="feature-group">
+          <div class="feature-group-title">2. 타겟 락온 시스템</div>
+          <ul class="feature-list">
+            <li>UActorComponent 기반 모듈형 설계 — 모든 캐릭터에 즉시 탑재 가능</li>
+            <li>내적(Dot Product)으로 카메라 정면 벡터와 타겟 벡터 유사도 측정, 화면 중앙에 가장 가까운 적 우선 선택</li>
+            <li>RInterp To로 카메라 회전 부드럽게 보간, 락온 상태에서 Strafing 이동 자동 전환</li>
+            <li>Line Trace로 장애물 뒤의 적은 타겟 대상에서 자동 제외</li>
+          </ul>
+        </div>
+
+        <!-- 3. 그래플링 훅 -->
+        <div class="feature-group">
+          <div class="feature-group-title">3. 그래플링 훅 시스템</div>
+          <ul class="feature-list">
+            <li>타겟 지점 감지 후 하단 트레이스로 실제 착지 가능 지형(Walkable Surface) 사전 검증</li>
+            <li>Timeline + Curve로 발사 가속 / 도착 감속을 조합한 물리적으로 자연스러운 이동 궤적 구현</li>
+            <li>Cable Component로 발사체와 캐릭터 손 소켓 사이의 물리 연결 및 환경 충돌 구현</li>
+            <li>애니메이션 노티파이(Anim Notify)로 이동 시작 · 종료 시점과 Flying / Falling 상태 정밀 동기화</li>
+          </ul>
+        </div>
+
+        <!-- 4. 패링 시스템 -->
+        <div class="feature-group">
+          <div class="feature-group-title">4. 패링 시스템</div>
+          <ul class="feature-list">
+            <li>USphereComponent 기반 <code style="color:var(--accent);font-size:0.85em">URealParryBox</code>의 Overlap으로 패리 판정 — 일반 약 8프레임, 위험(Hazard) 상태 1프레임으로 난이도 연동</li>
+            <li>패리 입력 시 데미지 채널 충돌 응답을 즉시 Ignore로 전환하여 무적 판정 구현, 패리 종료 시 복구</li>
+            <li>패리 성공 시 SetGlobalTimeDilation(0.85f)로 슬로우 모션 적용 후 0.5초 뒤 타이머로 복구</li>
+            <li>패리 성공마다 보스 자세 데미지(3) 누적, 자세 붕괴 시 처형 연출 트리거</li>
+            <li>패리 윈도우와 쿨다운을 별도 FTimerHandle로 분리 — 연속 패리 어뷰징 방지</li>
+          </ul>
+        </div>
+
+        <!-- 핵심 기술 -->
+        <div class="feature-group">
+          <div class="feature-group-title">핵심 기술</div>
+          <table class="tech-table">
+            <tr><th>기술</th><th>적용 내용</th></tr>
+            <tr><td>FSM (컴포넌트 기반)</td><td>UFSMComponent + UStateObject로 보스 상태 모듈화</td></tr>
+            <tr><td>Dot Product</td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
+            <tr><td>Line Trace</td><td>착지 가능 지형 사전 검증 · 시야 차단 감지</td></tr>
+            <tr><td>Timeline + Curve</td><td>그래플링 이동 가속 / 감속 곡선 제어</td></tr>
+            <tr><td>TimeDilation</td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
+            <tr><td>Anim Notify</td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
+            <tr><td>Niagara</td><td>보스 화살 발사 트레일 이펙트</td></tr>
           </table>
         </div>
-      </div>
 
-      <!-- 2. 타겟 락온 -->
-      <div class="feature-group">
-        <div class="feature-group-title">2. 타겟 락온 시스템</div>
-        <ul class="feature-list">
-          <li>UActorComponent 기반 모듈형 설계 — 모든 캐릭터에 즉시 탑재 가능</li>
-          <li>내적(Dot Product)으로 카메라 정면 벡터와 타겟 벡터 유사도 측정, 화면 중앙에 가장 가까운 적 우선 선택</li>
-          <li>RInterp To로 카메라 회전 부드럽게 보간, 락온 상태에서 Strafing 이동 자동 전환</li>
-          <li>Line Trace로 장애물 뒤의 적은 타겟 대상에서 자동 제외</li>
-        </ul>
-      </div>
+        <a class="link-btn" href="https://github.com/AIMHYUK/Isekiro" target="_blank" onclick="event.stopPropagation()">
+          &#128279; 레포지토리 보기
+        </a>
+        <a class="link-btn" href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="margin-left:8px;" onclick="event.stopPropagation()">
+          &#9654; 시연 영상 보기
+        </a>
+      </div><!-- /card-detail -->
+    </div><!-- /project-card Isekiro -->
 
-      <!-- 3. 그래플링 훅 -->
-      <div class="feature-group">
-        <div class="feature-group-title">3. 그래플링 훅 시스템</div>
-        <ul class="feature-list">
-          <li>타겟 지점 감지 후 하단 트레이스로 실제 착지 가능 지형(Walkable Surface) 사전 검증</li>
-          <li>Timeline + Curve로 발사 가속 / 도착 감속을 조합한 물리적으로 자연스러운 이동 궤적 구현</li>
-          <li>Cable Component로 발사체와 캐릭터 손 소켓 사이의 물리 연결 및 환경 충돌 구현</li>
-          <li>애니메이션 노티파이(Anim Notify)로 이동 시작 · 종료 시점과 Flying / Falling 상태 정밀 동기화</li>
-        </ul>
-      </div>
-
-      <!-- 4. 패링 시스템 -->
-      <div class="feature-group">
-        <div class="feature-group-title">4. 패링 시스템</div>
-        <ul class="feature-list">
-          <li>USphereComponent 기반 <code style="color:var(--accent);font-size:0.85em">URealParryBox</code>의 Overlap으로 패리 판정 — 일반 약 8프레임, 위험(Hazard) 상태 1프레임으로 난이도 연동</li>
-          <li>패리 입력 시 데미지 채널 충돌 응답을 즉시 Ignore로 전환하여 무적 판정 구현, 패리 종료 시 복구</li>
-          <li>패리 성공 시 SetGlobalTimeDilation(0.85f)로 슬로우 모션 적용 후 0.5초 뒤 타이머로 복구</li>
-          <li>패리 성공마다 보스 자세 데미지(3) 누적, 자세 붕괴 시 처형 연출 트리거</li>
-          <li>패리 윈도우와 쿨다운을 별도 FTimerHandle로 분리 — 연속 패리 어뷰징 방지</li>
-        </ul>
-      </div>
-
-      <!-- 핵심 기술 -->
-      <div class="feature-group">
-        <div class="feature-group-title">핵심 기술</div>
-        <table class="tech-table">
-          <tr><th>기술</th><th>적용 내용</th></tr>
-          <tr><td>FSM (컴포넌트 기반)</td><td>UFSMComponent + UStateObject로 보스 상태 모듈화</td></tr>
-          <tr><td>Dot Product</td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
-          <tr><td>Line Trace</td><td>착지 가능 지형 사전 검증 · 시야 차단 감지</td></tr>
-          <tr><td>Timeline + Curve</td><td>그래플링 이동 가속 / 감속 곡선 제어</td></tr>
-          <tr><td>TimeDilation</td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
-          <tr><td>Anim Notify</td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
-          <tr><td>Niagara</td><td>보스 화살 발사 트레일 이펙트</td></tr>
-        </table>
-      </div>
-
-      <a class="link-btn" href="https://github.com/AIMHYUK/Isekiro" target="_blank">
-        &#128279; 레포지토리 보기
-      </a>
-      <a class="link-btn" href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="margin-left:8px;">
-        &#9654; 시연 영상 보기
-      </a>
-    </div>
-
-    <!-- VIRTUALIDOL -->
-    <div class="project-card">
+    <!-- ── VIRTUALIDOL ── -->
+    <div class="project-card" onclick="toggleCard(this)">
+      <!-- 요약 (항상 표시) -->
       <div class="project-header">
         <div class="project-title">VirtualIdol</div>
         <div class="project-meta">
@@ -500,19 +576,27 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
       </div>
       <p class="project-desc">
         VRM 모델을 활용한 버튜버 온라인 콘서트 플랫폼입니다. 관객들이 가상 무대에 모여 버튜버의 공연을 감상하고, 팬들이 직접 무대 환경을 커스터마이징하여 세션을 개설할 수 있습니다.
-        <br><br>
-        <strong style="color:var(--text)">본인 담당 파트 :</strong> 무대 액터 배치 시스템 · 버튜버 모델링 적용 · 무대 설정 UI 구현 · RemoCap UDP/OSC 본 데이터 손실 초기화
       </p>
-      <div class="feature-group">
-        <div class="feature-group-title">1. 무대 액터 배치 시스템</div>
-        <ul class="feature-list">
-          <li>하늘(Sky) · 테마(Theme) · 지면(Floor) · 이펙트(VFX) 4가지 카테고리를 독립 조합하는 모듈형 무대 구성</li>
-          <li>테마 선택 시 StreamLevel 동적 로드/언로드 — 이전 레벨을 0.2초 간격 지연 타이머로 순차 언로드하여 비동기 충돌 방지</li>
-          <li>액터 태그(VFX · Floor · Skybox · Theme) 기반 일괄 Destroy 후 재스폰으로 깔끔한 교체 처리</li>
-          <li><code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code> + <code style="color:var(--accent);font-size:0.85em">UTextureRenderTarget2D</code>로 현재 카메라 시점 실시간 캡처하여 썸네일 생성</li>
-          <li>서버/클라이언트 분기 처리 — <code style="color:var(--accent);font-size:0.85em">CreateDummyStage()</code>로 클라이언트 프리뷰 동기화 제공</li>
-        </ul>
-        <div class="code-block"><pre><span class="comment">// 스트리밍 레벨 교체 시 이전 레벨을 지연 언로드하여 비동기 충돌 방지</span>
+      <p class="project-role">
+        <strong style="color:var(--text)">담당 파트 :</strong> 무대 액터 배치 시스템 · 버튜버 모델링 적용 · 무대 설정 UI 구현 · RemoCap UDP/OSC 본 데이터 손실 초기화
+      </p>
+      <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
+        <span class="card-toggle-text">자세히 보기</span>
+        <i class="card-toggle-icon">▾</i>
+      </button>
+
+      <!-- 상세 (클릭 시 표시) -->
+      <div class="card-detail">
+        <div class="feature-group">
+          <div class="feature-group-title">1. 무대 액터 배치 시스템</div>
+          <ul class="feature-list">
+            <li>하늘(Sky) · 테마(Theme) · 지면(Floor) · 이펙트(VFX) 4가지 카테고리를 독립 조합하는 모듈형 무대 구성</li>
+            <li>테마 선택 시 StreamLevel 동적 로드/언로드 — 이전 레벨을 0.2초 간격 지연 타이머로 순차 언로드하여 비동기 충돌 방지</li>
+            <li>액터 태그(VFX · Floor · Skybox · Theme) 기반 일괄 Destroy 후 재스폰으로 깔끔한 교체 처리</li>
+            <li><code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code> + <code style="color:var(--accent);font-size:0.85em">UTextureRenderTarget2D</code>로 현재 카메라 시점 실시간 캡처하여 썸네일 생성</li>
+            <li>서버/클라이언트 분기 처리 — <code style="color:var(--accent);font-size:0.85em">CreateDummyStage()</code>로 클라이언트 프리뷰 동기화 제공</li>
+          </ul>
+          <div class="code-block"><pre><span class="comment">// 스트리밍 레벨 교체 시 이전 레벨을 지연 언로드하여 비동기 충돌 방지</span>
 <span class="keyword">float</span> UnloadDelay = 0.4f;
 <span class="keyword">for</span> (const FName&amp; LevelName : LevelsToUnload)
 {
@@ -522,64 +606,65 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
         }, UnloadDelay, false);
     UnloadDelay += 0.2f;
 }</pre></div>
-      </div>
-      <div class="feature-group">
-        <div class="feature-group-title">2. 버튜버 모델링 적용</div>
-        <ul class="feature-list">
-          <li>VRM4U 플러그인을 통해 VRM 형식의 버튜버 모델을 언리얼 엔진에 임포트 및 적용</li>
-          <li>게임 플레이 중 스켈레탈 메시를 런타임에 동적 교체하여 공연 도중 의상 및 모델 전환 구현</li>
-          <li>Morph Target 제어를 애니메이션과 연동하여 실시간 표정 변화 반영</li>
-          <li>Mocopi 기반 전신 모션 캡처 데이터를 UDP 소켓으로 수신하여 VRM 모델 뼈대에 적용</li>
-        </ul>
-      </div>
-      <div class="feature-group">
-        <div class="feature-group-title">3. RemoCap UDP/OSC 본 데이터 손실 초기화</div>
-        <ul class="feature-list">
-          <li>RemoCap 앱의 본(Bone) 데이터 전송 방식을 분석하여 기존 로직의 데이터 손실 원인 파악</li>
-          <li>UDP 기반 OSC 프로토콜로 수신 구조 수정 — <code style="color:var(--accent);font-size:0.85em">FUdpSocketBuilder</code>로 포트 바인딩 후 <code style="color:var(--accent);font-size:0.85em">FUdpSocketReceiver</code> 리스너 스레드 구성</li>
-          <li>패킷 수신 누락 시 이전 프레임 데이터를 유지하던 문제를 초기 상태 리셋 로직으로 교체하여 포즈 고착 현상 제거</li>
-          <li>100ms 폴링 간격 백그라운드 스레드에서 연속 수신 처리, 메인 스레드와 안전 동기화</li>
-        </ul>
-      </div>
-      <div class="feature-group">
-        <div class="feature-group-title">4. 무대 설정 UI</div>
-        <ul class="feature-list">
-          <li>날씨 · 테마 · 이펙트 · 지면 4개 카테고리 탭 — 탭 전환 시 해당 옵션 패널만 표시</li>
-          <li>선택된 카테고리 버튼에 Scale 1.1 렌더 트랜스폼 적용, 이전 버튼 원상 복귀로 현재 선택 상태 시각화</li>
-          <li>Border 배열로 선택된 항목에만 SelectedBox 텍스처를 적용하는 하이라이트 시스템</li>
-          <li><code style="color:var(--accent);font-size:0.85em">WidgetSwitcher</code>로 설정 → 캡처 확인 → 최종 확인 3단계 플로우 전환</li>
-          <li>0.3초 지연 타이머로 UI 버튼 은닉 후 씬 캡처 — 버튼이 썸네일에 찍히는 문제 해결</li>
-          <li>스테이지 이름 입력 후 썸네일 + 설정 정보를 HTTP Multipart로 서버 업로드</li>
-        </ul>
-        <div style="margin-top: 14px;">
-          <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">UI 플로우</div>
-          <div class="flow">
-            <div class="flow-step">무대 옵션 선택</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">실시간 프리뷰</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">썸네일 캡처</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">스테이지 이름 입력</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step">서버 업로드 완료</div>
+        </div>
+        <div class="feature-group">
+          <div class="feature-group-title">2. 버튜버 모델링 적용</div>
+          <ul class="feature-list">
+            <li>VRM4U 플러그인을 통해 VRM 형식의 버튜버 모델을 언리얼 엔진에 임포트 및 적용</li>
+            <li>게임 플레이 중 스켈레탈 메시를 런타임에 동적 교체하여 공연 도중 의상 및 모델 전환 구현</li>
+            <li>Morph Target 제어를 애니메이션과 연동하여 실시간 표정 변화 반영</li>
+            <li>Mocopi 기반 전신 모션 캡처 데이터를 UDP 소켓으로 수신하여 VRM 모델 뼈대에 적용</li>
+          </ul>
+        </div>
+        <div class="feature-group">
+          <div class="feature-group-title">3. RemoCap UDP/OSC 본 데이터 손실 초기화</div>
+          <ul class="feature-list">
+            <li>RemoCap 앱의 본(Bone) 데이터 전송 방식을 분석하여 기존 로직의 데이터 손실 원인 파악</li>
+            <li>UDP 기반 OSC 프로토콜로 수신 구조 수정 — <code style="color:var(--accent);font-size:0.85em">FUdpSocketBuilder</code>로 포트 바인딩 후 <code style="color:var(--accent);font-size:0.85em">FUdpSocketReceiver</code> 리스너 스레드 구성</li>
+            <li>패킷 수신 누락 시 이전 프레임 데이터를 유지하던 문제를 초기 상태 리셋 로직으로 교체하여 포즈 고착 현상 제거</li>
+            <li>100ms 폴링 간격 백그라운드 스레드에서 연속 수신 처리, 메인 스레드와 안전 동기화</li>
+          </ul>
+        </div>
+        <div class="feature-group">
+          <div class="feature-group-title">4. 무대 설정 UI</div>
+          <ul class="feature-list">
+            <li>날씨 · 테마 · 이펙트 · 지면 4개 카테고리 탭 — 탭 전환 시 해당 옵션 패널만 표시</li>
+            <li>선택된 카테고리 버튼에 Scale 1.1 렌더 트랜스폼 적용, 이전 버튼 원상 복귀로 현재 선택 상태 시각화</li>
+            <li>Border 배열로 선택된 항목에만 SelectedBox 텍스처를 적용하는 하이라이트 시스템</li>
+            <li><code style="color:var(--accent);font-size:0.85em">WidgetSwitcher</code>로 설정 → 캡처 확인 → 최종 확인 3단계 플로우 전환</li>
+            <li>0.3초 지연 타이머로 UI 버튼 은닉 후 씬 캡처 — 버튼이 썸네일에 찍히는 문제 해결</li>
+            <li>스테이지 이름 입력 후 썸네일 + 설정 정보를 HTTP Multipart로 서버 업로드</li>
+          </ul>
+          <div style="margin-top: 14px;">
+            <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">UI 플로우</div>
+            <div class="flow">
+              <div class="flow-step">무대 옵션 선택</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">실시간 프리뷰</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">썸네일 캡처</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">스테이지 이름 입력</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step">서버 업로드 완료</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="feature-group">
-        <div class="feature-group-title">핵심 기술</div>
-        <table class="tech-table">
-          <tr><th>기술</th><th>적용 내용</th></tr>
-          <tr><td>StreamLevel</td><td>테마별 레벨 동적 로드/언로드 — 지연 타이머로 비동기 충돌 방지</td></tr>
-          <tr><td>Actor Tag</td><td>카테고리별 배치 액터 태그 식별, 교체 시 일괄 Destroy 후 재스폰</td></tr>
-          <tr><td>SceneCaptureComponent2D</td><td>카메라 시점을 RenderTarget에 실시간 캡처, UI 썸네일로 표시</td></tr>
-          <tr><td>VRM4U</td><td>VRM 모델 임포트, 런타임 스켈레탈 메시 교체, Morph Target 표정 제어</td></tr>
-          <tr><td>UDP / OSC</td><td>FUdpSocketReceiver로 RemoCap 본 데이터 수신, 손실 시 리셋 로직 적용</td></tr>
-          <tr><td>UMG / WidgetSwitcher</td><td>3단계 설정 플로우 전환 및 카테고리 탭 UI 구현</td></tr>
-        </table>
-      </div>
-      <a class="link-btn" href="https://github.com/FavoriteIdol/VirtualIdol" target="_blank">&#128279; 팀 레포지토리 보기</a>
-    </div>
+        <div class="feature-group">
+          <div class="feature-group-title">핵심 기술</div>
+          <table class="tech-table">
+            <tr><th>기술</th><th>적용 내용</th></tr>
+            <tr><td>StreamLevel</td><td>테마별 레벨 동적 로드/언로드 — 지연 타이머로 비동기 충돌 방지</td></tr>
+            <tr><td>Actor Tag</td><td>카테고리별 배치 액터 태그 식별, 교체 시 일괄 Destroy 후 재스폰</td></tr>
+            <tr><td>SceneCaptureComponent2D</td><td>카메라 시점을 RenderTarget에 실시간 캡처, UI 썸네일로 표시</td></tr>
+            <tr><td>VRM4U</td><td>VRM 모델 임포트, 런타임 스켈레탈 메시 교체, Morph Target 표정 제어</td></tr>
+            <tr><td>UDP / OSC</td><td>FUdpSocketReceiver로 RemoCap 본 데이터 수신, 손실 시 리셋 로직 적용</td></tr>
+            <tr><td>UMG / WidgetSwitcher</td><td>3단계 설정 플로우 전환 및 카테고리 탭 UI 구현</td></tr>
+          </table>
+        </div>
+        <a class="link-btn" href="https://github.com/FavoriteIdol/VirtualIdol" target="_blank" onclick="event.stopPropagation()">&#128279; 팀 레포지토리 보기</a>
+      </div><!-- /card-detail -->
+    </div><!-- /project-card VirtualIdol -->
 
   </section>
 
@@ -595,6 +680,17 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
 <footer>
   &copy; 2024 JJH. Built with GitHub Pages.
 </footer>
+
+<script>
+  function toggleCard(card) {
+    const isExpanded = card.classList.contains('expanded');
+    card.classList.toggle('expanded');
+    const btn = card.querySelector('.card-toggle-text');
+    if (btn) {
+      btn.textContent = isExpanded ? '자세히 보기' : '접기';
+    }
+  }
+</script>
 
 </body>
 </html>

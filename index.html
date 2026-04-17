@@ -322,7 +322,7 @@
         <div class="project-meta">
           <span class="tag">Unreal Engine 5.6</span>
           <span class="tag">C++</span>
-          <span class="tag red">Team 3인</span>
+          <span class="tag red">Team 5인</span>
         </div>
       </div>
       <p class="project-desc">
@@ -468,7 +468,7 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
         <div class="project-meta">
           <span class="tag">Unreal Engine 5.6</span>
           <span class="tag">C++</span>
-          <span class="tag">개인 프로젝트</span>
+          <span class="tag red">Team 3인</span>
         </div>
       </div>
       <p class="project-desc">
@@ -584,7 +584,7 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
           <span class="tag">Unreal Engine 5</span>
           <span class="tag">C++</span>
           <span class="tag">Blueprint</span>
-          <span class="tag red">Team 3인</span>
+          <span class="tag red">Team 7인</span>
         </div>
       </div>
       <p class="project-desc">
@@ -638,8 +638,7 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
             <li>Morph Target 제어를 애니메이션과 연동하여 실시간 표정 변화 반영</li>
             <li>Mocopi 기반 전신 모션 캡처 데이터를 UDP 소켓으로 수신하여 VRM 모델 뼈대에 적용</li>
           </ul>
-          <div class="code-block"><pre><span class="comment">// [AudienceServerComponent_KMK.cpp]
-// 로컬 플레이어가 선택한 메시 번호를 서버 RPC로 전달</span>
+          <div class="code-block"><pre><span class="comment">// 로컬 플레이어가 선택한 메시 번호를 서버 RPC로 전달</span>
 <span class="func">ServerRPC_ChangeMyMesh</span>( gi-&gt;playerMeshNum );
 
 <span class="comment">// 서버 → 모든 클라이언트에 메시 동기화 (MulticastRPC)</span>
@@ -655,8 +654,7 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
     }
 }
 
-<span class="comment">// [Dummy_KMK.cpp]
-// DynamicMaterial 스칼라 파라미터로 표정(Morph Target) 실시간 제어</span>
+<span class="comment">// DynamicMaterial 스칼라 파라미터로 표정(Morph Target) 실시간 제어</span>
 <span class="keyword">void</span> ADummy_KMK::<span class="func">SetFace</span>( <span class="keyword">float</span> faceValue )
 {
     <span class="keyword">if</span> (FaceDynamicMat)
@@ -691,8 +689,7 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
             <li>0.3초 지연 타이머로 UI 버튼 은닉 후 씬 캡처 — 버튼이 썸네일에 찍히는 문제 해결</li>
             <li>스테이지 이름 입력 후 썸네일 + 설정 정보를 HTTP Multipart로 서버 업로드</li>
           </ul>
-          <div class="code-block"><pre><span class="comment">// [HttpActor_KMK.cpp]
-// ① 썸네일 이미지를 Multipart/form-data로 서버 업로드</span>
+          <div class="code-block"><pre><span class="comment">// ① 썸네일 이미지를 Multipart/form-data로 서버 업로드</span>
 <span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqMultipartCapturedURL</span>( FStageInfo&amp; Stage, <span class="keyword">const</span> FString&amp; ImagePath )
 {
     TSharedRef&lt;IHttpRequest&gt; Req = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();

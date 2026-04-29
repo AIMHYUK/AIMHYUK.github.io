@@ -83,8 +83,32 @@
       gap: 20px;
       align-items: start;
     }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 900px) {
       .project-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .hero { padding: 52px 20px 40px; }
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+      .container { padding: 0 16px; }
+      section { padding: 40px 0; }
+      .project-card { padding: 20px 18px; }
+      .project-title { font-size: 1.1rem; }
+      .feature-list li { font-size: 0.85rem; }
+      .tech-table th,
+      .tech-table td { padding: 8px 10px; font-size: 0.82rem; }
+      .link-btn { padding: 7px 14px; font-size: 0.83rem; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.6rem; }
+      .project-header { flex-direction: column; gap: 8px; }
+      .project-card { padding: 16px 14px; }
+      .code-block { padding: 12px 14px; }
+      .code-block pre { font-size: 0.75rem; }
+      .flow { gap: 4px; }
+      .flow-step { padding: 4px 8px; font-size: 0.75rem; }
     }
 
     /* ── PROJECT CARD ── */
@@ -251,6 +275,7 @@
     .code-block .func    { color: #d2a8ff; }
 
     /* ── TECH TABLE ── */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .tech-table {
       width: 100%;
       border-collapse: collapse;
@@ -447,7 +472,7 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
         <!-- 핵심 기술 -->
         <div class="feature-group">
           <div class="feature-group-title">핵심 기술</div>
-          <table class="tech-table">
+          <div class="table-wrap"><table class="tech-table">
             <tr>
               <th>기술</th>
               <th>적용 내용</th>
@@ -476,7 +501,7 @@ SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="
               <td>UMG / WidgetSwitcher</td>
               <td>로비 화면 전환 및 동적 슬롯 위젯 생성</td>
             </tr>
-          </table>
+          </table></div>
         </div>
 
         <!-- 시스템 흐름도 -->
@@ -695,7 +720,7 @@ graph TB
         <!-- 핵심 기술 -->
         <div class="feature-group">
           <div class="feature-group-title">핵심 기술</div>
-          <table class="tech-table">
+          <div class="table-wrap"><table class="tech-table">
             <tr><th>기술</th><th>적용 내용</th></tr>
             <tr><td>FSM (컴포넌트 기반)</td><td>UFSMComponent + UStateObject로 보스 상태 모듈화</td></tr>
             <tr><td>Dot Product</td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
@@ -704,7 +729,7 @@ graph TB
             <tr><td>TimeDilation</td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
             <tr><td>Anim Notify</td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
             <tr><td>Niagara</td><td>보스 화살 발사 트레일 이펙트</td></tr>
-          </table>
+          </table></div>
         </div>
 
         <a class="link-btn" href="https://github.com/AIMHYUK/Isekiro" target="_blank" onclick="event.stopPropagation()">
@@ -892,7 +917,7 @@ graph TB
         </div>
         <div class="feature-group">
           <div class="feature-group-title">핵심 기술</div>
-          <table class="tech-table">
+          <div class="table-wrap"><table class="tech-table">
             <tr><th>기술</th><th>적용 내용</th></tr>
             <tr><td>StreamLevel</td><td>테마별 레벨 동적 로드/언로드 — 지연 타이머로 비동기 충돌 방지</td></tr>
             <tr><td>Actor Tag</td><td>카테고리별 배치 액터 태그 식별, 교체 시 일괄 Destroy 후 재스폰</td></tr>
@@ -900,7 +925,7 @@ graph TB
             <tr><td>VRM4U</td><td>VRM 모델 임포트, 런타임 스켈레탈 메시 교체, Morph Target 표정 제어</td></tr>
             <tr><td>UDP / OSC</td><td>FUdpSocketReceiver로 RemoCap 본 데이터 수신, 손실 시 리셋 로직 적용</td></tr>
             <tr><td>UMG / WidgetSwitcher</td><td>3단계 설정 플로우 전환 및 카테고리 탭 UI 구현</td></tr>
-          </table>
+          </table></div>
         </div>
         <a class="link-btn" href="https://github.com/FavoriteIdol/VirtualIdol" target="_blank" onclick="event.stopPropagation()">&#128279; 팀 레포지토리 보기</a>
         <a class="link-btn" href="https://youtu.be/D8ZNVKkEmxU" target="_blank" style="margin-left:8px;" onclick="event.stopPropagation()">
@@ -1139,7 +1164,7 @@ graph TB
         <!-- 핵심 기술 -->
         <div class="feature-group">
           <div class="feature-group-title">핵심 기술</div>
-          <table class="tech-table">
+          <div class="table-wrap"><table class="tech-table">
             <tr>
               <th>기술</th>
               <th>적용 내용</th>
@@ -1168,7 +1193,7 @@ graph TB
               <td>Yarn Spinner 연동</td>
               <td>QuestAction으로 퀘스트 진행 시 대화 분기 노드를 인스펙터에서 드롭다운 설정</td>
             </tr>
-          </table>
+          </table></div>
         </div>
 
         <a class="link-btn" href="https://github.com/AIMCOMPLETEHYUK/MdCalling" target="_blank" onclick="event.stopPropagation()">

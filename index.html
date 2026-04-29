@@ -244,18 +244,23 @@
       gap: 6px;
     }
     .feature-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
+      position: relative;
+      display: block;
+      padding-left: 18px;
       font-size: 0.9rem;
       color: var(--muted);
-      line-height: 1.65;
+      line-height: 1.7;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .feature-list li::before {
       content: '▸';
       color: var(--accent);
-      flex-shrink: 0;
-      margin-top: 3px;
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-size: 0.85em;
+      line-height: 1.7;
     }
     .feature-list li code {
       font-family: 'Cascadia Code', 'Fira Code', monospace;
@@ -265,18 +270,6 @@
       border: 1px solid rgba(88, 166, 255, 0.2);
       border-radius: 4px;
       padding: 1px 5px;
-      white-space: nowrap;
-    }
-    /* 펼친 카드 — feature-list 2단 배치 */
-    .project-card.expanded .feature-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px 24px;
-    }
-    @media (max-width: 768px) {
-      .project-card.expanded .feature-list {
-        grid-template-columns: 1fr;
-      }
     }
 
     /* ── CODE BLOCK ── */

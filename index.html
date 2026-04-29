@@ -61,7 +61,7 @@
 
     /* ── LAYOUT ── */
     .container {
-      max-width: 900px;
+      max-width: 1320px;
       margin: 0 auto;
       padding: 0 24px;
     }
@@ -76,13 +76,23 @@
       color: var(--accent);
     }
 
+    /* ── PROJECT GRID ── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .project-grid { grid-template-columns: 1fr; }
+    }
+
     /* ── PROJECT CARD ── */
     .project-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 28px 32px;
-      margin-bottom: 24px;
       cursor: pointer;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
@@ -126,9 +136,23 @@
       font-size: 0.95rem;
     }
     .project-role {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: var(--muted);
       margin-bottom: 4px;
+      background: rgba(88, 166, 255, 0.05);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      margin-top: 12px;
+    }
+    .project-role strong {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
     }
 
     /* ── TOGGLE BUTTON ── */
@@ -316,6 +340,8 @@
   <section>
     <div class="section-title">Projects</div>
 
+    <div class="project-grid">
+
     <!-- ── KingSejong ── -->
     <div class="project-card" onclick="toggleCard(this)">
       <!-- 요약 (항상 표시) -->
@@ -332,7 +358,7 @@
         플레이어들은 로비에서 방을 만들고 달리기 · 토론 · 배틀 세 가지 미니게임 중 하나를 선택해 함께 플레이합니다.
       </p>
       <p class="project-role">
-        <strong style="color:var(--text)">담당 파트 :</strong> 세션 시스템 전반 · 로비 UI · 달리기 미니게임 · 캐릭터 선택
+        <strong>담당 파트</strong> 세션 시스템 전반 · 로비 UI · 달리기 미니게임 · 캐릭터 선택
       </p>
       <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
         <span class="card-toggle-text">자세히 보기</span>
@@ -591,7 +617,7 @@ graph TB
         패리 · 자세 게이지 · 처형 등 세키로의 핵심 전투 메커니즘을 언리얼 엔진 C++로 직접 구현했습니다.
       </p>
       <p class="project-role">
-        <strong style="color:var(--text)">담당 파트 :</strong> 보스 AI FSM · 타겟 락온 · 그래플링 훅 · 패링 시스템
+        <strong>담당 파트</strong> 보스 AI FSM · 타겟 락온 · 그래플링 훅 · 패링 시스템
       </p>
       <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
         <span class="card-toggle-text">자세히 보기</span>
@@ -706,7 +732,7 @@ graph TB
         VRM 모델을 활용한 버튜버 온라인 콘서트 플랫폼입니다. 관객들이 가상 무대에 모여 버튜버의 공연을 감상하고, 팬들이 직접 무대 환경을 커스터마이징하여 세션을 개설할 수 있습니다.
       </p>
       <p class="project-role">
-        <strong style="color:var(--text)">담당 파트 :</strong> 무대 액터 배치 시스템 · 버튜버 모델링 적용 · 무대 설정 UI 구현 · RemoCap UDP/OSC 본 데이터 손실 초기화
+        <strong>담당 파트</strong> 무대 액터 배치 시스템 · 버튜버 모델링 적용 · 무대 설정 UI 구현 · RemoCap UDP/OSC 본 데이터 손실 초기화
       </p>
       <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
         <span class="card-toggle-text">자세히 보기</span>
@@ -891,7 +917,7 @@ graph TB
         <div class="project-meta">
           <span class="tag">Unity 6</span>
           <span class="tag">C#</span>
-          <span class="tag red">Team 5인</span>
+          <span class="tag red">Team 3인</span>
         </div>
       </div>
       <p class="project-desc">
@@ -900,7 +926,7 @@ graph TB
         마우스·게임패드 하이브리드 입력 처리까지 담당했습니다.
       </p>
       <p class="project-role">
-        <strong style="color:var(--text)">담당 파트 :</strong> 인벤토리 시스템 전체 · 퀘스트 시스템 전체 · InventoryState (하이브리드 입력)
+        <strong>담당 파트</strong> 인벤토리 시스템 전체 · 퀘스트 시스템 전체 · InventoryState (하이브리드 입력)
       </p>
       <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
         <span class="card-toggle-text">자세히 보기</span>
@@ -1150,6 +1176,8 @@ graph TB
         </a>
       </div><!-- /card-detail -->
     </div><!-- /project-card MdCalling -->
+
+    </div><!-- /project-grid -->
 
   </section>
 

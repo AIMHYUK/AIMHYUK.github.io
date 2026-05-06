@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Isekiro - JJH Portfolio</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--line:#30363d;--accent:#58a6ff;--text:#e6edf3;--muted:#8b949e}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;background:rgba(13,17,23,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:10}
+.top .inner{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.back{color:var(--accent);font-weight:700;transition:0.2s;}
+.back:hover{color:#79c0ff;}
+.hero{max-width:1100px;margin:0 auto;padding:56px 20px 32px;text-align:center;}
+.kicker{color:var(--accent);font-size:.86rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.hero h1{margin:12px 0 8px;font-size:clamp(2rem,4vw,2.8rem)}
+.hero p{margin:0;color:var(--muted);font-size:1.1rem;}
+.badges{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}
+.badge{padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:#0f131a;color:#c7d2de;font-size:.85rem;font-weight:600;}
+.shell{max-width:1100px;margin:0 auto;padding:0 20px 80px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+@media (max-width: 600px) { .panel { padding: 20px; } }
+.feature-group{background:#0f131a;border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:20px}
+.feature-group:first-child{margin-top:0}
+.feature-group-title{font-size:1.1rem;font-weight:800;color:#d7e2f0;margin-bottom:16px;border-left:4px solid var(--accent);padding-left:12px}
+.feature-list{margin:0;padding-left:20px;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.95rem;line-height:1.8}
+.feature-list li{margin:10px 0;color:#d0d7de}
+.code-block{background:#010409;border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto;color:#e6edf3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);margin-top:16px;}
+.code-block pre{white-space:pre-wrap;word-break:break-word;overflow-x:auto;margin:0;line-height:1.75;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.9rem;color:#e6edf3}
+.code-block .comment{color:#8b949e} .code-block .keyword{color:#ff7b72} .code-block .string{color:#a5d6ff} .code-block .func{color:#d2a8ff}
+.table-wrap{overflow-x:auto;margin-top:16px;} table{width:100%;border-collapse:collapse;min-width:500px;} th,td{border-bottom:1px solid var(--line);padding:12px 16px;text-align:left;vertical-align:top} th{color:#c7d2de;background:#11161d;font-weight:700;}
+img,video{max-width:100%;height:auto;border-radius:12px;display:block}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.flow-step{background:#1c2128;border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:.85rem;color:var(--muted);font-weight:500;}.flow-arrow{color:var(--line);font-size:1.1rem}
+.btn-wrap{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line);}
+.link-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--accent);color:#000;font-weight:bold;border-radius:8px;transition:0.2s;font-size:0.95rem;}
+.link-btn:hover{background:#79c0ff;}
+.link-btn.outline{background:transparent;color:var(--text);border:1px solid var(--line);}
+.link-btn.outline:hover{background:var(--line);}
+</style>
+</head>
+<body>
+<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">Isekiro</div><a class="back" href="../index.html">← Back to Home</a></div></div>
+
+<header class="hero">
+  <div class="kicker">Project Detail</div>
+  <h1>Isekiro</h1>
+  <p>보스 AI / 패링 / 그래플링</p>
+  <div class="badges">
+    <span class="badge">Unreal Engine 5.6</span>
+    <span class="badge">C++</span>
+    <span class="badge">Team 3인</span>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="panel">
+    <!-- 0. 시연 영상 -->
+    <div class="feature-group">
+      <div class="feature-group-title">시연 영상</div>
+      <a href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="display:inline-block; margin-top:6px;">
+        <img src="https://img.youtube.com/vi/BzzkD_gu2F0/hqdefault.jpg" alt="Isekiro Demo" style="width:100%; max-width:480px; border-radius:8px; border:1px solid var(--line);" />
+      </a>
+    </div>
+
+    <!-- 1. 보스 AI FSM -->
+    <div class="feature-group">
+      <div class="feature-group-title">1. 보스 AI — 컴포넌트 기반 FSM</div>
+      <ul class="feature-list">
+        <li><code style="color:var(--accent);font-size:0.85em">UFSMComponent</code>로 보스 행동 상태를 관리하는 핵심 컴포넌트 설계</li>
+        <li>각 상태를 <code style="color:var(--accent);font-size:0.85em">UStateObject</code> 클래스로 분리 — Start / End / Interrupt 인터페이스 통일</li>
+        <li>플레이어와의 거리에 따라 근거리(NEAR) / 원거리(FAR) 공간 분리 후 상태 선택</li>
+        <li>공격받을수록 회피(Dodge) 확률이 점진적으로 증가하는 적응형 AI</li>
+        <li>Block / Parry 확률을 상태별로 독립 설정 가능</li>
+      </ul>
+      <div class="table-wrap">
+        <table class="tech-table">
+          <tr><th>카테고리</th><th>상태</th></tr>
+          <tr><td>반응 (Stun)</td><td>Hit, Block, Parry, Deflected</td></tr>
+          <tr><td>근거리 공격</td><td>NormalAttack, CounterAttack, Strafe</td></tr>
+          <tr><td>원거리 공격</td><td>DistanceAttack, ThrustAttack, Run, PatternAttack, LungeAttack</td></tr>
+          <tr><td>전환</td><td>Dodge, DodgeAttack, Jump, JumpStrike, JumpFire</td></tr>
+          <tr><td>기타</td><td>Death</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 2. 타겟 락온 -->
+    <div class="feature-group">
+      <div class="feature-group-title">2. 타겟 락온 시스템</div>
+      <ul class="feature-list">
+        <li>UActorComponent 기반 모듈형 설계 — 모든 캐릭터에 즉시 탑재 가능</li>
+        <li>내적(Dot Product)으로 카메라 정면 벡터와 타겟 벡터 유사도 측정, 화면 중앙에 가장 가까운 적 우선 선택</li>
+        <li>RInterp To로 카메라 회전 부드럽게 보간, 락온 상태에서 Strafing 이동 자동 전환</li>
+        <li>Line Trace로 장애물 뒤의 적은 타겟 대상에서 자동 제외</li>
+      </ul>
+    </div>
+
+    <!-- 3. 그래플링 훅 -->
+    <div class="feature-group">
+      <div class="feature-group-title">3. 그래플링 훅 시스템</div>
+      <ul class="feature-list">
+        <li>타겟 지점 감지 후 하단 트레이스로 실제 착지 가능 지형(Walkable Surface) 사전 검증</li>
+        <li>Timeline + Curve로 발사 가속 / 도착 감속을 조합한 물리적으로 자연스러운 이동 궤적 구현</li>
+        <li>Cable Component로 발사체와 캐릭터 손 소켓 사이의 물리 연결 및 환경 충돌 구현</li>
+        <li>애니메이션 노티파이(Anim Notify)로 이동 시작 · 종료 시점과 Flying / Falling 상태 정밀 동기화</li>
+      </ul>
+    </div>
+
+    <!-- 4. 패링 시스템 -->
+    <div class="feature-group">
+      <div class="feature-group-title">4. 패링 시스템</div>
+      <ul class="feature-list">
+        <li>USphereComponent 기반 <code style="color:var(--accent);font-size:0.85em">URealParryBox</code>의 Overlap으로 패리 판정 — 일반 약 8프레임, 위험(Hazard) 상태 1프레임으로 난이도 연동</li>
+        <li>패리 입력 시 데미지 채널 충돌 응답을 즉시 Ignore로 전환하여 무적 판정 구현, 패리 종료 시 복구</li>
+        <li>패리 성공 시 SetGlobalTimeDilation(0.85f)로 슬로우 모션 적용 후 0.5초 뒤 타이머로 복구</li>
+        <li>패리 성공마다 보스 자세 데미지(3) 누적, 자세 붕괴 시 처형 연출 트리거</li>
+        <li>패리 윈도우와 쿨다운을 별도 FTimerHandle로 분리 — 연속 패리 어뷰징 방지</li>
+      </ul>
+    </div>
+
+    <!-- 5. 핵심 기술 -->
+    <div class="feature-group">
+      <div class="feature-group-title">핵심 기술</div>
+      <div class="table-wrap">
+        <table class="tech-table">
+          <tr><th>기술</th><th>적용 내용</th></tr>
+          <tr><td>FSM (컴포넌트 기반)</td><td>UFSMComponent + UStateObject로 보스 상태 모듈화</td></tr>
+          <tr><td>Dot Product</td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
+          <tr><td>Line Trace</td><td>착지 가능 지형 사전 검증 · 시야 차단 감지</td></tr>
+          <tr><td>Timeline + Curve</td><td>그래플링 이동 가속 / 감속 곡선 제어</td></tr>
+          <tr><td>TimeDilation</td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
+          <tr><td>Anim Notify</td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
+          <tr><td>Niagara</td><td>보스 화살 발사 트레일 이펙트</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 하단 버튼 영역 -->
+    <div class="btn-wrap">
+      <a class="link-btn outline" href="https://github.com/AIMHYUK/Isekiro" target="_blank">&#128279; 레포지토리 보기</a>
+      <a class="link-btn" href="https://youtu.be/BzzkD_gu2F0" target="_blank">&#9654; 시연 영상 보기</a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

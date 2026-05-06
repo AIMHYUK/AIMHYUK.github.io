@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JJH Portfolio</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script>mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { background: '#0d1117', primaryColor: '#1c2128', primaryTextColor: '#e6edf3', primaryBorderColor: '#30363d', lineColor: '#58a6ff', secondaryColor: '#161b22', tertiaryColor: '#1c2128' } });</script>
   <style>
     :root {
       --bg: #0d1117;
@@ -206,28 +204,6 @@
       font-style: normal;
       line-height: 1;
     }
-    .project-card.expanded .card-toggle-icon {
-      transform: rotate(180deg);
-    }
-
-    /* ── DETAIL SECTION ── */
-    .card-detail {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease;
-      border-top: 0px solid var(--border);
-      margin-top: 0;
-    }
-    .project-card.expanded {
-      grid-column: 1 / -1;
-    }
-    .project-card.expanded .card-detail {
-      max-height: 9999px;
-      border-top: 1px solid var(--border);
-      margin-top: 20px;
-      padding-top: 20px;
-    }
-
     /* ── FEATURE LIST ── */
     .feature-group { margin-bottom: 20px; }
     .feature-group-title {
@@ -386,7 +362,7 @@
     <div class="project-grid">
 
     <!-- ── KingSejong ── -->
-    <div class="project-card" onclick="toggleCard(this)">
+    <div class="project-card" data-url="projects/kingsejong.html" onclick="goProject(this)">
       <!-- 요약 (항상 표시) -->
       <div class="project-header">
         <div class="project-title">KingSejong</div>
@@ -403,249 +379,15 @@
       <p class="project-role">
         <strong>담당 파트</strong> 세션 시스템 전반 · 로비 UI · 달리기 미니게임 · 캐릭터 선택
       </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
-        <span class="card-toggle-text">자세히 보기</span>
-        <i class="card-toggle-icon">▾</i>
+      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
+        <span class="card-toggle-text">프로젝트 보기</span>
+        <i class="card-toggle-icon">→</i>
       </button>
 
-      <!-- 상세 (클릭 시 표시) -->
-      <div class="card-detail">
-        <!-- 시연 영상 -->
-        <div class="feature-group">
-          <div class="feature-group-title">시연 영상</div>
-          <a href="https://youtu.be/ybDS-EG7wro" target="_blank" style="display:inline-block; margin-top:6px;" onclick="event.stopPropagation()">
-            <img src="https://img.youtube.com/vi/ybDS-EG7wro/hqdefault.jpg"
-                 alt="KingSejong Demo"
-                 style="width:100%; max-width:480px; border-radius:8px; border:1px solid var(--border);" />
-          </a>
-        </div>
-
-        <!-- 1. 세션 시스템 -->
-        <div class="feature-group">
-          <div class="feature-group-title">1. 멀티플레이어 세션 시스템</div>
-          <ul class="feature-list">
-            <li>OnlineSubsystem을 직접 연동하여 세션 생성 · 탐색 · 접속 · 파괴 전 과정 구현</li>
-            <li>Steam / LAN 환경 자동 감지 및 분기 처리</li>
-            <li>Steam 서버에 한글 방 이름을 저장하기 위한 Base64 인코딩 / 디코딩 적용</li>
-            <li>서버 RPC → Multicast RPC → Client RPC 구조로 세션 퇴장 시 모든 플레이어 동시 로비 복귀</li>
-            <li>네트워크 장애(서버 종료) 시 OnNetworkFailure 콜백으로 클라이언트 자동 복귀</li>
-          </ul>
-          <div class="code-block"><pre><span class="comment">// 한글 방 이름을 Steam 서버에 안전하게 저장하기 위한 Base64 인코딩</span>
-FString roomname = <span class="func">StringBase64Encode</span>(RoomName);
-SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="string">"Room_Name"</span>), roomname,
-    EOnlineDataAdvertisementType::<span class="keyword">ViaOnlineServiceAndPing</span>);</pre></div>
-        </div>
-
-        <!-- 2. 로비 UI -->
-        <div class="feature-group">
-          <div class="feature-group-title">2. 로비 UI</div>
-          <ul class="feature-list">
-            <li>WidgetSwitcher로 방 만들기 / 방 찾기 화면 전환</li>
-            <li>게임 종류(달리기 · 토론 · 배틀) 체크박스 — 하나만 선택되도록 상호 배타 처리</li>
-            <li>슬라이더로 최대 인원 실시간 설정</li>
-            <li>세션 탐색 결과를 델리게이트로 수신 후 스크롤박스에 슬롯 위젯 동적 생성</li>
-            <li>방 미선택 상태에서 입장 버튼 클릭 시 크래시 방지 처리</li>
-          </ul>
-        </div>
-
-        <!-- 3. 달리기 미니게임 -->
-        <div class="feature-group">
-          <div class="feature-group-title">3. 달리기 미니게임</div>
-          <ul class="feature-list">
-            <li>결승선(FinishLine) — OnComponentBeginOverlap으로 통과 감지, 게임모드에 순서 전달</li>
-            <li>결승선 통과 순서대로 초성 퀴즈 기회 부여, 오답 시 다음 플레이어로 자동 전환</li>
-            <li>퀴즈 답변 중 나머지 플레이어는 답변자 폰을 자동 관전하도록 전환</li>
-            <li>DataTable에서 랜덤 퀴즈 선택 후 Multicast RPC로 모든 클라이언트에 동기화</li>
-            <li>RPC로 특정 타이밍에 플레이어 입력 활성화 / 비활성화 제어</li>
-            <li>승리 / 패배 몽타주 재생 및 엔드게임 UI 전환</li>
-          </ul>
-          <div style="margin-top: 14px;">
-            <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">게임 흐름</div>
-            <div class="flow">
-              <div class="flow-step">모든 플레이어 입장</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">카운트다운 후 달리기</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">결승선 통과 순서 기록</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">초성 퀴즈 (순서 기반)</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">정답자 승리 / 결과 화면</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">로비 복귀</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. 캐릭터 선택 -->
-        <div class="feature-group">
-          <div class="feature-group-title">4. 캐릭터 선택 시스템</div>
-          <ul class="feature-list">
-            <li>이전 / 다음 버튼으로 스켈레탈 메시 실시간 교체 및 프리뷰</li>
-            <li>선택 확정 시 메시 인덱스를 GameInstance에 저장해 게임 내내 유지</li>
-            <li>선택 완료 후 마우스 숨김 및 게임 입력 모드로 전환</li>
-          </ul>
-        </div>
-
-        <!-- 핵심 기술 -->
-        <div class="feature-group">
-          <div class="feature-group-title">핵심 기술</div>
-          <div class="table-wrap"><table class="tech-table">
-            <tr>
-              <th>기술</th>
-              <th>적용 내용</th>
-            </tr>
-            <tr>
-              <td>OnlineSubsystem</td>
-              <td>Steam / LAN 세션 전 과정 직접 구현 (IOnlineSessionInterface)</td>
-            </tr>
-            <tr>
-              <td>RPC</td>
-              <td>Server · Multicast · Client RPC로 게임 상태 동기화</td>
-            </tr>
-            <tr>
-              <td>Delegate</td>
-              <td>세션 탐색 완료 이벤트 비동기 처리 후 UI 업데이트</td>
-            </tr>
-            <tr>
-              <td>Base64</td>
-              <td>한글 방 이름을 Steam 서버에 저장하는 인코딩 문제 해결</td>
-            </tr>
-            <tr>
-              <td>DataTable</td>
-              <td>런타임에 퀴즈 데이터 랜덤 선택</td>
-            </tr>
-            <tr>
-              <td>UMG / WidgetSwitcher</td>
-              <td>로비 화면 전환 및 동적 슬롯 위젯 생성</td>
-            </tr>
-          </table></div>
-        </div>
-
-        <!-- 시스템 흐름도 -->
-        <div class="feature-group">
-          <div class="feature-group-title">시스템 흐름도</div>
-
-          <div style="margin-bottom:12px;">
-            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">세션 전체 생명주기</div>
-            <div class="mermaid">
-flowchart TD
-    A([게임 시작]) --> B[로비 맵 로드]
-    B --> C[UJJH_GameInstance::LoadMenu]
-    C --> D{플레이어 선택}
-    D -->|방 만들기| E[카테고리 선택]
-    E --> F[방 이름 & 인원수 설정]
-    F --> G[CreateSession 호출]
-    G --> H[OnlineSubsystem::CreateSession]
-    H --> I{OnMyCreateSessionComplete}
-    I -->|Run| J[ServerTravel — RunningMap]
-    I -->|Battle| K[ServerTravel — BattleMap]
-    I -->|Talk| L[ServerTravel — CommunityMap]
-    D -->|방 찾기| M[FindOtherSessions 호출]
-    M --> N[SessionInterface::FindSessions]
-    N --> O[OnMyFindSessionComplete]
-    O --> P[방 목록 슬롯 표시]
-    P --> Q[플레이어 방 선택]
-    Q --> R[SessionInterface::JoinSession]
-    R --> S[ClientTravel to 게임맵]
-    J & K & L --> T[게임 맵 로드 완료]
-    S --> T
-    T --> U[GameMode::PostLogin]
-    U --> V{RequiredPlayerCount 도달?}
-    V -->|No| U
-    V -->|Yes| W[3초 후 게임 시작]
-    W --> X[게임 진행]
-    X --> Y[EndGame / DestroySession]
-    Y --> Z[로비로 복귀]
-    Z --> B
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">인게임 퀴즈 RPC 흐름 (Run 모드)</div>
-            <div class="mermaid">
-sequenceDiagram
-    participant GM as RunningGameMode (서버)
-    participant RC_S as RunnerController (서버)
-    participant RC_C as RunnerController (클라이언트)
-    participant QW as UQuizWidget
-
-    GM->>GM: StartQuiz() / SelectRandomQuizData()
-    GM->>RC_C: MulticastSendQuizData(FWordsData)
-    RC_C->>RC_C: ClientDisableInput()
-    RC_C->>QW: ClientCreateQuizWidget(QuizData)
-    QW->>QW: ShowInitials() — 초성 & 뜻 표시
-    Note over GM: 플레이어 결승선 통과
-    GM->>RC_C: ClientShowAnswerTextBox()
-    RC_C->>RC_C: ClientAbleInput()
-    RC_C->>RC_S: ServerSubmitAnswer(UserAnswer)
-    RC_S->>GM: CheckAnswer(UserAnswer, Player)
-    alt 정답
-        GM->>RC_C: MulticastShowTeachSpeak(true)
-        GM->>RC_C: ClientSwitchToEndWidget()
-        GM->>RC_C: ClientReturnToLobby()
-    else 오답
-        GM->>RC_C: MulticastShowTeachSpeak(false)
-        GM->>GM: MoveToNextPlayer()
-        GM->>RC_C: ClientShowAnswerTextBox() (다음 플레이어)
-    end
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">세션 퇴장 / 종료 흐름</div>
-            <div class="mermaid">
-flowchart TD
-    A([퇴장 요청]) --> B{NetMode 확인}
-    B -->|NM_Client| C[ClientLeaveSession 직접 호출]
-    B -->|NM_ListenServer| D[ServerRPCExitSession 호출]
-    D --> E[SessionInterface::DestroySession]
-    E --> F[MulticastRPCExitSession — 전체 전파]
-    F --> G{각 클라이언트 NetMode}
-    G -->|NM_Client| C
-    C --> I[DestroySession — 로컬 세션 정리]
-    I --> J[ClientTravel]
-    J --> K([로비 맵 복귀])
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <div style="font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:8px;">클래스 책임 구조</div>
-            <div class="mermaid">
-graph TB
-    subgraph 세션관리
-        GI[UJJH_GameInstance<br/>세션 생성·검색·참가·삭제]
-    end
-    subgraph 게임로직_서버
-        GM[RunningGameModeBase<br/>퀴즈 시작·채점·게임 종료]
-    end
-    subgraph 네트워크통신
-        RC[RunnerController<br/>Client/Server RPC 허브]
-    end
-    subgraph UI_클라이언트
-        LW[ULobbyWidget]
-        QW[UQuizWidget]
-    end
-    GI -->|ServerTravel| GM
-    GI -->|ClientTravel| RC
-    GM -->|Multicast RPC| RC
-    RC -->|Client RPC| QW
-    LW -->|ILobbyInterface| GI
-            </div>
-          </div>
-        </div>
-
-        <a class="link-btn" href="https://github.com/hjs101/KingSejong" target="_blank" onclick="event.stopPropagation()">
-          &#128279; 팀 레포지토리 보기
-        </a>
-        <a class="link-btn" href="https://youtu.be/ybDS-EG7wro" target="_blank" style="margin-left:8px;" onclick="event.stopPropagation()">
-          &#9654; 시연 영상 보기
-        </a>
-      </div><!-- /card-detail -->
     </div><!-- /project-card KingSejong -->
 
     <!-- ── ISEKIRO ── -->
-    <div class="project-card" onclick="toggleCard(this)">
+    <div class="project-card" data-url="projects/isekiro.html" onclick="goProject(this)">
       <!-- 요약 (항상 표시) -->
       <div class="project-header">
         <div class="project-title">Isekiro</div>
@@ -662,105 +404,15 @@ graph TB
       <p class="project-role">
         <strong>담당 파트</strong> 보스 AI FSM · 타겟 락온 · 그래플링 훅 · 패링 시스템
       </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
-        <span class="card-toggle-text">자세히 보기</span>
-        <i class="card-toggle-icon">▾</i>
+      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
+        <span class="card-toggle-text">프로젝트 보기</span>
+        <i class="card-toggle-icon">→</i>
       </button>
 
-      <!-- 상세 (클릭 시 표시) -->
-      <div class="card-detail">
-        <!-- 시연 영상 -->
-        <div class="feature-group">
-          <div class="feature-group-title">시연 영상</div>
-          <a href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="display:inline-block; margin-top:6px;" onclick="event.stopPropagation()">
-            <img src="https://img.youtube.com/vi/BzzkD_gu2F0/hqdefault.jpg"
-                 alt="Isekiro Demo"
-                 style="width:100%; max-width:480px; border-radius:8px; border:1px solid var(--border);" />
-          </a>
-        </div>
-
-        <!-- 1. 보스 AI FSM -->
-        <div class="feature-group">
-          <div class="feature-group-title">1. 보스 AI — 컴포넌트 기반 FSM</div>
-          <ul class="feature-list">
-            <li><code style="color:var(--accent);font-size:0.85em">UFSMComponent</code>로 보스 행동 상태를 관리하는 핵심 컴포넌트 설계</li>
-            <li>각 상태를 <code style="color:var(--accent);font-size:0.85em">UStateObject</code> 클래스로 분리 — Start / End / Interrupt 인터페이스 통일</li>
-            <li>플레이어와의 거리에 따라 근거리(NEAR) / 원거리(FAR) 공간 분리 후 상태 선택</li>
-            <li>공격받을수록 회피(Dodge) 확률이 점진적으로 증가하는 적응형 AI</li>
-            <li>Block / Parry 확률을 상태별로 독립 설정 가능</li>
-          </ul>
-          <div style="margin-top:14px; overflow-x:auto;">
-            <table class="tech-table" style="min-width:420px;">
-              <tr><th>카테고리</th><th>상태</th></tr>
-              <tr><td>반응 (Stun)</td><td>Hit, Block, Parry, Deflected</td></tr>
-              <tr><td>근거리 공격</td><td>NormalAttack, CounterAttack, Strafe</td></tr>
-              <tr><td>원거리 공격</td><td>DistanceAttack, ThrustAttack, Run, PatternAttack, LungeAttack</td></tr>
-              <tr><td>전환</td><td>Dodge, DodgeAttack, Jump, JumpStrike, JumpFire</td></tr>
-              <tr><td>기타</td><td>Death</td></tr>
-            </table>
-          </div>
-        </div>
-
-        <!-- 2. 타겟 락온 -->
-        <div class="feature-group">
-          <div class="feature-group-title">2. 타겟 락온 시스템</div>
-          <ul class="feature-list">
-            <li>UActorComponent 기반 모듈형 설계 — 모든 캐릭터에 즉시 탑재 가능</li>
-            <li>내적(Dot Product)으로 카메라 정면 벡터와 타겟 벡터 유사도 측정, 화면 중앙에 가장 가까운 적 우선 선택</li>
-            <li>RInterp To로 카메라 회전 부드럽게 보간, 락온 상태에서 Strafing 이동 자동 전환</li>
-            <li>Line Trace로 장애물 뒤의 적은 타겟 대상에서 자동 제외</li>
-          </ul>
-        </div>
-
-        <!-- 3. 그래플링 훅 -->
-        <div class="feature-group">
-          <div class="feature-group-title">3. 그래플링 훅 시스템</div>
-          <ul class="feature-list">
-            <li>타겟 지점 감지 후 하단 트레이스로 실제 착지 가능 지형(Walkable Surface) 사전 검증</li>
-            <li>Timeline + Curve로 발사 가속 / 도착 감속을 조합한 물리적으로 자연스러운 이동 궤적 구현</li>
-            <li>Cable Component로 발사체와 캐릭터 손 소켓 사이의 물리 연결 및 환경 충돌 구현</li>
-            <li>애니메이션 노티파이(Anim Notify)로 이동 시작 · 종료 시점과 Flying / Falling 상태 정밀 동기화</li>
-          </ul>
-        </div>
-
-        <!-- 4. 패링 시스템 -->
-        <div class="feature-group">
-          <div class="feature-group-title">4. 패링 시스템</div>
-          <ul class="feature-list">
-            <li>USphereComponent 기반 <code style="color:var(--accent);font-size:0.85em">URealParryBox</code>의 Overlap으로 패리 판정 — 일반 약 8프레임, 위험(Hazard) 상태 1프레임으로 난이도 연동</li>
-            <li>패리 입력 시 데미지 채널 충돌 응답을 즉시 Ignore로 전환하여 무적 판정 구현, 패리 종료 시 복구</li>
-            <li>패리 성공 시 SetGlobalTimeDilation(0.85f)로 슬로우 모션 적용 후 0.5초 뒤 타이머로 복구</li>
-            <li>패리 성공마다 보스 자세 데미지(3) 누적, 자세 붕괴 시 처형 연출 트리거</li>
-            <li>패리 윈도우와 쿨다운을 별도 FTimerHandle로 분리 — 연속 패리 어뷰징 방지</li>
-          </ul>
-        </div>
-
-        <!-- 핵심 기술 -->
-        <div class="feature-group">
-          <div class="feature-group-title">핵심 기술</div>
-          <div class="table-wrap"><table class="tech-table">
-            <tr><th>기술</th><th>적용 내용</th></tr>
-            <tr><td>FSM (컴포넌트 기반)</td><td>UFSMComponent + UStateObject로 보스 상태 모듈화</td></tr>
-            <tr><td>Dot Product</td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
-            <tr><td>Line Trace</td><td>착지 가능 지형 사전 검증 · 시야 차단 감지</td></tr>
-            <tr><td>Timeline + Curve</td><td>그래플링 이동 가속 / 감속 곡선 제어</td></tr>
-            <tr><td>TimeDilation</td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
-            <tr><td>Anim Notify</td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
-            <tr><td>Niagara</td><td>보스 화살 발사 트레일 이펙트</td></tr>
-          </table></div>
-        </div>
-
-        <a class="link-btn" href="https://github.com/AIMHYUK/Isekiro" target="_blank" onclick="event.stopPropagation()">
-          &#128279; 레포지토리 보기
-        </a>
-        <a class="link-btn" href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="margin-left:8px;" onclick="event.stopPropagation()">
-          &#9654; 시연 영상 보기
-        </a>
-      </div><!-- /card-detail -->
     </div><!-- /project-card Isekiro -->
 
     <!-- ── VIRTUALIDOL ── -->
-    <div class="project-card" onclick="toggleCard(this)">
+    <div class="project-card" data-url="projects/virtualidol.html" onclick="goProject(this)">
       <!-- 요약 (항상 표시) -->
       <div class="project-header">
         <div class="project-title">VirtualIdol</div>
@@ -777,183 +429,15 @@ graph TB
       <p class="project-role">
         <strong>담당 파트</strong> 무대 액터 배치 시스템 · 버튜버 모델링 적용 · 무대 설정 UI 구현 · RemoCap UDP/OSC 본 데이터 손실 초기화
       </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
-        <span class="card-toggle-text">자세히 보기</span>
-        <i class="card-toggle-icon">▾</i>
+      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
+        <span class="card-toggle-text">프로젝트 보기</span>
+        <i class="card-toggle-icon">→</i>
       </button>
 
-      <!-- 상세 (클릭 시 표시) -->
-      <div class="card-detail">
-        <!-- 시연 영상 -->
-        <div class="feature-group">
-          <div class="feature-group-title">시연 영상</div>
-          <a href="https://youtu.be/D8ZNVKkEmxU" target="_blank" style="display:inline-block; margin-top:6px;" onclick="event.stopPropagation()">
-            <img src="https://img.youtube.com/vi/D8ZNVKkEmxU/hqdefault.jpg"
-                 alt="VirtualIdol Demo"
-                 style="width:100%; max-width:480px; border-radius:8px; border:1px solid var(--border);" />
-          </a>
-        </div>
-
-        <div class="feature-group">
-          <div class="feature-group-title">1. 무대 액터 배치 시스템</div>
-          <ul class="feature-list">
-            <li>하늘(Sky) · 테마(Theme) · 지면(Floor) · 이펙트(VFX) 4가지 카테고리를 독립 조합하는 모듈형 무대 구성</li>
-            <li>테마 선택 시 StreamLevel 동적 로드/언로드 — 이전 레벨을 0.2초 간격 지연 타이머로 순차 언로드하여 비동기 충돌 방지</li>
-            <li>액터 태그(VFX · Floor · Skybox · Theme) 기반 일괄 Destroy 후 재스폰으로 깔끔한 교체 처리</li>
-            <li><code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code> + <code style="color:var(--accent);font-size:0.85em">UTextureRenderTarget2D</code>로 현재 카메라 시점 실시간 캡처하여 썸네일 생성</li>
-            <li>서버/클라이언트 분기 처리 — <code style="color:var(--accent);font-size:0.85em">CreateDummyStage()</code>로 클라이언트 프리뷰 동기화 제공</li>
-          </ul>
-          <div class="code-block"><pre><span class="comment">// 스트리밍 레벨 교체 시 이전 레벨을 지연 언로드하여 비동기 충돌 방지</span>
-<span class="keyword">float</span> UnloadDelay = 0.4f;
-<span class="keyword">for</span> (const FName&amp; LevelName : LevelsToUnload)
-{
-    GetWorld()-&gt;<span class="func">GetTimerManager</span>().<span class="func">SetTimer</span>(UnloadTimerHandle,
-        [this, LevelName]() {
-            UGameplayStatics::<span class="func">UnloadStreamLevel</span>(GetWorld(), LevelName, ...);
-        }, UnloadDelay, false);
-    UnloadDelay += 0.2f;
-}</pre></div>
-        </div>
-        <div class="feature-group">
-          <div class="feature-group-title">2. 버튜버 모델링 적용</div>
-          <ul class="feature-list">
-            <li>VRM4U 플러그인을 통해 VRM 형식의 버튜버 모델을 언리얼 엔진에 임포트 및 적용</li>
-            <li>게임 플레이 중 스켈레탈 메시를 런타임에 동적 교체하여 공연 도중 의상 및 모델 전환 구현</li>
-            <li>Morph Target 제어를 애니메이션과 연동하여 실시간 표정 변화 반영</li>
-            <li>Mocopi 기반 전신 모션 캡처 데이터를 UDP 소켓으로 수신하여 VRM 모델 뼈대에 적용</li>
-          </ul>
-          <div class="code-block"><pre><span class="comment">// 로컬 플레이어가 선택한 메시 번호를 서버 RPC로 전달</span>
-<span class="func">ServerRPC_ChangeMyMesh</span>( gi-&gt;playerMeshNum );
-
-<span class="comment">// 서버 → 모든 클라이언트에 메시 동기화 (MulticastRPC)</span>
-<span class="keyword">void</span> UAudienceServerComponent_KMK::<span class="func">MultiRPC_ChangeMyMesh_Implementation</span>( int32 num )
-{
-    <span class="keyword">auto</span>* TargetMesh = Cast&lt;AHSW_ThirdPersonCharacter&gt;( <span class="func">GetOwner</span>() );
-    <span class="keyword">if</span> (num &gt;= 0 &amp;&amp; num &lt;= 1)
-    {
-        <span class="comment">// 관객 메시 교체</span>
-        TargetMesh-&gt;<span class="func">GetMesh</span>()-&gt;<span class="func">SetSkeletalMesh</span>( audienceMesh[num] );
-        UMaterialInstanceDynamic* meshMat = TargetMesh-&gt;<span class="func">ChangeMyMeshMat</span>( num );
-        TargetMesh-&gt;<span class="func">GetMesh</span>()-&gt;<span class="func">SetMaterial</span>( 0, meshMat );
-    }
-}
-
-<span class="comment">// DynamicMaterial 스칼라 파라미터로 표정(Morph Target) 실시간 제어</span>
-<span class="keyword">void</span> ADummy_KMK::<span class="func">SetFace</span>( <span class="keyword">float</span> faceValue )
-{
-    <span class="keyword">if</span> (FaceDynamicMat)
-        FaceDynamicMat-&gt;<span class="func">SetScalarParameterValue</span>( <span class="string">TEXT("jswFaceChange")</span>, faceValue );
-}</pre></div>
-        </div>
-        <div class="feature-group">
-          <div class="feature-group-title">3. RemoCap UDP/OSC 본 데이터 손실 초기화</div>
-          <ul class="feature-list">
-            <li>RemoCap 앱의 본(Bone) 데이터 전송 방식을 분석하여 기존 로직의 데이터 손실 원인 파악</li>
-            <li>UDP 기반 OSC 프로토콜로 수신 구조 수정 — <code style="color:var(--accent);font-size:0.85em">FUdpSocketBuilder</code>로 포트 바인딩 후 <code style="color:var(--accent);font-size:0.85em">FUdpSocketReceiver</code> 리스너 스레드 구성</li>
-            <li>패킷 수신 누락 시 이전 프레임 데이터를 유지하던 문제를 초기 상태 리셋 로직으로 교체하여 포즈 고착 현상 제거</li>
-            <li>100ms 폴링 간격 백그라운드 스레드에서 연속 수신 처리, 메인 스레드와 안전 동기화</li>
-          </ul>
-          <!-- Blueprint 구현 — 이미지/GIF 플레이스홀더 -->
-          <div style="margin-top:14px; border:2px dashed var(--border); border-radius:8px; padding:24px 20px; text-align:center; background:#0d1117;">
-            <div style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">블루프린트 구성도 / 시연 GIF</div>
-            <div style="width:100%; max-width:480px; height:220px; background:#1c2128; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; border:1px solid var(--border);">
-              <div style="font-size:1.5rem; opacity:0.3;">&#128247;</div>
-              <div style="font-size:0.8rem; color:var(--muted); opacity:0.6;">이미지 또는 GIF를 여기에 추가하세요</div>
-              <div style="font-size:0.75rem; color:var(--muted); opacity:0.4;">ex) &lt;img src="your-image.png" ... /&gt;</div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-group">
-          <div class="feature-group-title">4. 무대 설정 UI</div>
-          <ul class="feature-list">
-            <li>날씨 · 테마 · 이펙트 · 지면 4개 카테고리 탭 — 탭 전환 시 해당 옵션 패널만 표시</li>
-            <li>선택된 카테고리 버튼에 Scale 1.1 렌더 트랜스폼 적용, 이전 버튼 원상 복귀로 현재 선택 상태 시각화</li>
-            <li>Border 배열로 선택된 항목에만 SelectedBox 텍스처를 적용하는 하이라이트 시스템</li>
-            <li><code style="color:var(--accent);font-size:0.85em">WidgetSwitcher</code>로 설정 → 캡처 확인 → 최종 확인 3단계 플로우 전환</li>
-            <li>0.3초 지연 타이머로 UI 버튼 은닉 후 씬 캡처 — 버튼이 썸네일에 찍히는 문제 해결</li>
-            <li>스테이지 이름 입력 후 썸네일 + 설정 정보를 HTTP Multipart로 서버 업로드</li>
-          </ul>
-          <div class="code-block"><pre><span class="comment">// ① 썸네일 이미지를 Multipart/form-data로 서버 업로드</span>
-<span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqMultipartCapturedURL</span>( FStageInfo&amp; Stage, <span class="keyword">const</span> FString&amp; ImagePath )
-{
-    TSharedRef&lt;IHttpRequest&gt; Req = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();
-    Req-&gt;<span class="func">SetURL</span>( <span class="string">TEXT("http://back.reward-factory.shop:8123/api/v1/files/upload")</span> );
-    Req-&gt;<span class="func">SetVerb</span>( <span class="string">TEXT("POST")</span> );
-
-    TArray&lt;<span class="keyword">uint8</span>&gt; FileData;
-    FFileHelper::<span class="func">LoadFileToArray</span>( FileData, *ImagePath );
-
-    FString Boundary = <span class="string">"---------------------------boundary_string"</span>;
-    FString FileHeader = <span class="string">"Content-Disposition: form-data; name=\"file\"; filename=\""</span>
-                         + FPaths::<span class="func">GetCleanFilename</span>(ImagePath)
-                         + <span class="string">TEXT("\"\r\nContent-Type: image/png\r\n\r\n")</span>;
-
-    TArray&lt;<span class="keyword">uint8</span>&gt; PostData;
-    PostData.<span class="func">Append</span>( (uint8*)TCHAR_TO_ANSI(*(FString(<span class="string">"--"</span>) + Boundary + <span class="string">"\r\n"</span>)) , ... );
-    PostData.<span class="func">Append</span>( (uint8*)TCHAR_TO_ANSI(*FileHeader), FileHeader.<span class="func">Len</span>() );
-    PostData.<span class="func">Append</span>( FileData );
-
-    Req-&gt;<span class="func">SetHeader</span>( <span class="string">TEXT("Content-Type")</span>,
-        FString::Printf(<span class="string">TEXT("multipart/form-data; boundary=%s")</span>, *Boundary) );
-    Req-&gt;<span class="func">SetContent</span>( PostData );
-    Req-&gt;<span class="func">ProcessRequest</span>();
-}
-
-<span class="comment">// ② 업로드 완료 후 반환된 이미지 URL을 포함한 무대 정보를 JSON으로 POST</span>
-<span class="keyword">void</span> AHttpActor_KMK::<span class="func">OnReqMultipartCapturedURL</span>( ..., FStageInfo* Stage )
-{
-    Stage-&gt;img = Response-&gt;<span class="func">GetContentAsString</span>();  <span class="comment">// 서버 반환 URL 저장</span>
-    <span class="func">ReqStageInfo</span>( *Stage );                          <span class="comment">// 무대 정보 JSON 전송</span>
-}
-
-<span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqStageInfo</span>( <span class="keyword">const</span> FStageInfo&amp; Stage )
-{
-    FString JsonString;
-    FJsonObjectConverter::<span class="func">UStructToJsonObjectString</span>( Stage, JsonString );
-
-    TSharedRef&lt;IHttpRequest&gt; Req = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();
-    Req-&gt;<span class="func">SetURL</span>( <span class="string">TEXT("http://back.reward-factory.shop:8123/api/v1/stages")</span> );
-    Req-&gt;<span class="func">SetVerb</span>( <span class="string">TEXT("POST")</span> );
-    Req-&gt;<span class="func">SetHeader</span>( <span class="string">TEXT("Content-Type")</span>, <span class="string">TEXT("application/json")</span> );
-    Req-&gt;<span class="func">SetContentAsString</span>( JsonString );
-    Req-&gt;<span class="func">ProcessRequest</span>();
-}</pre></div>
-          <div style="margin-top: 14px;">
-            <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">UI 플로우</div>
-            <div class="flow">
-              <div class="flow-step">무대 옵션 선택</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">실시간 프리뷰</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">썸네일 캡처</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">스테이지 이름 입력</div>
-              <div class="flow-arrow">→</div>
-              <div class="flow-step">서버 업로드 완료</div>
-            </div>
-          </div>
-        </div>
-        <div class="feature-group">
-          <div class="feature-group-title">핵심 기술</div>
-          <div class="table-wrap"><table class="tech-table">
-            <tr><th>기술</th><th>적용 내용</th></tr>
-            <tr><td>StreamLevel</td><td>테마별 레벨 동적 로드/언로드 — 지연 타이머로 비동기 충돌 방지</td></tr>
-            <tr><td>Actor Tag</td><td>카테고리별 배치 액터 태그 식별, 교체 시 일괄 Destroy 후 재스폰</td></tr>
-            <tr><td>SceneCaptureComponent2D</td><td>카메라 시점을 RenderTarget에 실시간 캡처, UI 썸네일로 표시</td></tr>
-            <tr><td>VRM4U</td><td>VRM 모델 임포트, 런타임 스켈레탈 메시 교체, Morph Target 표정 제어</td></tr>
-            <tr><td>UDP / OSC</td><td>FUdpSocketReceiver로 RemoCap 본 데이터 수신, 손실 시 리셋 로직 적용</td></tr>
-            <tr><td>UMG / WidgetSwitcher</td><td>3단계 설정 플로우 전환 및 카테고리 탭 UI 구현</td></tr>
-          </table></div>
-        </div>
-        <a class="link-btn" href="https://github.com/FavoriteIdol/VirtualIdol" target="_blank" onclick="event.stopPropagation()">&#128279; 팀 레포지토리 보기</a>
-        <a class="link-btn" href="https://youtu.be/D8ZNVKkEmxU" target="_blank" style="margin-left:8px;" onclick="event.stopPropagation()">
-          &#9654; 시연 영상 보기
-        </a>
-      </div><!-- /card-detail -->
     </div><!-- /project-card VirtualIdol -->
 
     <!-- ── MdCalling ── -->
-    <div class="project-card" onclick="toggleCard(this)">
+    <div class="project-card" data-url="projects/mdcalling.html" onclick="goProject(this)">
       <!-- 요약 (항상 표시) -->
       <div class="project-header">
         <div class="project-title">MdCalling — 인벤토리 · 퀘스트 시스템</div>
@@ -971,253 +455,11 @@ graph TB
       <p class="project-role">
         <strong>담당 파트</strong> 인벤토리 시스템 전체 · 퀘스트 시스템 전체 · InventoryState (하이브리드 입력)
       </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); toggleCard(this.closest('.project-card'))">
-        <span class="card-toggle-text">자세히 보기</span>
-        <i class="card-toggle-icon">▾</i>
+      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
+        <span class="card-toggle-text">프로젝트 보기</span>
+        <i class="card-toggle-icon">→</i>
       </button>
 
-      <!-- 상세 (클릭 시 표시) -->
-      <div class="card-detail">
-
-        <!-- 1. 인벤토리 시스템 -->
-        <div class="feature-group">
-          <div class="feature-group-title">1. 테트리스형 2D 그리드 인벤토리</div>
-          <ul class="feature-list">
-            <li><code style="color:var(--accent);font-size:0.85em">InventoryModel</code>이 <code style="color:var(--accent);font-size:0.85em">InventoryItem[,] _grid</code> 2D 배열로 상태를 관리, 이벤트(<code style="color:var(--accent);font-size:0.85em">OnItemPlaced</code> / <code style="color:var(--accent);font-size:0.85em">OnItemRemoved</code>)로 View에 통보하는 이벤트 기반 MVC 패턴 설계</li>
-            <li>아이템마다 <code style="color:var(--accent);font-size:0.85em">InventorySize(Vector2Int)</code>와 <code style="color:var(--accent);font-size:0.85em">IsRotated</code> 플래그를 두어 90도 회전 시 <code style="color:var(--accent);font-size:0.85em">EffectiveSize</code>의 x/y를 교환 — 배치 충돌 판정에 그대로 반영</li>
-            <li><code style="color:var(--accent);font-size:0.85em">TryPlace</code> / <code style="color:var(--accent);font-size:0.85em">CanPlace</code> 메서드가 차지하는 모든 셀을 순회해 공간 충돌을 원자적으로 검사</li>
-            <li><code style="color:var(--accent);font-size:0.85em">OutsideInventoryAreaView</code>로 그리드 밖 좌·우 인벤토리 영역을 독립 관리 — 그리드 경계에서 방향키 입력 시 Outside 영역으로 포커스 자동 전환</li>
-            <li><code style="color:var(--accent);font-size:0.85em">InventoryDragPreviewView</code>가 드래그 중 아이템 실루엣과 배치 가능 여부 하이라이트를 실시간 렌더링</li>
-          </ul>
-          <div class="code-block"><pre><span class="comment">// 아이템 배치 — 차지하는 모든 셀 충돌 검사 후 원자적 배치</span>
-<span class="keyword">public bool</span> <span class="func">TryPlace</span>(InventoryItem item, Vector2Int pos)
-{
-    <span class="keyword">if</span> (!<span class="func">CanPlace</span>(item, pos)) <span class="keyword">return false</span>;
-
-    item.<span class="func">Place</span>(pos);
-    <span class="keyword">foreach</span> (<span class="keyword">var</span> cell <span class="keyword">in</span> item.<span class="func">GetOccupiedCells</span>())
-        _grid[cell.x, cell.y] = item;
-
-    OnItemPlaced?.<span class="func">Invoke</span>(item);
-    <span class="keyword">return true</span>;
-}
-
-<span class="comment">// 회전 시 EffectiveSize x/y 교환으로 충돌 판정 자동 반영</span>
-<span class="keyword">public</span> Vector2Int EffectiveSize
-    => IsRotated ? <span class="keyword">new</span> Vector2Int(Size.y, Size.x) : Size;</pre></div>
-        </div>
-
-        <!-- 2. 하이브리드 입력 (InventoryState) -->
-        <div class="feature-group">
-          <div class="feature-group-title">2. 마우스 · 게임패드 하이브리드 입력 (InventoryState)</div>
-          <ul class="feature-list">
-            <li><code style="color:var(--accent);font-size:0.85em">Mouse.current.delta.sqrMagnitude > 0.1f</code> 감지로 마우스 모드 전환, 게임패드 버튼 입력 시 패드 모드로 즉시 전환 — 하나의 인벤토리가 두 입력장치를 실시간 병행 지원</li>
-            <li>스틱 아날로그 입력을 디지털 4방향으로 변환하고 초기 딜레이(0.4s) + 반복 간격(0.12s) 타이머로 키 반복 네비게이션 구현</li>
-            <li>그리드 좌·우 경계에서 방향 입력 시 Outside 영역으로, 반대 방향 입력 시 그리드 가장자리 셀로 포커스 자동 이동하는 스마트 네비게이션</li>
-            <li>패드 A 버튼 — 토글 방식으로 집기·놓기, LB/RB — 드래그 중 아이템 90도 회전, B 버튼 — 드래그 취소 및 원위치 복구</li>
-          </ul>
-          <div class="code-block"><pre><span class="comment">// 마우스 델타 · 게임패드 버튼 감지로 실시간 입력 모드 전환</span>
-<span class="keyword">private void</span> <span class="func">UpdateInputMode</span>()
-{
-    <span class="keyword">if</span> (<span class="func">IsMouseMoving</span>())
-        <span class="func">SwitchMode</span>(InputMode.Mouse);
-    <span class="keyword">else if</span> (<span class="func">IsGamepadActive</span>())
-        <span class="func">SwitchMode</span>(InputMode.Gamepad);
-}
-
-<span class="comment">// 스틱 반복 입력 — 초기 딜레이 후 고속 반복 네비게이션</span>
-<span class="keyword">private void</span> <span class="func">UpdateStickRepeat</span>()
-{
-    <span class="keyword">if</span> (_stickDirection == Vector2Int.zero) <span class="keyword">return</span>;
-    _stickRepeatTimer -= Time.deltaTime;
-    <span class="keyword">if</span> (_stickRepeatTimer > 0f) <span class="keyword">return</span>;
-
-    <span class="func">NavigateInDirection</span>(_stickDirection);
-    _stickRepeatTimer = STICK_REPEAT_INTERVAL; <span class="comment">// 0.12s</span>
-}</pre></div>
-        </div>
-
-        <!-- 3. 퀘스트 시스템 -->
-        <div class="feature-group">
-          <div class="feature-group-title">3. 장소 기반 퀘스트 시스템</div>
-
-          <!-- 데이터 구조 트리 -->
-          <div style="margin:14px 0 20px;">
-            <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">인스펙터 데이터 구조 — 코드 수정 없이 데이터만 바꿔 새 퀘스트 제작 가능</div>
-            <div style="background:#010409; border:1px solid var(--border); border-radius:8px; padding:16px 20px; font-family:'Cascadia Code','Fira Code',monospace; font-size:0.82rem; line-height:2;">
-              <span style="color:#ff7b72;">Quest</span> <span style="color:#6e7681;">(ScriptableObject)</span><br>
-              <span style="color:#c9d1d9;">├─ </span><span style="color:#f78166;">TaskGroup</span><span style="color:#6e7681;">[0]</span><br>
-              <span style="color:#c9d1d9;">│&nbsp;&nbsp;&nbsp;├─ </span><span style="color:#79c0ff;">QuestTask</span><span style="color:#c9d1d9;">&nbsp;&nbsp;category: </span><span style="color:#a5d6ff;">"DELIVERY_ACCEPT"</span><span style="color:#c9d1d9;">&nbsp;&nbsp;target: </span><span style="color:#a5d6ff;">A장소</span><br>
-              <span style="color:#c9d1d9;">│&nbsp;&nbsp;&nbsp;└─ </span><span style="color:#d2a8ff;">QuestAction</span><span style="color:#c9d1d9;">&nbsp;&nbsp;→ Yarn 대화 노드 변경</span><br>
-              <span style="color:#c9d1d9;">└─ </span><span style="color:#f78166;">TaskGroup</span><span style="color:#6e7681;">[1]</span><br>
-              <span style="color:#c9d1d9;">&nbsp;&nbsp;&nbsp;&nbsp;└─ </span><span style="color:#79c0ff;">QuestTask</span><span style="color:#c9d1d9;">&nbsp;&nbsp;category: </span><span style="color:#a5d6ff;">"DELIVERY_COMPLETE"</span><span style="color:#c9d1d9;">&nbsp;&nbsp;target: </span><span style="color:#a5d6ff;">B장소</span>
-            </div>
-          </div>
-
-          <!-- 런타임 흐름 다이어그램 -->
-          <div style="font-size:0.8rem; color:var(--muted); margin-bottom:14px;">런타임 흐름</div>
-
-          <!-- Step 1 -->
-          <div style="display:flex; gap:14px;">
-            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-              <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">1</div>
-              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
-            </div>
-            <div style="padding-bottom:16px; flex:1;">
-              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">씬 시작 — 퀘스트 등록</div>
-              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-                씬에 배치된 <code style="color:var(--accent2);font-size:0.82em;">QuestGiver</code> 컴포넌트가 <code style="color:var(--accent2);font-size:0.82em;">QuestManager.Register(quest)</code> 호출<br>
-                → Quest를 Clone해 <code style="color:var(--accent);font-size:0.82em;">_activeQuests</code>에 추가, state: <span style="color:var(--accent);">Inactive → Running</span>, 첫 TaskGroup 시작
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 2 -->
-          <div style="display:flex; gap:14px;">
-            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-              <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent2); flex-shrink:0;">2</div>
-              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
-            </div>
-            <div style="padding-bottom:16px; flex:1;">
-              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">플레이어 행동 — 배달 수락</div>
-              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-                플레이어가 A장소에서 배달을 수락 → <code style="color:var(--accent2);font-size:0.82em;">DeliveryManager.AcceptDelivery()</code> 내부에서<br>
-                <code style="color:var(--accent);font-size:0.82em;">QuestManager.ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_ACCEPT"</span>, A장소, 1)</code> 호출
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 3 -->
-          <div style="display:flex; gap:14px;">
-            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-              <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">3</div>
-              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
-            </div>
-            <div style="padding-bottom:16px; flex:1;">
-              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestManager — 전체 브로드캐스트</div>
-              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-                <code style="color:var(--accent2);font-size:0.82em;">_activeQuests</code>를 순회하며 모든 활성 퀘스트에 <code style="color:var(--accent2);font-size:0.82em;">quest.ReceiveReport()</code> 전달<br>
-                → 매칭 여부와 상관없이 일단 전부 찔러봄. 맞는 것만 반응
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 4 -->
-          <div style="display:flex; gap:14px;">
-            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-              <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent2); flex-shrink:0;">4</div>
-              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
-            </div>
-            <div style="padding-bottom:16px; flex:1;">
-              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestTask — 카테고리 · 타겟 매칭</div>
-              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-                각 QuestTask가 <code style="color:var(--accent2);font-size:0.82em;">IsTarget(category, target)</code>으로 자신에게 해당되는지 확인<br>
-                인스펙터에서 <code style="color:#a5d6ff;font-size:0.82em;">category = "DELIVERY_ACCEPT"</code>, <code style="color:#a5d6ff;font-size:0.82em;">target = A장소</code>로 설정된 Task만 반응
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 5 -->
-          <div style="display:flex; gap:14px;">
-            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-              <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">5</div>
-              <div style="width:1px; background:var(--border); flex:1; margin:4px 0; min-height:16px;"></div>
-            </div>
-            <div style="padding-bottom:16px; flex:1;">
-              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">TaskGroup 완료 → QuestAction 실행</div>
-              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-                <code style="color:var(--accent2);font-size:0.82em;">CurrentSuccess++</code> → needSuccess 달성 → TaskState: <span style="color:var(--accent);">Complete</span><br>
-                TaskGroup의 모든 Task 완료 시 <code style="color:var(--accent2);font-size:0.82em;">ExecuteQuestActions()</code> 실행 (Yarn 노드 변경 등)<br>
-                → 다음 TaskGroup[1] 시작, state: <span style="color:var(--accent);">Running</span> 유지
-              </div>
-            </div>
-          </div>
-
-          <!-- Step 6 -->
-          <div style="display:flex; gap:14px;">
-            <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-              <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent2); flex-shrink:0;">6</div>
-            </div>
-            <div style="padding-bottom:4px; flex:1;">
-              <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">배달 완료 → 퀘스트 종료</div>
-              <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-                B장소 도착 후 <code style="color:var(--accent2);font-size:0.82em;">DeliveryManager.CompleteDelivery()</code><br>
-                → <code style="color:var(--accent);font-size:0.82em;">ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_COMPLETE"</span>, B장소, 1)</code> → TaskGroup[1] 완료<br>
-                → 마지막 TaskGroup이므로 state: <span style="color:var(--accent);">WaitForCompletion → Complete</span>, <code style="color:var(--accent2);font-size:0.82em;">OnCompleted</code> 이벤트 발행
-              </div>
-            </div>
-          </div>
-
-          <!-- 핵심 설명 박스 -->
-          <div style="background:#1c2128; border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:12px 16px; margin:20px 0 16px;">
-            <div style="font-size:0.85rem; color:var(--text); font-weight:600; margin-bottom:5px;">핵심 — 왜 이 구조인가?</div>
-            <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-              <code style="color:var(--accent2);">DeliveryManager</code>는 퀘스트의 존재를 모릅니다. <code style="color:var(--accent2);">QuestManager</code>는 배달의 존재를 모릅니다.<br>
-              <code style="color:var(--accent);">"DELIVERY_ACCEPT"</code> 라는 <strong style="color:var(--text);">문자열 카테고리</strong>만으로 두 시스템이 연결됩니다.<br>
-              새 퀘스트를 추가할 때 코드를 건드리지 않고 <strong style="color:var(--text);">인스펙터에서 category · target만 설정</strong>하면 됩니다.
-            </div>
-          </div>
-
-          <div class="code-block"><pre><span class="comment">// QuestTask — category + target 두 조건이 모두 일치해야 반응</span>
-<span class="keyword">public bool</span> <span class="func">IsTarget</span>(<span class="keyword">string</span> categoryStr, IdentifiedObject target)
-    => <span class="func">HasCategory</span>(categoryStr)
-    &amp;&amp; targets.<span class="func">Any</span>(x => x.<span class="func">IsSameAs</span>(target))
-    &amp;&amp; IsComplete == <span class="keyword">false</span>;
-
-<span class="comment">// QuestManager — 모든 활성 퀘스트에 브로드캐스트, 매칭은 각 Task가 판단</span>
-<span class="keyword">public void</span> <span class="func">ReceiveReport</span>(<span class="keyword">string</span> category, IdentifiedObject target, <span class="keyword">int</span> successCount)
-{
-    <span class="keyword">foreach</span> (<span class="keyword">var</span> quest <span class="keyword">in</span> _activeQuests.<span class="func">ToArray</span>())
-        quest.<span class="func">ReceiveReport</span>(category, target, successCount);
-}
-
-<span class="comment">// DeliveryManager — 퀘스트 존재를 모른 채 카테고리 문자열만 전달</span>
-<span class="keyword">public void</span> <span class="func">AcceptDelivery</span>(Location pickupLocation, DeliveryInfo info)
-{
-    ...
-    QuestManager.Instance.<span class="func">ReceiveReport</span>(<span class="string">"DELIVERY_ACCEPT"</span>, info.PickupLocation, 1);
-}</pre></div>
-        </div>
-
-        <!-- 핵심 기술 -->
-        <div class="feature-group">
-          <div class="feature-group-title">핵심 기술</div>
-          <div class="table-wrap"><table class="tech-table">
-            <tr>
-              <th>기술</th>
-              <th>적용 내용</th>
-            </tr>
-            <tr>
-              <td>이벤트 기반 MVC</td>
-              <td>Model 이벤트(OnItemPlaced/Removed)로 View가 구독 — 데이터·UI 레이어 완전 분리</td>
-            </tr>
-            <tr>
-              <td>2D 그리드 배치 알고리즘</td>
-              <td>아이템 크기·회전을 반영한 멀티셀 충돌 검사 및 원자적 배치/제거</td>
-            </tr>
-            <tr>
-              <td>하이브리드 입력 (New Input System)</td>
-              <td>Mouse delta · Gamepad 버튼 감지로 실시간 모드 전환, 스틱 반복 타이머</td>
-            </tr>
-            <tr>
-              <td>5-State Quest FSM</td>
-              <td>Inactive→Running→WaitForCompletion→Complete/Cancel, 이벤트로 UI 통보</td>
-            </tr>
-            <tr>
-              <td>TaskGroup 계층 구조</td>
-              <td>Quest → TaskGroup[] → QuestTask[] 3계층으로 복합 목표 순차 처리</td>
-            </tr>
-            <tr>
-              <td>Yarn Spinner 연동</td>
-              <td>QuestAction으로 퀘스트 진행 시 대화 분기 노드를 인스펙터에서 드롭다운 설정</td>
-            </tr>
-          </table></div>
-        </div>
-
-        <a class="link-btn" href="https://github.com/AIMCOMPLETEHYUK/MdCalling" target="_blank" onclick="event.stopPropagation()">
-          &#128279; 팀 레포지토리 보기
-        </a>
-      </div><!-- /card-detail -->
     </div><!-- /project-card MdCalling -->
 
     </div><!-- /project-grid -->
@@ -1238,13 +480,9 @@ graph TB
 </footer>
 
 <script>
-  function toggleCard(card) {
-    const isExpanded = card.classList.contains('expanded');
-    card.classList.toggle('expanded');
-    const btn = card.querySelector('.card-toggle-text');
-    if (btn) {
-      btn.textContent = isExpanded ? '자세히 보기' : '접기';
-    }
+  function goProject(card) {
+    const url = card.dataset.url;
+    if (url) window.location.href = url;
   }
 </script>
 

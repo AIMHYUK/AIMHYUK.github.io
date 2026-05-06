@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MDCalling - JJH Portfolio</title>
+<style>
+/* 100% 동일한 CSS */
+:root{--bg:#0d1117;--card:#161b22;--line:#30363d;--accent:#58a6ff;--text:#e6edf3;--muted:#8b949e}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;background:rgba(13,17,23,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:10}
+.top .inner{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.back{color:var(--accent);font-weight:700;transition:0.2s;}
+.back:hover{color:#79c0ff;}
+.hero{max-width:1100px;margin:0 auto;padding:56px 20px 32px;text-align:center;}
+.kicker{color:var(--accent);font-size:.86rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.hero h1{margin:12px 0 8px;font-size:clamp(2rem,4vw,2.8rem)}
+.hero p{margin:0;color:var(--muted);font-size:1.1rem;}
+.badges{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}
+.badge{padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:#0f131a;color:#c7d2de;font-size:.85rem;font-weight:600;}
+.shell{max-width:1100px;margin:0 auto;padding:0 20px 80px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+@media (max-width: 600px) { .panel { padding: 20px; } }
+.feature-group{background:#0f131a;border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:20px}
+.feature-group:first-child{margin-top:0}
+.feature-group-title{font-size:1.1rem;font-weight:800;color:#d7e2f0;margin-bottom:16px;border-left:4px solid var(--accent);padding-left:12px}
+.feature-list{margin:0;padding-left:20px;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.95rem;line-height:1.8}
+.feature-list li{margin:10px 0;color:#d0d7de}
+.code-block{background:#010409;border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto;color:#e6edf3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);margin-top:16px;}
+.code-block pre{white-space:pre-wrap;word-break:break-word;overflow-x:auto;margin:0;line-height:1.75;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.9rem;color:#e6edf3}
+.code-block .comment{color:#8b949e} .code-block .keyword{color:#ff7b72} .code-block .string{color:#a5d6ff} .code-block .func{color:#d2a8ff}
+.table-wrap{overflow-x:auto;margin-top:16px;} table{width:100%;border-collapse:collapse;min-width:500px;} th,td{border-bottom:1px solid var(--line);padding:12px 16px;text-align:left;vertical-align:top} th{color:#c7d2de;background:#11161d;font-weight:700;}
+img,video{max-width:100%;height:auto;border-radius:12px;display:block}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.flow-step{background:#1c2128;border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:.85rem;color:var(--muted);font-weight:500;}.flow-arrow{color:var(--line);font-size:1.1rem}
+.btn-wrap{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line);}
+.link-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--accent);color:#000;font-weight:bold;border-radius:8px;transition:0.2s;font-size:0.95rem;}
+.link-btn:hover{background:#79c0ff;}
+.link-btn.outline{background:transparent;color:var(--text);border:1px solid var(--line);}
+.link-btn.outline:hover{background:var(--line);}
+</style>
+</head>
+<body>
+<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">MDCalling</div><a class="back" href="../index.html">← Back to Home</a></div></div>
+
+<header class="hero">
+  <div class="kicker">Project Detail</div>
+  <h1>MDCalling</h1>
+  <p>인벤토리 / 퀘스트 / 입력</p>
+  <div class="badges">
+    <span class="badge">Unity 6</span>
+    <span class="badge">C#</span>
+    <span class="badge">Team 3인</span>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="panel">
+    <!-- 1. 인벤토리 시스템 -->
+    <div class="feature-group">
+      <div class="feature-group-title">1. 테트리스형 2D 그리드 인벤토리</div>
+      <ul class="feature-list">
+        <li><code style="color:var(--accent);font-size:0.85em">InventoryModel</code>이 <code style="color:var(--accent);font-size:0.85em">InventoryItem[,] _grid</code> 2D 배열로 상태를 관리, 이벤트(<code style="color:var(--accent);font-size:0.85em">OnItemPlaced</code> / <code style="color:var(--accent);font-size:0.85em">OnItemRemoved</code>)로 View에 통보하는 이벤트 기반 MVC 패턴 설계</li>
+        <li>아이템마다 <code style="color:var(--accent);font-size:0.85em">InventorySize(Vector2Int)</code>와 <code style="color:var(--accent);font-size:0.85em">IsRotated</code> 플래그를 두어 90도 회전 시 <code style="color:var(--accent);font-size:0.85em">EffectiveSize</code>의 x/y를 교환 — 배치 충돌 판정에 그대로 반영</li>
+        <li><code style="color:var(--accent);font-size:0.85em">TryPlace</code> / <code style="color:var(--accent);font-size:0.85em">CanPlace</code> 메서드가 차지하는 모든 셀을 순회해 공간 충돌을 원자적으로 검사</li>
+        <li><code style="color:var(--accent);font-size:0.85em">OutsideInventoryAreaView</code>로 그리드 밖 좌·우 인벤토리 영역을 독립 관리 — 그리드 경계에서 방향키 입력 시 Outside 영역으로 포커스 자동 전환</li>
+        <li><code style="color:var(--accent);font-size:0.85em">InventoryDragPreviewView</code>가 드래그 중 아이템 실루엣과 배치 가능 여부 하이라이트를 실시간 렌더링</li>
+      </ul>
+      <div class="code-block"><pre><span class="comment">// 아이템 배치 — 차지하는 모든 셀 충돌 검사 후 원자적 배치</span>
+<span class="keyword">public bool</span> <span class="func">TryPlace</span>(InventoryItem item, Vector2Int pos)
+{
+    <span class="keyword">if</span> (!<span class="func">CanPlace</span>(item, pos)) <span class="keyword">return false</span>;
+
+    item.<span class="func">Place</span>(pos);
+    <span class="keyword">foreach</span> (<span class="keyword">var</span> cell <span class="keyword">in</span> item.<span class="func">GetOccupiedCells</span>())
+        _grid[cell.x, cell.y] = item;
+
+    OnItemPlaced?.<span class="func">Invoke</span>(item);
+    <span class="keyword">return true</span>;
+}
+
+<span class="comment">// 회전 시 EffectiveSize x/y 교환으로 충돌 판정 자동 반영</span>
+<span class="keyword">public</span> Vector2Int EffectiveSize
+    => IsRotated ? <span class="keyword">new</span> Vector2Int(Size.y, Size.x) : Size;</pre></div>
+    </div>
+
+    <!-- 2. 하이브리드 입력 -->
+    <div class="feature-group">
+      <div class="feature-group-title">2. 마우스 · 게임패드 하이브리드 입력 (InventoryState)</div>
+      <ul class="feature-list">
+        <li><code style="color:var(--accent);font-size:0.85em">Mouse.current.delta.sqrMagnitude > 0.1f</code> 감지로 마우스 모드 전환, 게임패드 버튼 입력 시 패드 모드로 즉시 전환 — 하나의 인벤토리가 두 입력장치를 실시간 병행 지원</li>
+        <li>스틱 아날로그 입력을 디지털 4방향으로 변환하고 초기 딜레이(0.4s) + 반복 간격(0.12s) 타이머로 키 반복 네비게이션 구현</li>
+        <li>그리드 좌·우 경계에서 방향 입력 시 Outside 영역으로, 반대 방향 입력 시 그리드 가장자리 셀로 포커스 자동 이동하는 스마트 네비게이션</li>
+        <li>패드 A 버튼 — 토글 방식으로 집기·놓기, LB/RB — 드래그 중 아이템 90도 회전, B 버튼 — 드래그 취소 및 원위치 복구</li>
+      </ul>
+      <div class="code-block"><pre><span class="comment">// 마우스 델타 · 게임패드 버튼 감지로 실시간 입력 모드 전환</span>
+<span class="keyword">private void</span> <span class="func">UpdateInputMode</span>()
+{
+    <span class="keyword">if</span> (<span class="func">IsMouseMoving</span>())
+        <span class="func">SwitchMode</span>(InputMode.Mouse);
+    <span class="keyword">else if</span> (<span class="func">IsGamepadActive</span>())
+        <span class="func">SwitchMode</span>(InputMode.Gamepad);
+}
+
+<span class="comment">// 스틱 반복 입력 — 초기 딜레이 후 고속 반복 네비게이션</span>
+<span class="keyword">private void</span> <span class="func">UpdateStickRepeat</span>()
+{
+    <span class="keyword">if</span> (_stickDirection == Vector2Int.zero) <span class="keyword">return</span>;
+    _stickRepeatTimer -= Time.deltaTime;
+    <span class="keyword">if</span> (_stickRepeatTimer > 0f) <span class="keyword">return</span>;
+
+    <span class="func">NavigateInDirection</span>(_stickDirection);
+    _stickRepeatTimer = STICK_REPEAT_INTERVAL; <span class="comment">// 0.12s</span>
+}</pre></div>
+    </div>
+
+    <!-- 3. 퀘스트 시스템 -->
+    <div class="feature-group">
+      <div class="feature-group-title">3. 장소 기반 퀘스트 시스템</div>
+
+      <!-- 데이터 구조 트리 -->
+      <div style="margin:14px 0 20px;">
+        <div style="font-size:0.8rem; color:var(--muted); margin-bottom:8px;">인스펙터 데이터 구조 — 코드 수정 없이 데이터만 바꿔 새 퀘스트 제작 가능</div>
+        <div style="background:#010409; border:1px solid var(--line); border-radius:8px; padding:16px 20px; font-family:'Cascadia Code','Fira Code',monospace; font-size:0.82rem; line-height:2;">
+          <span style="color:#ff7b72;">Quest</span> <span style="color:#6e7681;">(ScriptableObject)</span><br>
+          <span style="color:#c9d1d9;">├─ </span><span style="color:#f78166;">TaskGroup</span><span style="color:#6e7681;">[0]</span><br>
+          <span style="color:#c9d1d9;">│&nbsp;&nbsp;&nbsp;├─ </span><span style="color:#79c0ff;">QuestTask</span><span style="color:#c9d1d9;">&nbsp;&nbsp;category: </span><span style="color:#a5d6ff;">"DELIVERY_ACCEPT"</span><span style="color:#c9d1d9;">&nbsp;&nbsp;target: </span><span style="color:#a5d6ff;">A장소</span><br>
+          <span style="color:#c9d1d9;">│&nbsp;&nbsp;&nbsp;└─ </span><span style="color:#d2a8ff;">QuestAction</span><span style="color:#c9d1d9;">&nbsp;&nbsp;→ Yarn 대화 노드 변경</span><br>
+          <span style="color:#c9d1d9;">└─ </span><span style="color:#f78166;">TaskGroup</span><span style="color:#6e7681;">[1]</span><br>
+          <span style="color:#c9d1d9;">&nbsp;&nbsp;&nbsp;&nbsp;└─ </span><span style="color:#79c0ff;">QuestTask</span><span style="color:#c9d1d9;">&nbsp;&nbsp;category: </span><span style="color:#a5d6ff;">"DELIVERY_COMPLETE"</span><span style="color:#c9d1d9;">&nbsp;&nbsp;target: </span><span style="color:#a5d6ff;">B장소</span>
+        </div>
+      </div>
+
+      <!-- 런타임 흐름 다이어그램 -->
+      <div style="font-size:0.8rem; color:var(--muted); margin-bottom:14px;">런타임 흐름</div>
+
+      <div style="display:flex; gap:14px;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">1</div>
+          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+        </div>
+        <div style="padding-bottom:16px; flex:1;">
+          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">씬 시작 — 퀘스트 등록</div>
+          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+            씬에 배치된 <code style="color:var(--accent);font-size:0.82em;">QuestGiver</code> 컴포넌트가 <code style="color:var(--accent);font-size:0.82em;">QuestManager.Register(quest)</code> 호출<br>
+            → Quest를 Clone해 <code style="color:var(--accent);font-size:0.82em;">_activeQuests</code>에 추가, state: <span style="color:var(--accent);">Inactive → Running</span>, 첫 TaskGroup 시작
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:#ff7b72; flex-shrink:0;">2</div>
+          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+        </div>
+        <div style="padding-bottom:16px; flex:1;">
+          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">플레이어 행동 — 배달 수락</div>
+          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+            플레이어가 A장소에서 배달을 수락 → <code style="color:var(--accent);font-size:0.82em;">DeliveryManager.AcceptDelivery()</code> 내부에서<br>
+            <code style="color:var(--accent);font-size:0.82em;">QuestManager.ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_ACCEPT"</span>, A장소, 1)</code> 호출
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">3</div>
+          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+        </div>
+        <div style="padding-bottom:16px; flex:1;">
+          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestManager — 전체 브로드캐스트</div>
+          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+            <code style="color:var(--accent);font-size:0.82em;">_activeQuests</code>를 순회하며 모든 활성 퀘스트에 <code style="color:var(--accent);font-size:0.82em;">quest.ReceiveReport()</code> 전달<br>
+            → 매칭 여부와 상관없이 일단 전부 찔러봄. 맞는 것만 반응
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:#ff7b72; flex-shrink:0;">4</div>
+          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+        </div>
+        <div style="padding-bottom:16px; flex:1;">
+          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestTask — 카테고리 · 타겟 매칭</div>
+          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+            각 QuestTask가 <code style="color:var(--accent);font-size:0.82em;">IsTarget(category, target)</code>으로 자신에게 해당되는지 확인<br>
+            인스펙터에서 <code style="color:#a5d6ff;font-size:0.82em;">category = "DELIVERY_ACCEPT"</code>, <code style="color:#a5d6ff;font-size:0.82em;">target = A장소</code>로 설정된 Task만 반응
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">5</div>
+          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+        </div>
+        <div style="padding-bottom:16px; flex:1;">
+          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">TaskGroup 완료 → QuestAction 실행</div>
+          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+            <code style="color:var(--accent);font-size:0.82em;">CurrentSuccess++</code> → needSuccess 달성 → TaskState: <span style="color:var(--accent);">Complete</span><br>
+            TaskGroup의 모든 Task 완료 시 <code style="color:var(--accent);font-size:0.82em;">ExecuteQuestActions()</code> 실행 (Yarn 노드 변경 등)<br>
+            → 다음 TaskGroup[1] 시작, state: <span style="color:var(--accent);">Running</span> 유지
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px;">
+        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
+          <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:#ff7b72; flex-shrink:0;">6</div>
+        </div>
+        <div style="padding-bottom:4px; flex:1;">
+          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">배달 완료 → 퀘스트 종료</div>
+          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+            B장소 도착 후 <code style="color:var(--accent);font-size:0.82em;">DeliveryManager.CompleteDelivery()</code><br>
+            → <code style="color:var(--accent);font-size:0.82em;">ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_COMPLETE"</span>, B장소, 1)</code> → TaskGroup[1] 완료<br>
+            → 마지막 TaskGroup이므로 state: <span style="color:var(--accent);">WaitForCompletion → Complete</span>, <code style="color:var(--accent);font-size:0.82em;">OnCompleted</code> 이벤트 발행
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#1c2128; border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:12px 16px; margin:20px 0 16px;">
+        <div style="font-size:0.85rem; color:var(--text); font-weight:600; margin-bottom:5px;">핵심 — 왜 이 구조인가?</div>
+        <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
+          <code style="color:var(--accent);">DeliveryManager</code>는 퀘스트의 존재를 모릅니다. <code style="color:var(--accent);">QuestManager</code>는 배달의 존재를 모릅니다.<br>
+          <code style="color:var(--accent);">"DELIVERY_ACCEPT"</code> 라는 <strong style="color:var(--text);">문자열 카테고리</strong>만으로 두 시스템이 연결됩니다.<br>
+          새 퀘스트를 추가할 때 코드를 건드리지 않고 <strong style="color:var(--text);">인스펙터에서 category · target만 설정</strong>하면 됩니다.
+        </div>
+      </div>
+
+      <div class="code-block"><pre><span class="comment">// QuestTask — category + target 두 조건이 모두 일치해야 반응</span>
+<span class="keyword">public bool</span> <span class="func">IsTarget</span>(<span class="keyword">string</span> categoryStr, IdentifiedObject target)
+    => <span class="func">HasCategory</span>(categoryStr)
+    &amp;&amp; targets.<span class="func">Any</span>(x => x.<span class="func">IsSameAs</span>(target))
+    &amp;&amp; IsComplete == <span class="keyword">false</span>;
+
+<span class="comment">// QuestManager — 모든 활성 퀘스트에 브로드캐스트, 매칭은 각 Task가 판단</span>
+<span class="keyword">public void</span> <span class="func">ReceiveReport</span>(<span class="keyword">string</span> category, IdentifiedObject target, <span class="keyword">int</span> successCount)
+{
+    <span class="keyword">foreach</span> (<span class="keyword">var</span> quest <span class="keyword">in</span> _activeQuests.<span class="func">ToArray</span>())
+        quest.<span class="func">ReceiveReport</span>(category, target, successCount);
+}
+
+<span class="comment">// DeliveryManager — 퀘스트 존재를 모른 채 카테고리 문자열만 전달</span>
+<span class="keyword">public void</span> <span class="func">AcceptDelivery</span>(Location pickupLocation, DeliveryInfo info)
+{
+    ...
+    QuestManager.Instance.<span class="func">ReceiveReport</span>(<span class="string">"DELIVERY_ACCEPT"</span>, info.PickupLocation, 1);
+}</pre></div>
+    </div>
+
+    <!-- 4. 핵심 기술 -->
+    <div class="feature-group">
+      <div class="feature-group-title">핵심 기술</div>
+      <div class="table-wrap">
+        <table class="tech-table">
+          <tr><th>기술</th><th>적용 내용</th></tr>
+          <tr><td>이벤트 기반 MVC</td><td>Model 이벤트(OnItemPlaced/Removed)로 View가 구독 — 데이터·UI 레이어 완전 분리</td></tr>
+          <tr><td>2D 그리드 배치 알고리즘</td><td>아이템 크기·회전을 반영한 멀티셀 충돌 검사 및 원자적 배치/제거</td></tr>
+          <tr><td>하이브리드 입력 (New Input System)</td><td>Mouse delta · Gamepad 버튼 감지로 실시간 모드 전환, 스틱 반복 타이머</td></tr>
+          <tr><td>5-State Quest FSM</td><td>Inactive→Running→WaitForCompletion→Complete/Cancel, 이벤트로 UI 통보</td></tr>
+          <tr><td>TaskGroup 계층 구조</td><td>Quest → TaskGroup[] → QuestTask[] 3계층으로 복합 목표 순차 처리</td></tr>
+          <tr><td>Yarn Spinner 연동</td><td>QuestAction으로 퀘스트 진행 시 대화 분기 노드를 인스펙터에서 드롭다운 설정</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 하단 버튼 영역 -->
+    <div class="btn-wrap">
+      <a class="link-btn outline" href="https://github.com/AIMCOMPLETEHYUK/MdCalling" target="_blank">&#128279; 팀 레포지토리 보기</a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

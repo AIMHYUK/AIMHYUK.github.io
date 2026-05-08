@@ -81,8 +81,8 @@
       margin: 0 auto;
       padding: 66px 0 42px;
       display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
-      gap: 36px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
       align-items: center;
       border-bottom: 1px solid var(--line);
     }
@@ -101,13 +101,14 @@
       font-size: clamp(2.2rem, 5vw, 4.2rem);
       line-height: 1.08;
       letter-spacing: 0;
+      max-width: 1080px;
     }
 
     .hero-copy {
       margin: 18px 0 0;
       color: var(--soft);
       font-size: 1.08rem;
-      max-width: 720px;
+      max-width: 1080px;
     }
 
     .hero-actions,
@@ -260,25 +261,8 @@
     }
 
     .project {
-      display: grid;
-      grid-template-columns: minmax(280px, .42fr) minmax(0, .58fr);
-      gap: 18px;
-      align-items: stretch;
       padding: 0;
       overflow: hidden;
-    }
-
-    .project-media {
-      background: #080c11;
-      border-right: 1px solid var(--line);
-    }
-
-    .project-media img {
-      width: 100%;
-      height: 100%;
-      min-height: 270px;
-      object-fit: cover;
-      display: block;
     }
 
     .project-body { padding: 22px; }
@@ -434,15 +418,9 @@
 
     @media (max-width: 960px) {
       .hero,
-      .project,
       .split,
       .evidence {
         grid-template-columns: 1fr;
-      }
-
-      .project-media {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
       }
 
       .grid { grid-template-columns: 1fr; }
@@ -487,7 +465,6 @@
       <h1>언리얼 C++ 기반 게임플레이와 멀티플레이 시스템을 구현합니다.</h1>
       <p class="hero-copy">
         <code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code> 세션 흐름, <code style="color:var(--accent);font-size:0.85em">RPC</code> 기반 게임 진행 동기화, 락온·그래플링 훅·패링 같은 액션 전투 기능을 직접 구현한 포트폴리오입니다.
-        팀 프로젝트에서는 본인이 맡은 클래스와 책임 범위를 분리하고, 실제 코드 근거를 상세 페이지 안에서 바로 확인할 수 있도록 정리했습니다.
       </p>
       <div class="badges">
         <span class="badge">Unreal Engine 5</span>
@@ -501,38 +478,22 @@
         <a class="btn primary" href="#projects">대표 프로젝트 보기</a>
         <a class="btn" href="resume-modern.html">이력서</a>
         <a class="btn" href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">GitHub</a>
-        <a class="btn" href="#top">맨 위로</a>
       </div>
     </div>
-
-    <aside class="hero-panel" aria-label="Highlighted project">
-      <img src="https://img.youtube.com/vi/ybDS-EG7wro/hqdefault.jpg" alt="KingSejong multiplayer demo thumbnail">
-      <div class="hero-panel-body">
-        <p class="hero-panel-title">대표 포인트: KingSejong 멀티플레이 세션 구조</p>
-        <p>
-          방 생성, 검색, 참가, <code style="color:var(--accent);font-size:0.85em">ServerTravel</code>, <code style="color:var(--accent);font-size:0.85em">ClientTravel</code>, <code style="color:var(--accent);font-size:0.85em">RPC</code> 흐름을 <code style="color:var(--accent);font-size:0.85em">UI</code>·<code style="color:var(--accent);font-size:0.85em">GameInstance</code>·<code style="color:var(--accent);font-size:0.85em">GameMode</code>·<code style="color:var(--accent);font-size:0.85em">PlayerController</code> 책임으로 분리했습니다.
-        </p>
-      </div>
-    </aside>
   </header>
 
   <main>
     <section id="projects">
       <div class="section-head">
         <div>
-          <h2>대표 프로젝트</h2>
-        <p class="section-desc">KingSejong은 멀티플레이 세션 구현, Stage On은 언리얼 기반 가상 콘서트 플랫폼 구현 사례입니다.</p>
+          <h2>프로젝트</h2>
         </div>
       </div>
 
       <article class="card project">
-        <div class="project-media">
-          <img src="https://img.youtube.com/vi/ybDS-EG7wro/hqdefault.jpg" alt="KingSejong demo thumbnail">
-        </div>
         <div class="project-body">
           <div class="project-title-row">
             <h3>KingSejong - Unreal Multiplayer Mini Game</h3>
-            <span class="priority">대표</span>
           </div>
           <div class="badges">
             <span class="badge">Unreal Engine 5</span>
@@ -543,11 +504,11 @@
           </div>
           <div class="role-box">
             <strong>My Responsibility</strong>
-            세션 시스템 전반, 로비 UI, 달리기 미니게임 진행, 캐릭터 선택 흐름을 담당했습니다.
+            멀티플레이 세션 시스템 전반, 로비 UI, 달리기 미니게임 진행, 캐릭터 선택 흐름을 담당했습니다.
           </div>
           <div class="evidence">
             <div class="evidence-box">
-              <strong>핵심 구현 클래스</strong>
+              <strong>핵심 구현</strong>
               <p><code style="color:var(--accent);font-size:0.85em">UJJH_GameInstance</code>, <code style="color:var(--accent);font-size:0.85em">RunningGameModeBase</code>, <code style="color:var(--accent);font-size:0.85em">ULobbyWidget</code>, <code style="color:var(--accent);font-size:0.85em">UQuizWidget</code></p>
             </div>
             <div class="evidence-box">
@@ -573,9 +534,6 @@
       </article>
 
       <article class="card project" style="margin-top:18px;">
-        <div class="project-media">
-          <img src="https://img.youtube.com/vi/D8ZNVKkEmxU/hqdefault.jpg" alt="Stage On virtual idol concert demo thumbnail">
-        </div>
         <div class="project-body">
           <div class="project-title-row">
             <h3>Stage On - Virtual Idol Concert Platform</h3>
@@ -595,7 +553,7 @@
           </div>
           <div class="evidence">
             <div class="evidence-box">
-              <strong>핵심 구현 근거</strong>
+              <strong>핵심 구현</strong>
               <p><code style="color:var(--accent);font-size:0.85em">StreamLevel</code> 로드/언로드, <code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code>, <code style="color:var(--accent);font-size:0.85em">UTextureRenderTarget2D</code>, <code style="color:var(--accent);font-size:0.85em">WidgetSwitcher</code></p>
             </div>
             <div class="evidence-box">
@@ -629,12 +587,13 @@
             <span class="badge">Quest FSM</span>
           </div>
           <div class="role-box">
-            <strong>Role</strong>
-            시스템 설계와 입력 처리 경험을 보여주는 Unity 프로젝트입니다.
+            <strong>MY RESPONSIBILITY</strong>
+            인벤토리, 퀘스트 시스템 설계, 입력 처리를 담당했습니다.
+
           </div>
           <div class="evidence">
             <div class="evidence-box">
-              <strong>핵심 구현 클래스</strong>
+              <strong>핵심 구현</strong>
               <p><code style="color:var(--accent);font-size:0.85em">InventoryModel</code>, <code style="color:var(--accent);font-size:0.85em">InventoryState</code>, <code style="color:var(--accent);font-size:0.85em">QuestManager</code>, <code style="color:var(--accent);font-size:0.85em">QuestTask</code>, <code style="color:var(--accent);font-size:0.85em">QuestAction</code></p>
             </div>
             <div class="evidence-box">
@@ -661,12 +620,13 @@
             <span class="badge">Combat</span>
           </div>
           <div class="role-box">
-            <strong>Role</strong>
-            락온, 이동 보조, 패링 판정을 구현한 액션 전투 프로토타입입니다.
+            <strong>MY RESPONSIBILITY</strong>
+            락온, 이동 보조, 패링 판정을 담당했습니다.
+
           </div>
           <div class="evidence">
             <div class="evidence-box">
-              <strong>핵심 구현 근거</strong>
+              <strong>핵심 구현</strong>
               <p><code style="color:var(--accent);font-size:0.85em">UActorComponent</code> 기반 락온, <code style="color:var(--accent);font-size:0.85em">Timeline/Curve</code> 그래플링 훅, <code style="color:var(--accent);font-size:0.85em">URealParryBox</code> 패리 판정</p>
             </div>
             <div class="evidence-box">
@@ -691,7 +651,7 @@
       <div class="section-head">
         <div>
           <h2>기술 구현 요약</h2>
-          <p class="section-desc">프로젝트에서 직접 다룬 기능과 구현 기준을 기술별로 정리했습니다.</p>
+          <p class="section-desc">프로젝트에서 직접 다룬 기능과, 구현 과정에서 어떤 기준으로 설계 결정을 했는지 정리했습니다.</p>
         </div>
       </div>
       <div class="table-wrap">
@@ -707,32 +667,32 @@
             <tr>
               <td>OnlineSubsystem</td>
               <td>세션 생성, 검색, 참가, 종료, Subsystem 기준 LAN/Steam 세션 판정, 세션 광고 설정값 등록</td>
-              <td>Delegate 생명주기, 실패 케이스 처리, Listen Server 한계</td>
+              <td>비동기 Delegate 완료 시점 기준으로 UI 상태, 실패 처리, Delegate 정리를 함께 관리했습니다.</td>
             </tr>
             <tr>
               <td>Travel Flow</td>
               <td><code style="color:var(--accent);font-size:0.85em">Host</code>는 <code style="color:var(--accent);font-size:0.85em">ServerTravel</code>, <code style="color:var(--accent);font-size:0.85em">Client</code>는 <code style="color:var(--accent);font-size:0.85em">ClientTravel</code>로 실제 맵 진입 분리</td>
-              <td>JoinSession 성공과 실제 맵 입장의 차이</td>
+              <td>세션 참가 성공과 실제 맵 입장을 분리해 실패 지점을 추적할 수 있게 했습니다.</td>
             </tr>
             <tr>
               <td>RPC</td>
               <td><code style="color:var(--accent);font-size:0.85em">GameMode</code> 판단, <code style="color:var(--accent);font-size:0.85em">PlayerController</code> RPC 허브, UI 개별 갱신</td>
-              <td>Server/Client/Multicast RPC 선택 기준과 권한 검증</td>
+              <td>권한이 필요한 판단은 서버, 공통 연출은 Multicast, 개별 UI 갱신은 Client RPC로 분리했습니다.</td>
             </tr>
             <tr>
               <td>Combat Targeting</td>
               <td><code style="color:var(--accent);font-size:0.85em">Dot Product</code> 기반 우선순위와 <code style="color:var(--accent);font-size:0.85em">Line Trace</code> 시야 검증</td>
-              <td>카메라 기준 선택, 장애물 처리, 타깃 갱신 주기</td>
+              <td>카메라 전방 각도로 후보를 고르고, 시야 검증으로 벽 뒤 대상 선택을 방지했습니다.</td>
             </tr>
             <tr>
               <td>Action Movement</td>
               <td>그래플링 훅의 사전 지형 검증, <code style="color:var(--accent);font-size:0.85em">Curve</code> 이동, <code style="color:var(--accent);font-size:0.85em">Cable Component</code> 연출</td>
-              <td>물리 이동과 직접 보간의 장단점</td>
+              <td>예측 가능한 도착점과 연출 동기화를 위해 지형 검증 후 Curve 보간으로 이동을 제어했습니다.</td>
             </tr>
             <tr>
               <td>Combat Timing</td>
               <td>패링 타이밍, 충돌 채널 전환, <code style="color:var(--accent);font-size:0.85em">TimeDilation</code> 연출</td>
-              <td>프레임 의존성을 줄이는 타이머/DeltaTime 처리</td>
+              <td>판정 가능 시간, 쿨다운, 연출을 분리해 프레임 의존성과 입력 체감 문제를 줄였습니다.</td>
             </tr>
           </tbody>
         </table>

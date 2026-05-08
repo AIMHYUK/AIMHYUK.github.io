@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Isekiro - JJH Portfolio</title>
+<title>프로젝트 Isekiro - JJH Portfolio</title>
 <style>
 :root{--bg:#0d1117;--card:#161b22;--line:#30363d;--accent:#58a6ff;--text:#e6edf3;--muted:#8b949e}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}a{color:inherit;text-decoration:none}
@@ -25,11 +25,27 @@
 .feature-group-title{font-size:1.1rem;font-weight:800;color:#d7e2f0;margin-bottom:16px;border-left:4px solid var(--accent);padding-left:12px}
 .feature-list{margin:0;padding-left:20px;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.95rem;line-height:1.8}
 .feature-list li{margin:10px 0;color:#d0d7de}
+.feature-group>.feature-list:not([style]){list-style:none;padding-left:0;display:grid;gap:9px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.feature-group>.feature-list:not([style]) li{position:relative;margin:0;padding:11px 14px 11px 34px;border:1px solid rgba(48,54,61,.9);border-left:3px solid rgba(88,166,255,.65);border-radius:8px;background:#11161d;color:#d7dee8;line-height:1.65}
+.feature-group>.feature-list:not([style]) li::before{content:"";position:absolute;left:15px;top:20px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(88,166,255,.13)}
+.feature-list li strong{display:inline-flex;align-items:center;margin-right:6px;padding:2px 8px;border-radius:999px;background:rgba(88,166,255,.14);border:1px solid rgba(88,166,255,.45);color:#9dcbff;font-size:.78rem;line-height:1.4;letter-spacing:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;vertical-align:1px}
+.feature-list li:nth-child(2) strong{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
+.feature-list li:nth-child(3) strong{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
+.feature-list li strong.label-build{background:rgba(88,166,255,.14);border-color:rgba(88,166,255,.45);color:#9dcbff}
+.feature-list li strong.label-issue{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
+.feature-list li strong.label-improve{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
+.feature-list li code{font-weight:700}
 .code-block{background:#010409;border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto;color:#e6edf3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);margin-top:16px;}
 .code-block pre{white-space:pre-wrap;word-break:break-word;overflow-x:auto;margin:0;line-height:1.75;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.9rem;color:#e6edf3}
 .code-block .comment{color:#8b949e} .code-block .keyword{color:#ff7b72} .code-block .string{color:#a5d6ff} .code-block .func{color:#d2a8ff}
 .table-wrap{overflow-x:auto;margin-top:16px;} table{width:100%;border-collapse:collapse;min-width:500px;} th,td{border-bottom:1px solid var(--line);padding:12px 16px;text-align:left;vertical-align:top} th{color:#c7d2de;background:#11161d;font-weight:700;}
 img,video{max-width:100%;height:auto;border-radius:12px;display:block}
+.zoomable{cursor:zoom-in;transition:filter .2s, transform .2s}
+.zoomable:hover{filter:brightness(1.08)}
+.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px;background:rgba(0,0,0,.86);z-index:100}
+.lightbox.open{display:flex}
+.lightbox img{max-width:min(96vw,1400px);max-height:92vh;border-radius:10px;border:1px solid var(--line);background:#010409}
+.lightbox button{position:absolute;top:18px;right:20px;width:42px;height:42px;border:1px solid var(--line);border-radius:50%;background:#0f131a;color:var(--text);font-size:1.5rem;line-height:1;cursor:pointer}
 .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.flow-step{background:#1c2128;border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:.85rem;color:var(--muted);font-weight:500;}.flow-arrow{color:var(--line);font-size:1.1rem}
 .btn-wrap{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line);}
 .link-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--accent);color:#000;font-weight:bold;border-radius:8px;transition:0.2s;font-size:0.95rem;}
@@ -39,15 +55,16 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
 </style>
 </head>
 <body>
-<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">Isekiro</div><a class="back" href="../index.html">← Back to Home</a></div></div>
+<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">프로젝트 Isekiro</div><a class="back" href="../index.html">← Back to Home</a></div></div>
 
 <header class="hero">
   <div class="kicker">Project Detail</div>
-  <h1>Isekiro</h1>
-  <p>보스 AI / 패링 / 그래플링</p>
+  <h1>프로젝트 Isekiro</h1>
+  <p>패링 / 그래플링 / 타겟 락온</p>
   <div class="badges">
-    <span class="badge">Unreal Engine 5.6</span>
+    <span class="badge">Unreal Engine 5</span>
     <span class="badge">C++</span>
+    <span class="badge">Blueprint</span>
     <span class="badge">Team 3인</span>
   </div>
 </header>
@@ -62,75 +79,79 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
       </a>
     </div>
 
-    <!-- 1. 보스 AI FSM -->
+    <!-- 1. 타겟 락온 -->
     <div class="feature-group">
-      <div class="feature-group-title">1. 보스 AI — 컴포넌트 기반 FSM</div>
+      <div class="feature-group-title">1. 타겟 락온 시스템</div>
       <ul class="feature-list">
-        <li><code style="color:var(--accent);font-size:0.85em">UFSMComponent</code>로 보스 행동 상태를 관리하는 핵심 컴포넌트 설계</li>
-        <li>각 상태를 <code style="color:var(--accent);font-size:0.85em">UStateObject</code> 클래스로 분리 — Start / End / Interrupt 인터페이스 통일</li>
-        <li>플레이어와의 거리에 따라 근거리(NEAR) / 원거리(FAR) 공간 분리 후 상태 선택</li>
-        <li>공격받을수록 회피(Dodge) 확률이 점진적으로 증가하는 적응형 AI</li>
-        <li>Block / Parry 확률을 상태별로 독립 설정 가능</li>
+        <li><code style="color:var(--accent);font-size:0.85em">UActorComponent</code> 기반 모듈형 설계 — 모든 캐릭터에 즉시 탑재 가능</li>
+        <li>내적(<code style="color:var(--accent);font-size:0.85em">Dot Product</code>)으로 카메라 정면 벡터와 타겟 벡터 유사도 측정, 화면 중앙에 가장 가까운 적 우선 선택</li>
+        <li>RInterp To로 카메라 회전 부드럽게 보간, 락온 상태에서 Strafing 이동 자동 전환</li>
+        <li><code style="color:var(--accent);font-size:0.85em">Line Trace</code>로 장애물 뒤의 적은 타겟 대상에서 자동 제외</li>
       </ul>
-      <div class="table-wrap">
-        <table class="tech-table">
-          <tr><th>카테고리</th><th>상태</th></tr>
-          <tr><td>반응 (Stun)</td><td>Hit, Block, Parry, Deflected</td></tr>
-          <tr><td>근거리 공격</td><td>NormalAttack, CounterAttack, Strafe</td></tr>
-          <tr><td>원거리 공격</td><td>DistanceAttack, ThrustAttack, Run, PatternAttack, LungeAttack</td></tr>
-          <tr><td>전환</td><td>Dodge, DodgeAttack, Jump, JumpStrike, JumpFire</td></tr>
-          <tr><td>기타</td><td>Death</td></tr>
-        </table>
+      <img class="zoomable" data-lightbox src="../assets/gifs/isekiro/lockon.gif" alt="Isekiro lock-on system" style="width:100%; max-width:720px; margin-top:16px; border:1px solid var(--line);" />
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:14px;">
+        <img class="zoomable" data-lightbox src="../assets/images/isekiro/dotProduct.png" alt="Lock-on target selection using dot product" style="width:100%; border:1px solid var(--line);" />
+        <img class="zoomable" data-lightbox src="../assets/images/isekiro/checkVisible.png" alt="Lock-on visibility check using line trace" style="width:100%; border:1px solid var(--line);" />
       </div>
     </div>
 
-    <!-- 2. 타겟 락온 -->
+    <!-- 2. 그래플링 훅 -->
     <div class="feature-group">
-      <div class="feature-group-title">2. 타겟 락온 시스템</div>
-      <ul class="feature-list">
-        <li>UActorComponent 기반 모듈형 설계 — 모든 캐릭터에 즉시 탑재 가능</li>
-        <li>내적(Dot Product)으로 카메라 정면 벡터와 타겟 벡터 유사도 측정, 화면 중앙에 가장 가까운 적 우선 선택</li>
-        <li>RInterp To로 카메라 회전 부드럽게 보간, 락온 상태에서 Strafing 이동 자동 전환</li>
-        <li>Line Trace로 장애물 뒤의 적은 타겟 대상에서 자동 제외</li>
-      </ul>
-    </div>
-
-    <!-- 3. 그래플링 훅 -->
-    <div class="feature-group">
-      <div class="feature-group-title">3. 그래플링 훅 시스템</div>
+      <div class="feature-group-title">2. 그래플링 훅 시스템</div>
       <ul class="feature-list">
         <li>타겟 지점 감지 후 하단 트레이스로 실제 착지 가능 지형(Walkable Surface) 사전 검증</li>
-        <li>Timeline + Curve로 발사 가속 / 도착 감속을 조합한 물리적으로 자연스러운 이동 궤적 구현</li>
+        <li><code style="color:var(--accent);font-size:0.85em">Timeline + Curve</code>로 발사 가속 / 도착 감속을 조합한 물리적으로 자연스러운 이동 궤적 구현</li>
         <li>Cable Component로 발사체와 캐릭터 손 소켓 사이의 물리 연결 및 환경 충돌 구현</li>
         <li>애니메이션 노티파이(Anim Notify)로 이동 시작 · 종료 시점과 Flying / Falling 상태 정밀 동기화</li>
       </ul>
+      <img class="zoomable" data-lightbox src="../assets/gifs/isekiro/hook.gif" alt="Isekiro grappling hook system" style="width:100%; max-width:720px; margin-top:16px; border:1px solid var(--line);" />
     </div>
 
-    <!-- 4. 패링 시스템 -->
+    <!-- 3. 패링 시스템 -->
     <div class="feature-group">
-      <div class="feature-group-title">4. 패링 시스템</div>
+      <div class="feature-group-title">3. 패링 시스템</div>
       <ul class="feature-list">
         <li>USphereComponent 기반 <code style="color:var(--accent);font-size:0.85em">URealParryBox</code>의 Overlap으로 패리 판정 — 일반 약 8프레임, 위험(Hazard) 상태 1프레임으로 난이도 연동</li>
         <li>패리 입력 시 데미지 채널 충돌 응답을 즉시 Ignore로 전환하여 무적 판정 구현, 패리 종료 시 복구</li>
-        <li>패리 성공 시 SetGlobalTimeDilation(0.85f)로 슬로우 모션 적용 후 0.5초 뒤 타이머로 복구</li>
+        <li>패리 성공 시 <code style="color:var(--accent);font-size:0.85em">SetGlobalTimeDilation(0.85f)</code>로 슬로우 모션 적용 후 0.5초 뒤 타이머로 복구</li>
         <li>패리 성공마다 보스 자세 데미지(3) 누적, 자세 붕괴 시 처형 연출 트리거</li>
         <li>패리 윈도우와 쿨다운을 별도 FTimerHandle로 분리 — 연속 패리 어뷰징 방지</li>
       </ul>
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-build">구현</strong> — <code style="color:var(--accent);font-size:0.85em">URealParryBox::ParryStarted</code>에서 짧은 패리 윈도우를 열고, <code style="color:var(--accent);font-size:0.85em">FTimerHandle</code>로 판정 종료와 쿨다운을 분리했습니다. 성공 시 <code style="color:var(--accent);font-size:0.85em">OnParryCheckBeginOverlap</code>에서 패리 몽타주, 충돌 이펙트, 보스 자세 데미지, 히트스톱을 처리했습니다.</li>
+      </ul>
+      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - 입력 순간 패리 윈도우를 열고 타이머로 닫는 구조</span>
+<span class="keyword">void</span> URealParryBox::<span class="func">ParryStarted</span>()
+{
+    <span class="keyword">if</span> (!bCanParry) <span class="keyword">return</span>;
+
+    bIsParryWindow = <span class="keyword">true</span>;
+    <span class="func">SetCollisionEnabled</span>(ECollisionEnabled::QueryAndPhysics);
+    MyCharacter-&gt;<span class="func">GetCapsuleComponent</span>()-&gt;<span class="func">SetCollisionResponseToChannel</span>(
+        ECC_GameTraceChannel3, ECR_Ignore);
+
+    <span class="keyword">const float</span> WindowFrame =
+        MyCharacter-&gt;<span class="func">GetHazardState</span>() == EHazardState::EHS_Hazard ? 1.f : 8.f;
+    GetWorld()-&gt;<span class="func">GetTimerManager</span>().<span class="func">SetTimer</span>(
+        ParryTimerHandle, <span class="keyword">this</span>, &amp;URealParryBox::ParryEnded, WindowFrame / 60.f, <span class="keyword">false</span>);
+}</pre></div>
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-issue">문제</strong> — 프로토타입 단계라 패리 박스가 캐릭터, 보스, 슬로우 모션, 자세 데미지를 모두 알고 있어 책임이 큽니다. 또한 보스 참조와 전역 <code style="color:var(--accent);font-size:0.85em">TimeDilation</code> 사용은 확장 시 부작용이 생길 수 있습니다.</li>
+        <li><strong class="label-improve">개선 방향</strong> — 패리 박스는 “패리 성공 이벤트 발생”까지만 담당하게 줄이고, 자세 데미지·히트스톱·처형 가능 여부는 전투 컴포넌트나 이벤트 구독 쪽으로 분리하겠습니다. 판정 시간도 프레임 상수보다 데이터 에셋/애니메이션 노티파이 기반으로 옮기겠습니다.</li>
+      </ul>
     </div>
 
-    <!-- 5. 핵심 기술 -->
+    <!-- 4. 핵심 기술 -->
     <div class="feature-group">
       <div class="feature-group-title">핵심 기술</div>
       <div class="table-wrap">
         <table class="tech-table">
           <tr><th>기술</th><th>적용 내용</th></tr>
-          <tr><td>FSM (컴포넌트 기반)</td><td>UFSMComponent + UStateObject로 보스 상태 모듈화</td></tr>
-          <tr><td>Dot Product</td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
-          <tr><td>Line Trace</td><td>착지 가능 지형 사전 검증 · 시야 차단 감지</td></tr>
-          <tr><td>Timeline + Curve</td><td>그래플링 이동 가속 / 감속 곡선 제어</td></tr>
-          <tr><td>TimeDilation</td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
-          <tr><td>Anim Notify</td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
-          <tr><td>Niagara</td><td>보스 화살 발사 트레일 이펙트</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">Dot Product</code></td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">Line Trace</code></td><td>착지 가능 지형 사전 검증 · 시야 차단 감지</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">Timeline + Curve</code></td><td>그래플링 이동 가속 / 감속 곡선 제어</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">TimeDilation</code></td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">Anim Notify</code></td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
         </table>
       </div>
     </div>
@@ -142,5 +163,36 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
     </div>
   </section>
 </main>
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button type="button" aria-label="Close image preview">×</button>
+  <img alt="" />
+</div>
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImage = lightbox.querySelector('img');
+
+  document.querySelectorAll('[data-lightbox]').forEach((image) => {
+    image.addEventListener('click', () => {
+      lightboxImage.src = image.src;
+      lightboxImage.alt = image.alt;
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImage.src = '';
+  }
+
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox || event.target.tagName === 'BUTTON') closeLightbox();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeLightbox();
+  });
+</script>
 </body>
 </html>

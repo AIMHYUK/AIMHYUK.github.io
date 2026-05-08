@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KingSejong Multiplayer Session Architecture</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --paper: #ffffff;
+      --ink: #1f2933;
+      --muted: #5d6b7a;
+      --line: #d8dee8;
+      --navy: #162333;
+      --blue: #2f6fed;
+      --green: #138a56;
+      --amber: #b76d00;
+      --violet: #6f4bc1;
+      --red: #c43d3d;
+      --shadow: 0 12px 30px rgba(31, 41, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", "Malgun Gothic", Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .top {
+      background: #0d1117;
+      color: #e6edf3;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .top-inner {
+      width: min(1240px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 13px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .top a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    header {
+      background: var(--navy);
+      color: #fff;
+      padding: 42px 44px 34px;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    header p {
+      max-width: 980px;
+      margin: 0;
+      color: #d7dee8;
+      font-size: 16px;
+    }
+
+    main {
+      width: min(1240px, calc(100% - 40px));
+      margin: 24px auto 48px;
+    }
+
+    section {
+      margin-bottom: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .section-head h2 {
+      margin: 0 0 6px;
+      font-size: 21px;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      max-width: 960px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .content { padding: 24px; }
+
+    .responsibility-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .responsibility {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .responsibility h3 {
+      margin: 0;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .responsibility.ui h3 { background: var(--blue); }
+    .responsibility.instance h3 { background: var(--green); }
+    .responsibility.session h3 { background: #0f6f47; }
+    .responsibility.travel h3 { background: var(--amber); }
+    .responsibility.game h3 { background: var(--violet); }
+
+    .responsibility dl {
+      margin: 0;
+      padding: 14px;
+      font-size: 13px;
+    }
+
+    .responsibility dt {
+      margin: 10px 0 4px;
+      color: #263442;
+      font-weight: 700;
+    }
+
+    .responsibility dt:first-child { margin-top: 0; }
+
+    .responsibility dd {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .chain {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+      align-items: center;
+    }
+
+    .chain-step {
+      min-height: 86px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      position: relative;
+    }
+
+    .chain-step::after {
+      content: ">";
+      position: absolute;
+      right: -16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .chain-step:last-child::after { content: ""; }
+
+    .chain-step b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .chain-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--blue);
+      border-radius: 0 8px 8px 0;
+      background: #eef5ff;
+      color: #314254;
+      font-size: 14px;
+    }
+
+    .diagram {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .flow {
+      min-width: 1060px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fdfefe;
+      overflow: hidden;
+    }
+
+    .lane h3 {
+      margin: 0;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #f0f4f8;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .node {
+      margin: 14px;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .node.green { border-left-color: var(--green); }
+    .node.amber { border-left-color: var(--amber); }
+    .node.violet { border-left-color: var(--violet); }
+    .node.red { border-left-color: var(--red); }
+
+    .node strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .node span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .arrow {
+      margin: -2px 14px;
+      color: var(--muted);
+      font-size: 20px;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f4f8;
+      color: #263442;
+    }
+
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: rgba(47, 111, 237, 0.08);
+      border: 1px solid rgba(47, 111, 237, 0.18);
+      color: var(--blue);
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.85em;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card li { margin: 6px 0; }
+
+    @media (max-width: 1000px) {
+      .responsibility-grid,
+      .chain,
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .chain-step::after { content: ""; }
+    }
+
+    @media (max-width: 900px) {
+      header { padding: 30px 20px; }
+      .top-inner,
+      main { width: min(100% - 24px, 1240px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div class="top-inner">
+      <strong>KINGSEJONG Session Architecture</strong>
+      <a href="kingsejong.html">프로젝트 상세로 돌아가기</a>
+    </div>
+  </div>
+
+  <header>
+    <h1>멀티플레이 세션 시스템 책임 구조</h1>
+    <p>
+      이 페이지는 KINGSEJONG의 로비에서 방을 만들고, 검색하고, 참가한 뒤 실제 게임 맵으로 이동하는 과정을
+      <code>UI</code>, <code>GameInstance</code>, <code>Online Session</code>, <code>Travel</code>, <code>Running Game</code>의 책임으로 나누어 설명합니다.
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-head">
+        <h2>왜 이렇게 나누었나</h2>
+        <p>
+          Unreal 멀티플레이에서는 세션 생성, 온라인 백엔드 등록, 실제 맵 이동, 게임 진행이 서로 다른 책임입니다.
+          이를 분리하면 포트폴리오에서 구현 범위와 설계 의도를 더 명확하게 보여줄 수 있습니다.
+        </p>
+      </div>
+      <div class="content">
+        <div class="responsibility-grid">
+          <div class="responsibility ui">
+            <h3>UI</h3>
+            <dl>
+              <dt>역할</dt>
+              <dd>사용자 입력을 받는 계층입니다.</dd>
+              <dt>담당</dt>
+              <dd>방 만들기, 방 찾기, 참가 버튼, 검색 결과 슬롯 표시</dd>
+              <dt>분리 이유</dt>
+              <dd>UI가 세션을 직접 만들면 화면 구조 변경이 네트워크 로직에 영향을 줍니다.</dd>
+            </dl>
+          </div>
+
+          <div class="responsibility instance">
+            <h3>GameInstance</h3>
+            <dl>
+              <dt>역할</dt>
+              <dd>프로젝트가 직접 소유한 세션 관리 계층입니다.</dd>
+              <dt>담당</dt>
+              <dd><code>CreateSession</code>, <code>FindSessions</code>, <code>JoinSession</code>, <code>DestroySession</code></dd>
+              <dt>분리 이유</dt>
+              <dd>맵 이동 후에도 유지되므로 로비와 게임 맵 사이의 세션 상태를 관리하기 좋습니다.</dd>
+            </dl>
+          </div>
+
+          <div class="responsibility session">
+            <h3>Online Session</h3>
+            <dl>
+              <dt>역할</dt>
+              <dd>Unreal <code>OnlineSubsystem</code>이 제공하는 실제 세션 데이터 계층입니다.</dd>
+              <dt>담당</dt>
+              <dd>세션 설정, Presence, 세션 광고 설정값, Steam/LAN 검색 결과</dd>
+              <dt>분리 이유</dt>
+              <dd>내 코드의 상태와 Steam/LAN 백엔드가 관리하는 데이터를 구분해야 흐름이 명확해집니다.</dd>
+            </dl>
+          </div>
+
+          <div class="responsibility travel">
+            <h3>Travel</h3>
+            <dl>
+              <dt>역할</dt>
+              <dd>세션 참가 이후 실제 맵으로 이동하는 단계입니다.</dd>
+              <dt>담당</dt>
+              <dd>호스트 <code>ServerTravel</code>, 클라이언트 <code>ClientTravel</code></dd>
+              <dt>분리 이유</dt>
+              <dd>세션에 참가했다는 것과 게임 맵에 들어갔다는 것은 Unreal에서 별개의 단계입니다.</dd>
+            </dl>
+          </div>
+
+          <div class="responsibility game">
+            <h3>Running Game</h3>
+            <dl>
+              <dt>역할</dt>
+              <dd>게임 맵 입장 이후의 서버 권한 게임 진행 계층입니다.</dd>
+              <dt>담당</dt>
+              <dd><code>GameMode</code> 판정, <code>PlayerController</code> RPC, <code>Character</code> 동기화</dd>
+              <dt>분리 이유</dt>
+              <dd>세션 진입 로직과 인게임 규칙을 섞지 않아야 게임 모드 확장이 쉬워집니다.</dd>
+            </dl>
+          </div>
+        </div>
+
+        <div class="chain">
+          <div class="chain-step"><b>1. UI 요청</b><span>플레이어가 방 만들기, 검색, 참가를 누릅니다.</span></div>
+          <div class="chain-step"><b>2. <code>GameInstance</code> 처리</b><span>요청을 세션 함수 호출과 콜백 처리로 바꿉니다.</span></div>
+          <div class="chain-step"><b>3. Online Session 반영</b><span>Steam 또는 LAN 세션에 방 정보가 생성되거나 검색됩니다.</span></div>
+          <div class="chain-step"><b>4. Travel 실행</b><span>호스트와 클라이언트가 각자 다른 이동 함수를 탑니다.</span></div>
+          <div class="chain-step"><b>5. 게임 진행</b><span><code>GameMode</code>와 <code>RPC</code> 흐름으로 미니게임을 동기화합니다.</span></div>
+        </div>
+
+        <div class="note">
+          핵심은 UI, 세션 관리, 온라인 백엔드 데이터, 맵 이동, 인게임 진행을 한 덩어리로 보지 않는 것입니다.
+          특히 <code>JoinSession</code> 성공은 접속 주소를 얻는 단계이고, 실제 게임 입장은 <code>ClientTravel</code>까지 완료되어야 합니다.
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>전체 아키텍처 흐름</h2>
+        <p>
+          각 열은 클래스 종류가 아니라 런타임에서 책임이 넘어가는 구간을 의미합니다.
+          왼쪽에서 오른쪽으로 사용자의 요청이 실제 게임 입장과 진행으로 바뀝니다.
+        </p>
+      </div>
+      <div class="content">
+        <div class="diagram">
+          <div class="flow">
+            <div class="lane">
+              <h3>UI</h3>
+              <div class="node"><strong>Lobby Widget</strong><span>방 만들기, 방 찾기, 참가 요청</span></div>
+              <div class="arrow">↓</div>
+              <div class="node"><strong>Session Row</strong><span>검색 결과를 방 슬롯으로 표시</span></div>
+              <div class="arrow">↓</div>
+              <div class="node"><strong>Lobby Feedback</strong><span>로딩, 실패, 입장 가능 여부 표시</span></div>
+            </div>
+
+            <div class="lane">
+              <h3><code>GameInstance</code></h3>
+              <div class="node green"><strong>Session Interface</strong><span><code>OnlineSubsystem</code>에서 세션 인터페이스 획득</span></div>
+              <div class="arrow">↓</div>
+              <div class="node green"><strong>Session Wrapper</strong><span>Create, Find, Join, Destroy 호출 집중</span></div>
+              <div class="arrow">↓</div>
+              <div class="node red"><strong>Failure / Exit</strong><span>네트워크 실패와 세션 종료를 로비 복귀로 정리</span></div>
+            </div>
+
+            <div class="lane">
+              <h3>Online Session</h3>
+              <div class="node green"><strong>Session Settings</strong><span>Presence, Lobby, 공개 세션, 중간 참가 허용</span></div>
+              <div class="arrow">↓</div>
+              <div class="node green"><strong>Advertised Data</strong><span>방 이름, 카테고리, 최대 인원, 호스트 정보</span></div>
+              <div class="arrow">↓</div>
+              <div class="node green"><strong>Search Result</strong><span>검색 결과를 <code>FRoomInfo</code>로 변환</span></div>
+            </div>
+
+            <div class="lane">
+              <h3>Travel</h3>
+              <div class="node amber"><strong>Host Path</strong><span>세션 생성 성공 후 <code>MapName?listen</code>으로 <code>ServerTravel</code></span></div>
+              <div class="arrow">↓</div>
+              <div class="node amber"><strong>Client Path</strong><span><code>JoinSession</code> 결과의 connect string으로 <code>ClientTravel</code></span></div>
+              <div class="arrow">↓</div>
+              <div class="node amber"><strong>Return Lobby</strong><span>종료 또는 실패 시 로비 맵으로 복귀</span></div>
+            </div>
+
+            <div class="lane">
+              <h3>Running Game</h3>
+              <div class="node violet"><strong><code>GameMode</code></strong><span>입장 인원 확인, 퀴즈 선택, 정답 판정</span></div>
+              <div class="arrow">↓</div>
+              <div class="node violet"><strong><code>PlayerController</code></strong><span><code>Client RPC</code>와 <code>Server RPC</code>의 허브</span></div>
+              <div class="arrow">↓</div>
+              <div class="node violet"><strong>Character</strong><span>이동, 애니메이션, 메시 변경 Multicast</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>호스트와 클라이언트 흐름 비교</h2>
+        <p>
+          같은 로비 버튼에서 시작해도 호스트와 클라이언트는 세션 처리와 맵 이동 방식이 다릅니다.
+          이 차이를 분리해서 보여주는 것이 Travel을 별도 책임으로 둔 가장 큰 이유입니다.
+        </p>
+      </div>
+      <div class="content">
+        <table>
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>호스트</th>
+              <th>클라이언트</th>
+              <th>담당 책임</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>입력</td>
+              <td>방 이름, 인원, 카테고리 입력 후 방 만들기</td>
+              <td>방 찾기 후 검색 결과에서 방 선택</td>
+              <td>UI</td>
+            </tr>
+            <tr>
+              <td>세션 호출</td>
+              <td><code>CreateSession</code> 호출</td>
+              <td><code>FindSessions</code>, <code>JoinSession</code> 호출</td>
+              <td><code>GameInstance</code></td>
+            </tr>
+            <tr>
+              <td>온라인 데이터</td>
+              <td>세션 설정과 세션 광고 설정값을 Steam/LAN에 등록</td>
+              <td>Presence 조건으로 검색하고 선택한 결과를 사용</td>
+              <td>Online Session</td>
+            </tr>
+            <tr>
+              <td>맵 이동</td>
+              <td><code>ServerTravel("RunningMap?listen")</code></td>
+              <td><code>ClientTravel(ResolvedConnectString)</code></td>
+              <td>Travel</td>
+            </tr>
+            <tr>
+              <td>게임 시작</td>
+              <td><code>GameMode</code>가 <code>PostLogin</code>과 필요 인원 도달 여부 확인</td>
+              <td><code>PlayerController</code>를 통해 UI와 입력 권한을 받음</td>
+              <td>Running Game</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>클래스 매핑</h2>
+        <p>
+          포트폴리오 설명에서는 책임 단위로 보여주고, 실제 구현에서는 아래 클래스들이 각 책임을 담당합니다.
+        </p>
+      </div>
+      <div class="content">
+        <table>
+          <thead>
+            <tr>
+              <th>책임</th>
+              <th>대표 클래스 / API</th>
+              <th>구현 내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>UI</td>
+              <td><code>ULobbyWidget</code>, 방 슬롯 위젯</td>
+              <td>사용자 입력을 받고 검색 결과를 표시합니다. 세션 로직은 직접 수행하지 않고 <code>GameInstance</code>의 인터페이스를 호출합니다.</td>
+            </tr>
+            <tr>
+              <td><code>GameInstance</code></td>
+              <td><code>UJJH_GameInstance</code></td>
+              <td>세션 인터페이스 보관, 완료 델리게이트 등록, 생성/검색/참가/파괴 함수를 관리합니다.</td>
+            </tr>
+            <tr>
+              <td>Online Session</td>
+              <td><code>IOnlineSessionInterface</code>, <code>FOnlineSessionSettings</code></td>
+              <td>Steam 또는 LAN 세션에 저장되는 Presence, Lobby, 세션 광고 설정값, 검색 결과를 다룹니다.</td>
+            </tr>
+            <tr>
+              <td>Travel</td>
+              <td><code>ServerTravel</code>, <code>ClientTravel</code></td>
+              <td>세션 생성 또는 참가 이후 실제 게임 맵으로 이동합니다. 호스트와 클라이언트가 서로 다른 경로를 사용합니다.</td>
+            </tr>
+            <tr>
+              <td>Running Game</td>
+              <td><code>RunningGameModeBase</code>, <code>RunnerController</code>, <code>RunnerCharacter</code></td>
+              <td>게임 시작 조건, 퀴즈 선택, 정답 판정, 입력 제어, 캐릭터 동기화를 서버 권한 기준으로 처리합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>구현 포인트</h2>
+        <p>
+          이 구조를 통해 강조할 수 있는 기술적 결정입니다.
+        </p>
+      </div>
+      <div class="content">
+        <div class="cards">
+          <div class="card">
+            <h3><code>GameInstance</code>에 세션 집중</h3>
+            <ul>
+              <li>맵 이동 후에도 유지되는 객체에 세션 상태와 콜백을 모았습니다.</li>
+              <li>UI는 버튼 입력과 표시만 담당해 화면 변경 비용을 줄였습니다.</li>
+              <li>세션 종료와 네트워크 실패 복구를 로비 복귀 흐름으로 통일했습니다.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>세션 데이터와 UI 데이터 분리</h3>
+            <ul>
+              <li>Online Session Settings의 세션 광고 설정값을 <code>FRoomInfo</code>로 변환했습니다.</li>
+              <li>방 이름, 카테고리, 인원, 핑을 UI가 쓰기 쉬운 형태로 정리했습니다.</li>
+              <li>한글 방 이름 저장을 위해 Base64 인코딩과 디코딩을 적용했습니다.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>세션 이후는 서버 권한</h3>
+            <ul>
+              <li>정답 판정, 입장 순서, 게임 종료 판단은 서버 <code>GameMode</code>에서 처리했습니다.</li>
+              <li>개별 UI는 <code>Client RPC</code>, 공통 연출은 <code>Multicast RPC</code>로 분리했습니다.</li>
+              <li>세션 진입 로직과 인게임 규칙을 분리해 미니게임 확장에 대응했습니다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

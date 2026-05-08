@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MDCalling - JJH Portfolio</title>
+<title>배달왕 김족구 - 인벤토리 · 퀘스트 시스템</title>
 <style>
 /* 100% 동일한 CSS */
 :root{--bg:#0d1117;--card:#161b22;--line:#30363d;--accent:#58a6ff;--text:#e6edf3;--muted:#8b949e}
@@ -26,12 +26,27 @@
 .feature-group-title{font-size:1.1rem;font-weight:800;color:#d7e2f0;margin-bottom:16px;border-left:4px solid var(--accent);padding-left:12px}
 .feature-list{margin:0;padding-left:20px;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.95rem;line-height:1.8}
 .feature-list li{margin:10px 0;color:#d0d7de}
+.feature-group>.feature-list:not([style]){list-style:none;padding-left:0;display:grid;gap:9px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.feature-group>.feature-list:not([style]) li{position:relative;margin:0;padding:11px 14px 11px 34px;border:1px solid rgba(48,54,61,.9);border-left:3px solid rgba(88,166,255,.65);border-radius:8px;background:#11161d;color:#d7dee8;line-height:1.65}
+.feature-group>.feature-list:not([style]) li::before{content:"";position:absolute;left:15px;top:20px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(88,166,255,.13)}
+.feature-list li strong{display:inline-flex;align-items:center;margin-right:6px;padding:2px 8px;border-radius:999px;background:rgba(88,166,255,.14);border:1px solid rgba(88,166,255,.45);color:#9dcbff;font-size:.78rem;line-height:1.4;letter-spacing:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;vertical-align:1px}
+.feature-list li:nth-child(2) strong{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
+.feature-list li:nth-child(3) strong{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
+.feature-list li strong.label-build{background:rgba(88,166,255,.14);border-color:rgba(88,166,255,.45);color:#9dcbff}
+.feature-list li strong.label-result{background:rgba(210,168,255,.12);border-color:rgba(210,168,255,.4);color:#d2a8ff}
+.feature-list li strong.label-issue{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
+.feature-list li strong.label-solve{background:rgba(88,166,255,.12);border-color:rgba(88,166,255,.42);color:#9dcbff}
+.feature-list li strong.label-improve{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
+.feature-list li code{font-weight:700}
 .code-block{background:#010409;border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto;color:#e6edf3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);margin-top:16px;}
 .code-block pre{white-space:pre-wrap;word-break:break-word;overflow-x:auto;margin:0;line-height:1.75;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.9rem;color:#e6edf3}
 .code-block .comment{color:#8b949e} .code-block .keyword{color:#ff7b72} .code-block .string{color:#a5d6ff} .code-block .func{color:#d2a8ff}
 .table-wrap{overflow-x:auto;margin-top:16px;} table{width:100%;border-collapse:collapse;min-width:500px;} th,td{border-bottom:1px solid var(--line);padding:12px 16px;text-align:left;vertical-align:top} th{color:#c7d2de;background:#11161d;font-weight:700;}
 img,video{max-width:100%;height:auto;border-radius:12px;display:block}
 .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.flow-step{background:#1c2128;border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:.85rem;color:var(--muted);font-weight:500;}.flow-arrow{color:var(--line);font-size:1.1rem}
+.why-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.why-card{min-height:132px;background:#11161d;border:1px solid var(--line);border-radius:8px;padding:16px}.why-card strong{display:block;margin-bottom:7px;color:var(--text)}.why-card p{margin:0;color:var(--muted);font-size:.92rem}
+.quest-flow{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px;margin-top:18px}.quest-flow-step{position:relative;min-height:92px;border:1px solid var(--line);border-radius:8px;background:#11161d;padding:13px 12px}.quest-flow-step::after{content:"";position:absolute;top:45px;right:-8px;width:8px;height:1px;background:var(--line)}.quest-flow-step:last-child::after{display:none}.step-no{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;margin-bottom:8px;background:rgba(88,166,255,.14);border:1px solid rgba(88,166,255,.5);color:var(--accent);font-size:.74rem;font-weight:800}.quest-flow-step strong{display:block;color:#d7e2f0;font-size:.9rem;line-height:1.35}.quest-flow-step span{display:block;margin-top:5px;color:var(--muted);font-size:.78rem;line-height:1.45}.design-callout{margin-top:18px;border-left:3px solid #ffa657;background:#1d1811;border-radius:0 8px 8px 0;padding:13px 16px;color:#e6d0b6;font-size:.93rem}.pill{display:inline-flex;border-radius:999px;padding:3px 9px;font-size:.78rem;font-weight:800;color:#071018}.pill.ok{background:#7ee787}.pill.fix{background:#ffa657}
+@media (max-width:900px){.why-grid{grid-template-columns:1fr}.quest-flow{grid-template-columns:1fr}.quest-flow-step::after{display:none}}
 .btn-wrap{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line);}
 .link-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--accent);color:#000;font-weight:bold;border-radius:8px;transition:0.2s;font-size:0.95rem;}
 .link-btn:hover{background:#79c0ff;}
@@ -40,11 +55,11 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
 </style>
 </head>
 <body>
-<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">MDCalling</div><a class="back" href="../index.html">← Back to Home</a></div></div>
+<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">배달왕 김족구 - 인벤토리 · 퀘스트 시스템</div><a class="back" href="../index.html">← Back to Home</a></div></div>
 
 <header class="hero">
   <div class="kicker">Project Detail</div>
-  <h1>MDCalling</h1>
+  <h1>배달왕 김족구 - 인벤토리 · 퀘스트 시스템</h1>
   <p>인벤토리 / 퀘스트 / 입력</p>
   <div class="badges">
     <span class="badge">Unity 6</span>
@@ -65,52 +80,60 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
         <li><code style="color:var(--accent);font-size:0.85em">OutsideInventoryAreaView</code>로 그리드 밖 좌·우 인벤토리 영역을 독립 관리 — 그리드 경계에서 방향키 입력 시 Outside 영역으로 포커스 자동 전환</li>
         <li><code style="color:var(--accent);font-size:0.85em">InventoryDragPreviewView</code>가 드래그 중 아이템 실루엣과 배치 가능 여부 하이라이트를 실시간 렌더링</li>
       </ul>
-      <div class="code-block"><pre><span class="comment">// 아이템 배치 — 차지하는 모든 셀 충돌 검사 후 원자적 배치</span>
-<span class="keyword">public bool</span> <span class="func">TryPlace</span>(InventoryItem item, Vector2Int pos)
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-build">구현</strong> — <code style="color:var(--accent);font-size:0.85em">InventoryModel</code>이 2D 배열로 점유 상태를 관리하고, 아이템 배치 전 모든 점유 셀을 검사해 원자적으로 배치했습니다. 회전 상태는 <code style="color:var(--accent);font-size:0.85em">EffectiveSize</code>로 계산해 충돌 판정에 반영했습니다.</li>
+        <li><strong class="label-result">결과</strong> — 아이템 크기와 회전 상태를 반영한 테트리스형 인벤토리를 만들고, Model 이벤트를 통해 UI가 상태 변경을 구독하는 구조로 분리했습니다.</li>
+      </ul>
+      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - 모든 점유 셀을 검사한 뒤 한 번에 배치</span>
+<span class="keyword">public bool</span> <span class="func">CanPlaceSize</span>(int width, int height, Vector2Int position)
 {
-    <span class="keyword">if</span> (!<span class="func">CanPlace</span>(item, pos)) <span class="keyword">return false</span>;
-
-    item.<span class="func">Place</span>(pos);
-    <span class="keyword">foreach</span> (<span class="keyword">var</span> cell <span class="keyword">in</span> item.<span class="func">GetOccupiedCells</span>())
-        _grid[cell.x, cell.y] = item;
-
-    OnItemPlaced?.<span class="func">Invoke</span>(item);
+    <span class="keyword">for</span> (int x = position.x; x &lt; position.x + width; x++)
+    {
+        <span class="keyword">for</span> (int y = position.y; y &lt; position.y + height; y++)
+        {
+            <span class="keyword">if</span> (!<span class="func">IsInBounds</span>(x, y)) <span class="keyword">return false</span>;
+            <span class="keyword">if</span> (_grid[x, y] != <span class="keyword">null</span>) <span class="keyword">return false</span>;
+        }
+    }
     <span class="keyword">return true</span>;
 }
 
-<span class="comment">// 회전 시 EffectiveSize x/y 교환으로 충돌 판정 자동 반영</span>
-<span class="keyword">public</span> Vector2Int EffectiveSize
-    => IsRotated ? <span class="keyword">new</span> Vector2Int(Size.y, Size.x) : Size;</pre></div>
+<span class="keyword">public bool</span> <span class="func">TryPlace</span>(InventoryItem item, Vector2Int position)
+{
+    <span class="keyword">if</span> (!<span class="func">CanPlace</span>(item, position)) <span class="keyword">return false</span>;
+
+    int width = item.EffectiveSize.x;
+    int height = item.EffectiveSize.y;
+    <span class="keyword">for</span> (int x = position.x; x &lt; position.x + width; x++)
+    {
+        <span class="keyword">for</span> (int y = position.y; y &lt; position.y + height; y++)
+            _grid[x, y] = item;
+    }
+
+    item.<span class="func">Place</span>(position);
+    _placedItems.<span class="func">Add</span>(item);
+    <span class="func">RecalculateTorque</span>();
+    OnItemPlaced?.<span class="func">Invoke</span>(item, position);
+    OnTorqueChanged?.<span class="func">Invoke</span>(CurrentTorque);
+    <span class="keyword">return true</span>;
+}</pre></div>
+      <a class="link-btn outline" href="mdcalling/InventorySystemVisualization.html" style="margin-top:16px;">
+        인벤토리 설계 시각화 보기
+      </a>
     </div>
 
     <!-- 2. 하이브리드 입력 -->
     <div class="feature-group">
-      <div class="feature-group-title">2. 마우스 · 게임패드 하이브리드 입력 (InventoryState)</div>
+      <div class="feature-group-title">2. 마우스 · 게임패드 하이브리드 입력 (<code style="color:var(--accent);font-size:0.85em">InventoryState</code>)</div>
       <ul class="feature-list">
         <li><code style="color:var(--accent);font-size:0.85em">Mouse.current.delta.sqrMagnitude > 0.1f</code> 감지로 마우스 모드 전환, 게임패드 버튼 입력 시 패드 모드로 즉시 전환 — 하나의 인벤토리가 두 입력장치를 실시간 병행 지원</li>
         <li>스틱 아날로그 입력을 디지털 4방향으로 변환하고 초기 딜레이(0.4s) + 반복 간격(0.12s) 타이머로 키 반복 네비게이션 구현</li>
         <li>그리드 좌·우 경계에서 방향 입력 시 Outside 영역으로, 반대 방향 입력 시 그리드 가장자리 셀로 포커스 자동 이동하는 스마트 네비게이션</li>
         <li>패드 A 버튼 — 토글 방식으로 집기·놓기, LB/RB — 드래그 중 아이템 90도 회전, B 버튼 — 드래그 취소 및 원위치 복구</li>
       </ul>
-      <div class="code-block"><pre><span class="comment">// 마우스 델타 · 게임패드 버튼 감지로 실시간 입력 모드 전환</span>
-<span class="keyword">private void</span> <span class="func">UpdateInputMode</span>()
-{
-    <span class="keyword">if</span> (<span class="func">IsMouseMoving</span>())
-        <span class="func">SwitchMode</span>(InputMode.Mouse);
-    <span class="keyword">else if</span> (<span class="func">IsGamepadActive</span>())
-        <span class="func">SwitchMode</span>(InputMode.Gamepad);
-}
-
-<span class="comment">// 스틱 반복 입력 — 초기 딜레이 후 고속 반복 네비게이션</span>
-<span class="keyword">private void</span> <span class="func">UpdateStickRepeat</span>()
-{
-    <span class="keyword">if</span> (_stickDirection == Vector2Int.zero) <span class="keyword">return</span>;
-    _stickRepeatTimer -= Time.deltaTime;
-    <span class="keyword">if</span> (_stickRepeatTimer > 0f) <span class="keyword">return</span>;
-
-    <span class="func">NavigateInDirection</span>(_stickDirection);
-    _stickRepeatTimer = STICK_REPEAT_INTERVAL; <span class="comment">// 0.12s</span>
-}</pre></div>
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-result">결과</strong> — 같은 인벤토리 UI를 마우스와 게임패드 양쪽에서 사용할 수 있게 만들어, 입력 장치가 바뀌어도 플레이 흐름이 끊기지 않도록 했습니다.</li>
+      </ul>
     </div>
 
     <!-- 3. 퀘스트 시스템 -->
@@ -130,121 +153,97 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
         </div>
       </div>
 
-      <!-- 런타임 흐름 다이어그램 -->
-      <div style="font-size:0.8rem; color:var(--muted); margin-bottom:14px;">런타임 흐름</div>
+      <!-- 설계 의도 및 런타임 흐름 -->
+      <div style="font-size:0.8rem; color:var(--muted); margin:22px 0 10px;">설계 의도</div>
+      <ul class="feature-list">
+        <li>
+          <code style="color:var(--accent);font-size:0.85em">DeliveryManager</code>는 퀘스트를 직접 알지 않고
+          <code style="color:var(--accent);font-size:0.85em">"DELIVERY_ACCEPT"</code>,
+          <code style="color:var(--accent);font-size:0.85em">"DELIVERY_COMPLETE"</code> 같은 진행 이벤트만
+          <code style="color:var(--accent);font-size:0.85em">QuestManager</code>에 보고하도록 분리했습니다.
+        </li>
+        <li>
+          <code style="color:var(--accent);font-size:0.85em">QuestManager</code>는 활성 퀘스트 전체에 보고를 broadcast하고,
+          각 <code style="color:var(--accent);font-size:0.85em">QuestTask</code>가
+          <code style="color:var(--accent);font-size:0.85em">category + target</code> 조합으로 자신에게 해당하는 진행인지 판단합니다.
+        </li>
+        <li>
+          <code style="color:var(--accent);font-size:0.85em">TaskGroup</code> 완료 시
+          <code style="color:var(--accent);font-size:0.85em">QuestAction</code>을 실행해 배달 요청 생성, 보상,
+          장소별 <code style="color:var(--accent);font-size:0.85em">yarnStartNode</code> 변경 같은 후속 처리를 데이터 기반으로 연결했습니다.
+        </li>
+      </ul>
 
-      <div style="display:flex; gap:14px;">
-        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-          <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">1</div>
-          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+      <div class="why-grid">
+        <div class="why-card">
+          <strong>낮은 결합도</strong>
+          <p>배달 시스템은 배달 상태만 관리하고, 퀘스트 시스템은 보고된 이벤트만 해석합니다.</p>
         </div>
-        <div style="padding-bottom:16px; flex:1;">
-          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">씬 시작 — 퀘스트 등록</div>
-          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-            씬에 배치된 <code style="color:var(--accent);font-size:0.82em;">QuestGiver</code> 컴포넌트가 <code style="color:var(--accent);font-size:0.82em;">QuestManager.Register(quest)</code> 호출<br>
-            → Quest를 Clone해 <code style="color:var(--accent);font-size:0.82em;">_activeQuests</code>에 추가, state: <span style="color:var(--accent);">Inactive → Running</span>, 첫 TaskGroup 시작
-          </div>
+        <div class="why-card">
+          <strong>데이터 기반 확장</strong>
+          <p>새 퀘스트는 코드 수정 없이 TaskGroup, category, target, action 조합으로 추가할 수 있습니다.</p>
+        </div>
+        <div class="why-card">
+          <strong>대화 진행도 반영</strong>
+          <p>퀘스트 진행에 따라 장소의 Yarn 시작 노드를 바꿔 같은 장소에서도 다른 대화를 시작합니다.</p>
         </div>
       </div>
 
-      <div style="display:flex; gap:14px;">
-        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-          <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:#ff7b72; flex-shrink:0;">2</div>
-          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+      <div style="font-size:0.8rem; color:var(--muted); margin:24px 0 10px;">런타임 흐름</div>
+      <div class="quest-flow" aria-label="Quest flow">
+        <div class="quest-flow-step">
+          <div class="step-no">1</div>
+          <strong>Yarn에서 퀘스트 지급</strong>
+          <span><code style="color:var(--accent);font-size:0.9em">&lt;&lt;give_quest&gt;&gt;</code></span>
         </div>
-        <div style="padding-bottom:16px; flex:1;">
-          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">플레이어 행동 — 배달 수락</div>
-          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-            플레이어가 A장소에서 배달을 수락 → <code style="color:var(--accent);font-size:0.82em;">DeliveryManager.AcceptDelivery()</code> 내부에서<br>
-            <code style="color:var(--accent);font-size:0.82em;">QuestManager.ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_ACCEPT"</span>, A장소, 1)</code> 호출
-          </div>
+        <div class="quest-flow-step">
+          <div class="step-no">2</div>
+          <strong>퀘스트 등록</strong>
+          <span><code style="color:var(--accent);font-size:0.9em">QuestManager.Register</code></span>
         </div>
-      </div>
-
-      <div style="display:flex; gap:14px;">
-        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-          <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">3</div>
-          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+        <div class="quest-flow-step">
+          <div class="step-no">3</div>
+          <strong>배달 요청 생성</strong>
+          <span><code style="color:var(--accent);font-size:0.9em">DeliveryGiveQuestAction</code></span>
         </div>
-        <div style="padding-bottom:16px; flex:1;">
-          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestManager — 전체 브로드캐스트</div>
-          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-            <code style="color:var(--accent);font-size:0.82em;">_activeQuests</code>를 순회하며 모든 활성 퀘스트에 <code style="color:var(--accent);font-size:0.82em;">quest.ReceiveReport()</code> 전달<br>
-            → 매칭 여부와 상관없이 일단 전부 찔러봄. 맞는 것만 반응
-          </div>
+        <div class="quest-flow-step">
+          <div class="step-no">4</div>
+          <strong>수락/완료 보고</strong>
+          <span><code style="color:var(--accent);font-size:0.9em">ReceiveReport</code></span>
         </div>
-      </div>
-
-      <div style="display:flex; gap:14px;">
-        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-          <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:#ff7b72; flex-shrink:0;">4</div>
-          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
+        <div class="quest-flow-step">
+          <div class="step-no">5</div>
+          <strong>TaskGroup 완료</strong>
+          <span><code style="color:var(--accent);font-size:0.9em">QuestAction</code> 실행</span>
         </div>
-        <div style="padding-bottom:16px; flex:1;">
-          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">QuestTask — 카테고리 · 타겟 매칭</div>
-          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-            각 QuestTask가 <code style="color:var(--accent);font-size:0.82em;">IsTarget(category, target)</code>으로 자신에게 해당되는지 확인<br>
-            인스펙터에서 <code style="color:#a5d6ff;font-size:0.82em;">category = "DELIVERY_ACCEPT"</code>, <code style="color:#a5d6ff;font-size:0.82em;">target = A장소</code>로 설정된 Task만 반응
-          </div>
+        <div class="quest-flow-step">
+          <div class="step-no">6</div>
+          <strong>대화 노드 변경</strong>
+          <span><code style="color:var(--accent);font-size:0.9em">SetYarnStartNode</code></span>
         </div>
       </div>
 
-      <div style="display:flex; gap:14px;">
-        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-          <div style="width:26px; height:26px; border-radius:50%; background:rgba(88,166,255,0.12); border:1px solid rgba(88,166,255,0.4); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:var(--accent); flex-shrink:0;">5</div>
-          <div style="width:1px; background:var(--line); flex:1; margin:4px 0; min-height:16px;"></div>
-        </div>
-        <div style="padding-bottom:16px; flex:1;">
-          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">TaskGroup 완료 → QuestAction 실행</div>
-          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-            <code style="color:var(--accent);font-size:0.82em;">CurrentSuccess++</code> → needSuccess 달성 → TaskState: <span style="color:var(--accent);">Complete</span><br>
-            TaskGroup의 모든 Task 완료 시 <code style="color:var(--accent);font-size:0.82em;">ExecuteQuestActions()</code> 실행 (Yarn 노드 변경 등)<br>
-            → 다음 TaskGroup[1] 시작, state: <span style="color:var(--accent);">Running</span> 유지
-          </div>
-        </div>
+      <div class="design-callout">
+        마지막 <code style="color:var(--accent);font-size:0.9em">TaskGroup</code>에서는 그룹 완료 액션이 먼저 실행되고,
+        이후 <code style="color:var(--accent);font-size:0.9em">useAutoComplete</code> 설정에 따라 퀘스트가 완료됩니다.
+        따라서 <code style="color:var(--accent);font-size:0.9em">yarnStartNode</code> 변경은 “퀘스트 완료 후”가 아니라
+        “TaskGroup 완료 시점”에 일어납니다.
       </div>
 
-      <div style="display:flex; gap:14px;">
-        <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:26px;">
-          <div style="width:26px; height:26px; border-radius:50%; background:rgba(247,129,102,0.1); border:1px solid rgba(247,129,102,0.35); display:flex; align-items:center; justify-content:center; font-size:0.72rem; color:#ff7b72; flex-shrink:0;">6</div>
-        </div>
-        <div style="padding-bottom:4px; flex:1;">
-          <div style="font-size:0.87rem; color:var(--text); font-weight:600; margin-bottom:4px;">배달 완료 → 퀘스트 종료</div>
-          <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-            B장소 도착 후 <code style="color:var(--accent);font-size:0.82em;">DeliveryManager.CompleteDelivery()</code><br>
-            → <code style="color:var(--accent);font-size:0.82em;">ReceiveReport(<span style="color:#a5d6ff;">"DELIVERY_COMPLETE"</span>, B장소, 1)</code> → TaskGroup[1] 완료<br>
-            → 마지막 TaskGroup이므로 state: <span style="color:var(--accent);">WaitForCompletion → Complete</span>, <code style="color:var(--accent);font-size:0.82em;">OnCompleted</code> 이벤트 발행
-          </div>
-        </div>
-      </div>
-
-      <div style="background:#1c2128; border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:12px 16px; margin:20px 0 16px;">
-        <div style="font-size:0.85rem; color:var(--text); font-weight:600; margin-bottom:5px;">핵심 — 왜 이 구조인가?</div>
-        <div style="font-size:0.82rem; color:var(--muted); line-height:1.7;">
-          <code style="color:var(--accent);">DeliveryManager</code>는 퀘스트의 존재를 모릅니다. <code style="color:var(--accent);">QuestManager</code>는 배달의 존재를 모릅니다.<br>
-          <code style="color:var(--accent);">"DELIVERY_ACCEPT"</code> 라는 <strong style="color:var(--text);">문자열 카테고리</strong>만으로 두 시스템이 연결됩니다.<br>
-          새 퀘스트를 추가할 때 코드를 건드리지 않고 <strong style="color:var(--text);">인스펙터에서 category · target만 설정</strong>하면 됩니다.
-        </div>
-      </div>
-
-      <div class="code-block"><pre><span class="comment">// QuestTask — category + target 두 조건이 모두 일치해야 반응</span>
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-build">구현</strong> — 배달 시스템은 퀘스트를 직접 참조하지 않고 <code style="color:var(--accent);font-size:0.85em">category + target</code> 형태의 진행 이벤트만 보고합니다. <code style="color:var(--accent);font-size:0.85em">QuestManager</code>는 활성 퀘스트에 broadcast하고, 각 <code style="color:var(--accent);font-size:0.85em">QuestTask</code>가 자신에게 맞는 이벤트인지 판단합니다.</li>
+        <li><strong class="label-result">결과</strong> — 배달, 대화, 퀘스트 진행을 느슨하게 연결해 새 배달 퀘스트를 데이터 조합으로 추가할 수 있게 만들었습니다.</li>
+      </ul>
+      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - 시스템 간 직접 참조 대신 category + target 이벤트로 진행 보고</span>
 <span class="keyword">public bool</span> <span class="func">IsTarget</span>(<span class="keyword">string</span> categoryStr, IdentifiedObject target)
-    => <span class="func">HasCategory</span>(categoryStr)
-    &amp;&amp; targets.<span class="func">Any</span>(x => x.<span class="func">IsSameAs</span>(target))
+    =&gt; <span class="func">HasCategory</span>(categoryStr)
+    &amp;&amp; targets.<span class="func">Any</span>(x =&gt; x.<span class="func">IsSameAs</span>(target))
     &amp;&amp; IsComplete == <span class="keyword">false</span>;
 
-<span class="comment">// QuestManager — 모든 활성 퀘스트에 브로드캐스트, 매칭은 각 Task가 판단</span>
-<span class="keyword">public void</span> <span class="func">ReceiveReport</span>(<span class="keyword">string</span> category, IdentifiedObject target, <span class="keyword">int</span> successCount)
+<span class="keyword">public void</span> <span class="func">ReceiveReport</span>(<span class="keyword">string</span> category, IdentifiedObject target, <span class="keyword">int</span> count)
 {
     <span class="keyword">foreach</span> (<span class="keyword">var</span> quest <span class="keyword">in</span> _activeQuests.<span class="func">ToArray</span>())
-        quest.<span class="func">ReceiveReport</span>(category, target, successCount);
-}
-
-<span class="comment">// DeliveryManager — 퀘스트 존재를 모른 채 카테고리 문자열만 전달</span>
-<span class="keyword">public void</span> <span class="func">AcceptDelivery</span>(Location pickupLocation, DeliveryInfo info)
-{
-    ...
-    QuestManager.Instance.<span class="func">ReceiveReport</span>(<span class="string">"DELIVERY_ACCEPT"</span>, info.PickupLocation, 1);
+        quest.<span class="func">ReceiveReport</span>(category, target, count);
 }</pre></div>
     </div>
 
@@ -257,11 +256,19 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
           <tr><td>이벤트 기반 MVC</td><td>Model 이벤트(OnItemPlaced/Removed)로 View가 구독 — 데이터·UI 레이어 완전 분리</td></tr>
           <tr><td>2D 그리드 배치 알고리즘</td><td>아이템 크기·회전을 반영한 멀티셀 충돌 검사 및 원자적 배치/제거</td></tr>
           <tr><td>하이브리드 입력 (New Input System)</td><td>Mouse delta · Gamepad 버튼 감지로 실시간 모드 전환, 스틱 반복 타이머</td></tr>
-          <tr><td>5-State Quest FSM</td><td>Inactive→Running→WaitForCompletion→Complete/Cancel, 이벤트로 UI 통보</td></tr>
-          <tr><td>TaskGroup 계층 구조</td><td>Quest → TaskGroup[] → QuestTask[] 3계층으로 복합 목표 순차 처리</td></tr>
-          <tr><td>Yarn Spinner 연동</td><td>QuestAction으로 퀘스트 진행 시 대화 분기 노드를 인스펙터에서 드롭다운 설정</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">5-State Quest FSM</code></td><td><code style="color:var(--accent);font-size:0.85em">Inactive</code>→<code style="color:var(--accent);font-size:0.85em">Running</code>→<code style="color:var(--accent);font-size:0.85em">WaitForCompletion</code>→<code style="color:var(--accent);font-size:0.85em">Complete/Cancel</code>, 이벤트로 UI 통보</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">TaskGroup</code> 계층 구조</td><td><code style="color:var(--accent);font-size:0.85em">Quest</code> → <code style="color:var(--accent);font-size:0.85em">TaskGroup[]</code> → <code style="color:var(--accent);font-size:0.85em">QuestTask[]</code> 3계층으로 복합 목표 순차 처리</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">Yarn Spinner</code> 연동</td><td><code style="color:var(--accent);font-size:0.85em">QuestAction</code>으로 퀘스트 진행 시 대화 분기 노드를 인스펙터에서 드롭다운 설정</td></tr>
         </table>
       </div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-title">회고 및 개선 방향</div>
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-issue">문제</strong> — 인벤토리와 퀘스트 모두 데이터 중심으로 확장 가능하게 만들었지만, 문자열 category와 복잡한 UI 포커스 규칙은 규모가 커질수록 오류 가능성이 있습니다.</li>
+        <li><strong class="label-improve">개선</strong> — category를 enum이나 ScriptableObject ID로 바꾸고, 입력 포커스 이동은 별도 Navigator 클래스로 분리하겠습니다. 퀘스트 데이터 검증 툴도 추가해 인스펙터 설정 오류를 에디터 단계에서 잡겠습니다.</li>
+      </ul>
     </div>
 
     <!-- 하단 버튼 영역 -->

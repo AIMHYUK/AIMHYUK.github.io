@@ -1,490 +1,748 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JJH Portfolio</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>조준혁 Unreal Gameplay Programmer Portfolio</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
+      --bg: #0b0f14;
+      --surface: #121820;
+      --panel: #171f29;
+      --panel-2: #0f151d;
+      --line: #2b3645;
+      --text: #e8edf3;
+      --muted: #a3afbd;
+      --soft: #d6dee8;
+      --blue: #58a6ff;
       --accent: #58a6ff;
-      --accent2: #f78166;
-      --text: #e6edf3;
-      --muted: #8b949e;
+      --green: #5dd39e;
+      --amber: #f2b84b;
+      --red: #ff7b72;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
+      margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      line-height: 1.7;
+      font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+      line-height: 1.65;
     }
 
-    /* ── HERO ── */
-    .hero {
-      text-align: center;
-      padding: 80px 24px 60px;
-      border-bottom: 1px solid var(--border);
-    }
-    .hero h1 {
-      font-size: 2.8rem;
-      font-weight: 700;
-      letter-spacing: -1px;
-    }
-    .hero h1 span { color: var(--accent); }
-    .hero p {
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 1.1rem;
-    }
-    .badge-row {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .badge {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: 0.82rem;
-      color: var(--muted);
+    a { color: inherit; text-decoration: none; }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(11, 15, 20, .9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
 
-    /* ── LAYOUT ── */
-    .container {
-      max-width: 1320px;
+    .top-inner {
+      width: min(1180px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* ── SECTION ── */
-    section { padding: 60px 0; border-bottom: 1px solid var(--border); }
-    section:last-child { border-bottom: none; }
-    .section-title {
-      font-size: 1.35rem;
-      font-weight: 600;
-      margin-bottom: 28px;
-      color: var(--accent);
-    }
-
-    /* ── PROJECT GRID ── */
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      align-items: start;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .project-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-      .hero { padding: 52px 20px 40px; }
-      .hero h1 { font-size: 2rem; }
-      .hero p { font-size: 1rem; }
-      .container { padding: 0 16px; }
-      section { padding: 40px 0; }
-      .project-card { padding: 20px 18px; }
-      .project-title { font-size: 1.1rem; }
-      .feature-list li { font-size: 0.85rem; }
-      .tech-table th,
-      .tech-table td { padding: 8px 10px; font-size: 0.82rem; }
-      .link-btn { padding: 7px 14px; font-size: 0.83rem; }
-    }
-    @media (max-width: 480px) {
-      .hero h1 { font-size: 1.6rem; }
-      .project-header { flex-direction: column; gap: 8px; }
-      .project-card { padding: 16px 14px; }
-      .code-block { padding: 12px 14px; }
-      .code-block pre { font-size: 0.75rem; }
-      .flow { gap: 4px; }
-      .flow-step { padding: 4px 8px; font-size: 0.75rem; }
-    }
-
-    /* ── PROJECT CARD ── */
-    .project-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
-      cursor: pointer;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .project-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(88, 166, 255, 0.15);
-    }
-    .project-header {
+      min-height: 58px;
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .project-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-    .project-meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .tag {
-      background: rgba(88, 166, 255, 0.1);
-      border: 1px solid rgba(88, 166, 255, 0.3);
-      color: var(--accent);
-      border-radius: 6px;
-      padding: 2px 10px;
-      font-size: 0.78rem;
-    }
-    .tag.red {
-      background: rgba(247, 129, 102, 0.1);
-      border-color: rgba(247, 129, 102, 0.3);
-      color: var(--accent2);
-    }
-    .project-desc {
-      color: var(--muted);
-      margin-bottom: 16px;
-      font-size: 0.95rem;
-    }
-    .project-role {
-      font-size: 0.88rem;
-      color: var(--muted);
-      margin-bottom: 4px;
-      background: rgba(88, 166, 255, 0.05);
-      border-left: 3px solid var(--accent);
-      border-radius: 0 8px 8px 0;
-      padding: 10px 14px;
-      margin-top: 12px;
-    }
-    .project-role strong {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-    }
-
-    /* ── TOGGLE BUTTON ── */
-    .card-toggle {
-      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 14px;
-      font-size: 0.85rem;
-      color: var(--accent);
-      background: none;
-      border: 1px solid rgba(88, 166, 255, 0.3);
-      border-radius: 6px;
-      padding: 5px 12px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s, border-color 0.2s;
-      user-select: none;
-    }
-    .card-toggle:hover {
-      background: rgba(88, 166, 255, 0.08);
-      border-color: var(--accent);
-    }
-    .card-toggle-icon {
-      display: inline-block;
-      transition: transform 0.25s;
-      font-style: normal;
-      line-height: 1;
-    }
-    /* ── FEATURE LIST ── */
-    .feature-group { margin-bottom: 20px; }
-    .feature-group-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 8px;
-      padding-left: 2px;
-    }
-    .feature-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .feature-list li {
-      position: relative;
-      display: block;
-      padding-left: 18px;
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.7;
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-    .feature-list li::before {
-      content: '▸';
-      color: var(--accent);
-      position: absolute;
-      left: 0;
-      top: 2px;
-      font-size: 0.85em;
-      line-height: 1.7;
-    }
-    .feature-list li code {
-      font-family: 'Cascadia Code', 'Fira Code', monospace;
-      font-size: 0.82em;
-      color: var(--accent);
-      background: rgba(88, 166, 255, 0.08);
-      border: 1px solid rgba(88, 166, 255, 0.2);
-      border-radius: 4px;
-      padding: 1px 5px;
+      justify-content: space-between;
+      gap: 18px;
     }
 
-    /* ── CODE BLOCK ── */
-    .code-block {
-      background: #010409;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 20px;
-      margin-top: 16px;
-      overflow-x: auto;
-    }
-    .code-block pre {
-      font-family: 'Cascadia Code', 'Fira Code', monospace;
-      font-size: 0.82rem;
-      color: #c9d1d9;
-      white-space: pre;
-    }
-    .code-block .comment { color: #6e7681; }
-    .code-block .keyword { color: #ff7b72; }
-    .code-block .string  { color: #a5d6ff; }
-    .code-block .func    { color: #d2a8ff; }
-
-    /* ── TECH TABLE ── */
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .tech-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-      margin-top: 8px;
-    }
-    .tech-table th {
-      text-align: left;
-      padding: 10px 14px;
-      background: #1c2128;
-      color: var(--muted);
-      font-weight: 500;
-      border-bottom: 1px solid var(--border);
-    }
-    .tech-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      color: var(--muted);
-      vertical-align: top;
-    }
-    .tech-table td:first-child {
-      color: var(--text);
-      font-weight: 500;
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0;
       white-space: nowrap;
     }
-    .tech-table tr:last-child td { border-bottom: none; }
 
-    /* ── FLOW ── */
-    .flow {
+    .nav {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-    }
-    .flow-step {
-      background: #1c2128;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 5px 12px;
-      font-size: 0.82rem;
+      justify-content: flex-end;
+      gap: 10px;
       color: var(--muted);
+      font-size: .9rem;
     }
-    .flow-arrow { color: var(--border); font-size: 1rem; }
 
-    /* ── LINKS ── */
-    .link-btn {
+    .nav a {
+      padding: 6px 9px;
+      border-radius: 6px;
+    }
+
+    .nav a:hover { color: var(--text); background: var(--surface); }
+
+    .hero {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 66px 0 42px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+      gap: 36px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-weight: 800;
+      font-size: .88rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      margin: 18px 0 0;
+      color: var(--soft);
+      font-size: 1.08rem;
+      max-width: 720px;
+    }
+
+    .hero-actions,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 16px;
-      padding: 8px 18px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 15px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: var(--surface);
       color: var(--text);
-      text-decoration: none;
-      font-size: 0.88rem;
-      transition: border-color 0.2s, color 0.2s;
+      font-weight: 700;
+      font-size: .93rem;
     }
-    .link-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 40px 24px;
+    .btn.primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #061018;
+    }
+
+    .btn:hover { filter: brightness(1.08); }
+
+    .hero-panel {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .hero-panel img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-panel-body { padding: 18px; }
+
+    .hero-panel-title {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .hero-panel p {
+      margin: 0;
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: .92rem;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--soft);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding-bottom: 72px;
+    }
+
+    section {
+      padding: 52px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    section:last-child { border-bottom: 0; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.45rem;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .section-desc {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 9px;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .metric {
+      display: grid;
+      gap: 8px;
+    }
+
+    .metric strong {
+      color: var(--text);
+      font-size: 1.35rem;
+      line-height: 1.15;
+    }
+
+    .project {
+      display: grid;
+      grid-template-columns: minmax(280px, .42fr) minmax(0, .58fr);
+      gap: 18px;
+      align-items: stretch;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .project-media {
+      background: #080c11;
+      border-right: 1px solid var(--line);
+    }
+
+    .project-media img {
+      width: 100%;
+      height: 100%;
+      min-height: 270px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .project-body { padding: 22px; }
+
+    .project-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .project h3 {
+      margin: 0;
+      font-size: 1.22rem;
+    }
+
+    .priority {
+      flex: 0 0 auto;
+      color: #061018;
+      background: var(--green);
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: .76rem;
+      font-weight: 900;
+    }
+
+    .priority.secondary {
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--line);
+    }
+
+    .role-box {
+      margin: 16px 0;
+      border-left: 4px solid var(--blue);
+      background: var(--panel-2);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 16px;
+    }
+
+    .role-box strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--blue);
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .evidence {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .evidence-box {
+      border-left: 3px solid rgba(88, 166, 255, .55);
+      background: rgba(88, 166, 255, .05);
+      border-radius: 0 7px 7px 0;
+      padding: 11px 13px;
+    }
+
+    .evidence-box strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--soft);
+      font-size: .86rem;
+    }
+
+    .evidence-box p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: var(--soft);
+    }
+
+    li { margin: 7px 0; }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(88, 166, 255, .25);
+      background: rgba(88, 166, 255, .08);
+      color: #9dcbff;
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: .9em;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: .92rem;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    th {
+      background: var(--panel-2);
+      color: var(--soft);
+    }
+
+    td { color: var(--muted); }
+
+    td:first-child {
+      color: var(--text);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .note {
+      border: 1px solid rgba(242, 184, 75, .35);
+      background: rgba(242, 184, 75, .08);
+      border-radius: 8px;
+      padding: 16px 18px;
+      color: #f5d89a;
+    }
+
+    .footer {
+      padding: 32px 0 52px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 960px) {
+      .hero,
+      .project,
+      .split,
+      .evidence {
+        grid-template-columns: 1fr;
+      }
+
+      .project-media {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .grid { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+    }
+
+    @media (max-width: 640px) {
+      .top-inner,
+      .hero,
+      main {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .top-inner {
+        min-height: 0;
+        padding: 12px 0;
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .nav { justify-content: flex-start; }
+      .hero { padding-top: 42px; }
+      section { padding: 38px 0; }
+      .project-body { padding: 18px; }
     }
   </style>
 </head>
 <body>
+  <nav class="top">
+    <div class="top-inner">
+      <a class="brand" href="#top">조준혁 Unreal Portfolio</a>
+      <div class="nav" aria-label="Portfolio sections">
+        <a href="#projects">대표 프로젝트</a>
+        <a href="#tech">기술 요약</a>
+      </div>
+    </div>
+  </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <h1>안녕하세요, <span>JJH</span>입니다</h1>
-  <p>언리얼 엔진 기반 멀티플레이어 게임 개발을 공부하고 있습니다.</p>
-  <div class="badge-row">
-    <span class="badge">Unreal Engine 5</span>
-    <span class="badge">C++</span>
-    <span class="badge">OnlineSubsystem</span>
-    <span class="badge">Multiplayer</span>
-  </div>
-</div>
+  <header class="hero" id="top">
+    <div>
+      <p class="eyebrow">Unreal Engine Gameplay / Network Programmer</p>
+      <h1>언리얼 C++ 기반 게임플레이와 멀티플레이 시스템을 구현합니다.</h1>
+      <p class="hero-copy">
+        <code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code> 세션 흐름, <code style="color:var(--accent);font-size:0.85em">RPC</code> 기반 게임 진행 동기화, 락온·그래플링 훅·패링 같은 액션 전투 기능을 직접 구현한 포트폴리오입니다.
+        팀 프로젝트에서는 본인이 맡은 클래스와 책임 범위를 분리하고, 실제 코드 근거를 상세 페이지 안에서 바로 확인할 수 있도록 정리했습니다.
+      </p>
+      <div class="badges">
+        <span class="badge">Unreal Engine 5</span>
+        <span class="badge">C++</span>
+        <span class="badge">OnlineSubsystem</span>
+        <span class="badge">RPC</span>
+        <span class="badge">Gameplay Ability-like Systems</span>
+        <span class="badge">UMG</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn primary" href="#projects">대표 프로젝트 보기</a>
+        <a class="btn" href="resume-modern.html">이력서</a>
+        <a class="btn" href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="btn" href="#top">맨 위로</a>
+      </div>
+    </div>
 
-<!-- PROJECT -->
-<div class="container">
-  <section>
-    <div class="section-title">Projects</div>
+    <aside class="hero-panel" aria-label="Highlighted project">
+      <img src="https://img.youtube.com/vi/ybDS-EG7wro/hqdefault.jpg" alt="KingSejong multiplayer demo thumbnail">
+      <div class="hero-panel-body">
+        <p class="hero-panel-title">대표 포인트: KingSejong 멀티플레이 세션 구조</p>
+        <p>
+          방 생성, 검색, 참가, <code style="color:var(--accent);font-size:0.85em">ServerTravel</code>, <code style="color:var(--accent);font-size:0.85em">ClientTravel</code>, <code style="color:var(--accent);font-size:0.85em">RPC</code> 흐름을 <code style="color:var(--accent);font-size:0.85em">UI</code>·<code style="color:var(--accent);font-size:0.85em">GameInstance</code>·<code style="color:var(--accent);font-size:0.85em">GameMode</code>·<code style="color:var(--accent);font-size:0.85em">PlayerController</code> 책임으로 분리했습니다.
+        </p>
+      </div>
+    </aside>
+  </header>
 
-    <div class="project-grid">
-
-    <!-- ── KingSejong ── -->
-    <div class="project-card" data-url="projects/kingsejong.html" onclick="goProject(this)">
-      <!-- 요약 (항상 표시) -->
-      <div class="project-header">
-        <div class="project-title">KingSejong</div>
-        <div class="project-meta">
-          <span class="tag">Unreal Engine 5.6</span>
-          <span class="tag">C++</span>
-          <span class="tag red">Team 5인</span>
+  <main>
+    <section id="projects">
+      <div class="section-head">
+        <div>
+          <h2>대표 프로젝트</h2>
+        <p class="section-desc">KingSejong은 멀티플레이 세션 구현, Stage On은 언리얼 기반 가상 콘서트 플랫폼 구현 사례입니다.</p>
         </div>
       </div>
-      <p class="project-desc">
-        조선 시대를 배경으로 한 온라인 멀티플레이어 미니게임 모음입니다.
-        플레이어들은 로비에서 방을 만들고 달리기 · 토론 · 배틀 세 가지 미니게임 중 하나를 선택해 함께 플레이합니다.
-      </p>
-      <p class="project-role">
-        <strong>담당 파트</strong> 세션 시스템 전반 · 로비 UI · 달리기 미니게임 · 캐릭터 선택
-      </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
-        <span class="card-toggle-text">프로젝트 보기</span>
-        <i class="card-toggle-icon">→</i>
-      </button>
 
-    </div><!-- /project-card KingSejong -->
+      <article class="card project">
+        <div class="project-media">
+          <img src="https://img.youtube.com/vi/ybDS-EG7wro/hqdefault.jpg" alt="KingSejong demo thumbnail">
+        </div>
+        <div class="project-body">
+          <div class="project-title-row">
+            <h3>KingSejong - Unreal Multiplayer Mini Game</h3>
+            <span class="priority">대표</span>
+          </div>
+          <div class="badges">
+            <span class="badge">Unreal Engine 5</span>
+            <span class="badge">C++</span>
+            <span class="badge">OnlineSubsystem</span>
+            <span class="badge">RPC</span>
+            <span class="badge">Team 5</span>
+          </div>
+          <div class="role-box">
+            <strong>My Responsibility</strong>
+            세션 시스템 전반, 로비 UI, 달리기 미니게임 진행, 캐릭터 선택 흐름을 담당했습니다.
+          </div>
+          <div class="evidence">
+            <div class="evidence-box">
+              <strong>핵심 구현 클래스</strong>
+              <p><code style="color:var(--accent);font-size:0.85em">UJJH_GameInstance</code>, <code style="color:var(--accent);font-size:0.85em">RunningGameModeBase</code>, <code style="color:var(--accent);font-size:0.85em">ULobbyWidget</code>, <code style="color:var(--accent);font-size:0.85em">UQuizWidget</code></p>
+            </div>
+            <div class="evidence-box">
+              <strong>검증 범위</strong>
+              <p>활성 <code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code>이 <code style="color:var(--accent);font-size:0.85em">NULL</code>인지 확인해 LAN 여부를 자동 판정하고, 방 생성, 검색, 참가, 맵 이동, 세션 종료 흐름을 확인했습니다.</p>
+            </div>
+          </div>
+          <ul>
+            <li><code style="color:var(--accent);font-size:0.85em">IOnlineSessionInterface</code>로 방 생성, 검색, 참가, 세션 종료 흐름을 구현했습니다.</li>
+            <li>활성 <code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code>이 <code style="color:var(--accent);font-size:0.85em">NULL</code>이면 LAN 세션으로, <code style="color:var(--accent);font-size:0.85em">Steam Subsystem</code> 환경에서는 Steam 세션으로 동작하도록 <code style="color:var(--accent);font-size:0.85em">bIsLANMatch</code>와 <code style="color:var(--accent);font-size:0.85em">bIsLanQuery</code>를 설정했습니다.</li>
+            <li>방 생성 시 <code style="color:var(--accent);font-size:0.85em">Category</code>, <code style="color:var(--accent);font-size:0.85em">Room_Name</code>, <code style="color:var(--accent);font-size:0.85em">Host_Name</code>, 최대 인원을 <code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code>의 세션 광고 설정값으로 등록하고, 검색 결과에서 읽어 로비 UI 표시용 <code style="color:var(--accent);font-size:0.85em">roomInfo</code> 구조체로 변환했습니다.</li>
+            <li>호스트는 <code style="color:var(--accent);font-size:0.85em">ServerTravel("Map?listen")</code>, 클라이언트는 <code style="color:var(--accent);font-size:0.85em">JoinSession</code> 결과의 connect string으로 <code style="color:var(--accent);font-size:0.85em">ClientTravel</code>을 수행했습니다.</li>
+            <li>퀴즈 진행은 서버 <code style="color:var(--accent);font-size:0.85em">GameMode</code>가 판단하고, 공통 연출은 <code style="color:var(--accent);font-size:0.85em">Multicast RPC</code>, 개별 입력 권한은 <code style="color:var(--accent);font-size:0.85em">Client RPC</code>로 분리했습니다.</li>
+            <li>다음 개선은 <code style="color:var(--accent);font-size:0.85em">Listen Server</code> 구조를 <code style="color:var(--accent);font-size:0.85em">Dedicated Server</code> 기준 매치 플로우로 분리하는 것입니다.</li>
+          </ul>
+          <div class="actions">
+            <a class="btn" href="projects/kingsejong.html">상세 보기</a>
+            <a class="btn" href="projects/JJH_OnlineSubsystem_Visualization.html">세션 구조 시각화</a>
+            <a class="btn" href="https://github.com/hjs101/KingSejong" target="_blank" rel="noreferrer">Repository</a>
+            <a class="btn primary" href="https://youtu.be/ybDS-EG7wro" target="_blank" rel="noreferrer">Demo</a>
+          </div>
+        </div>
+      </article>
 
-    <!-- ── ISEKIRO ── -->
-    <div class="project-card" data-url="projects/isekiro.html" onclick="goProject(this)">
-      <!-- 요약 (항상 표시) -->
-      <div class="project-header">
-        <div class="project-title">Isekiro</div>
-        <div class="project-meta">
-          <span class="tag">Unreal Engine 5.6</span>
-          <span class="tag">C++</span>
-          <span class="tag red">Team 3인</span>
+      <article class="card project" style="margin-top:18px;">
+        <div class="project-media">
+          <img src="https://img.youtube.com/vi/D8ZNVKkEmxU/hqdefault.jpg" alt="Stage On virtual idol concert demo thumbnail">
+        </div>
+        <div class="project-body">
+          <div class="project-title-row">
+            <h3>Stage On - Virtual Idol Concert Platform</h3>
+            <span class="priority">대표</span>
+          </div>
+          <div class="badges">
+            <span class="badge">Unreal Engine 5</span>
+            <span class="badge">C++</span>
+            <span class="badge">Blueprint</span>
+            <span class="badge">VRM4U</span>
+            <span class="badge">OSC/UDP</span>
+            <span class="badge">Team 7</span>
+          </div>
+          <div class="role-box">
+            <strong>My Responsibility</strong>
+            무대 프리셋 선택 <code style="color:var(--accent);font-size:0.85em">UI</code>, <code style="color:var(--accent);font-size:0.85em">StreamLevel</code> 기반 무대 교체, <code style="color:var(--accent);font-size:0.85em">Actor Tag</code> 기반 오브젝트 정리, <code style="color:var(--accent);font-size:0.85em">SceneCapture</code> 썸네일 생성, <code style="color:var(--accent);font-size:0.85em">OSC</code> 수신 흐름 정리를 담당했습니다.
+          </div>
+          <div class="evidence">
+            <div class="evidence-box">
+              <strong>핵심 구현 근거</strong>
+              <p><code style="color:var(--accent);font-size:0.85em">StreamLevel</code> 로드/언로드, <code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code>, <code style="color:var(--accent);font-size:0.85em">UTextureRenderTarget2D</code>, <code style="color:var(--accent);font-size:0.85em">WidgetSwitcher</code></p>
+            </div>
+            <div class="evidence-box">
+              <strong>성과와 검증</strong>
+              <p>과학기술정보통신부 장관상 수상작이며, 무대 구성, 아바타 적용, <code style="color:var(--accent);font-size:0.85em">OSC</code> 수신, <code style="color:var(--accent);font-size:0.85em">HTTP</code> 업로드까지 하나의 시연 흐름으로 연결했습니다.</p>
+            </div>
+          </div>
+          <ul>
+            <li>과학기술정보통신부 장관상을 받은 팀 프로젝트로, 언리얼 기반 가상 콘서트 플랫폼을 구현했습니다.</li>
+            <li>Sky, Theme, Floor, VFX 카테고리를 조합하는 무대 구성 시스템과 설정 UI를 제작했습니다.</li>
+            <li><code style="color:var(--accent);font-size:0.85em">StreamLevel</code> 동적 로드/언로드와 <code style="color:var(--accent);font-size:0.85em">Actor Tag</code> 기반 정리 로직으로 무대 오브젝트 교체 흐름을 관리했습니다.</li>
+            <li><code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code>와 <code style="color:var(--accent);font-size:0.85em">RenderTarget</code>으로 현재 카메라 시점 썸네일을 생성했습니다.</li>
+            <li><code style="color:var(--accent);font-size:0.85em">VRM4U</code>, <code style="color:var(--accent);font-size:0.85em">OSC/UDP</code> 수신 흐름을 활용해 버튜버 모델과 모션캡처 데이터를 언리얼에 적용했습니다.</li>
+            <li>외부 연동은 프로토타입 범위에서 검증했으며, 운영 환경에서는 인증, 파일 검증, 실패 응답 분류를 보강할 수 있습니다.</li>
+          </ul>
+          <div class="actions">
+            <a class="btn" href="projects/virtualidol.html">상세 보기</a>
+            <a class="btn" href="https://github.com/FavoriteIdol/VirtualIdol" target="_blank" rel="noreferrer">Repository</a>
+            <a class="btn primary" href="https://youtu.be/D8ZNVKkEmxU" target="_blank" rel="noreferrer">Demo</a>
+          </div>
+        </div>
+      </article>
+
+      <div class="split" style="margin-top:18px;">
+        <article class="card">
+          <h3>배달왕 김족구 - Inventory / Quest System</h3>
+          <div class="badges">
+            <span class="badge">Unity 6</span>
+            <span class="badge">C#</span>
+            <span class="badge">MVC</span>
+            <span class="badge">Quest FSM</span>
+          </div>
+          <div class="role-box">
+            <strong>Role</strong>
+            시스템 설계와 입력 처리 경험을 보여주는 Unity 프로젝트입니다.
+          </div>
+          <div class="evidence">
+            <div class="evidence-box">
+              <strong>핵심 구현 클래스</strong>
+              <p><code style="color:var(--accent);font-size:0.85em">InventoryModel</code>, <code style="color:var(--accent);font-size:0.85em">InventoryState</code>, <code style="color:var(--accent);font-size:0.85em">QuestManager</code>, <code style="color:var(--accent);font-size:0.85em">QuestTask</code>, <code style="color:var(--accent);font-size:0.85em">QuestAction</code></p>
+            </div>
+            <div class="evidence-box">
+              <strong>설계 기준</strong>
+              <p>인벤토리는 이벤트 기반 MVC로, 퀘스트는 category + target 진행 이벤트로 시스템 간 직접 참조를 줄였습니다.</p>
+            </div>
+          </div>
+          <p>
+            2D 그리드 인벤토리, 마우스/게임패드 하이브리드 입력, 장소 기반 퀘스트 흐름을 데이터 중심으로 설계했습니다.
+            입력 포커스 이동 로직은 이후 별도 <code style="color:var(--accent);font-size:0.85em">Navigator</code> 클래스로 분리할 수 있습니다.
+          </p>
+          <div class="actions">
+            <a class="btn" href="projects/mdcalling.html">상세 보기</a>
+            <a class="btn" href="projects/mdcalling/InventorySystemVisualization.html">인벤토리 구조</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Isekiro - Action Combat Prototype</h3>
+          <div class="badges">
+            <span class="badge">Unreal Engine 5</span>
+            <span class="badge">C++</span>
+            <span class="badge">Blueprint</span>
+            <span class="badge">Combat</span>
+          </div>
+          <div class="role-box">
+            <strong>Role</strong>
+            락온, 이동 보조, 패링 판정을 구현한 액션 전투 프로토타입입니다.
+          </div>
+          <div class="evidence">
+            <div class="evidence-box">
+              <strong>핵심 구현 근거</strong>
+              <p><code style="color:var(--accent);font-size:0.85em">UActorComponent</code> 기반 락온, <code style="color:var(--accent);font-size:0.85em">Timeline/Curve</code> 그래플링 훅, <code style="color:var(--accent);font-size:0.85em">URealParryBox</code> 패리 판정</p>
+            </div>
+            <div class="evidence-box">
+              <strong>판정 기준</strong>
+              <p><code style="color:var(--accent);font-size:0.85em">Dot Product</code>로 우선 타깃을 고르고 <code style="color:var(--accent);font-size:0.85em">Line Trace</code>로 시야를 검증했으며, 패리는 타이머로 판정 윈도우와 쿨다운을 분리했습니다.</p>
+            </div>
+          </div>
+          <p>
+            <code style="color:var(--accent);font-size:0.85em">Dot Product</code>와 <code style="color:var(--accent);font-size:0.85em">Line Trace</code>를 활용한 락온, <code style="color:var(--accent);font-size:0.85em">Timeline/Curve</code> 기반 그래플링 훅, 패링 판정과 자세 게이지 흐름을 구현했습니다.
+            전투 판정은 프로토타입 범위에서 검증했고, 네트워크 복제는 별도 확장 과제로 분리했습니다.
+          </p>
+          <div class="actions">
+            <a class="btn" href="projects/isekiro.html">상세 보기</a>
+            <a class="btn" href="https://github.com/AIMHYUK/Isekiro" target="_blank" rel="noreferrer">Repository</a>
+            <a class="btn" href="https://youtu.be/BzzkD_gu2F0" target="_blank" rel="noreferrer">Demo</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="tech">
+      <div class="section-head">
+        <div>
+          <h2>기술 구현 요약</h2>
+          <p class="section-desc">프로젝트에서 직접 다룬 기능과 구현 기준을 기술별로 정리했습니다.</p>
         </div>
       </div>
-      <p class="project-desc">
-        세키로(Sekiro: Shadows Die Twice) 스타일의 3인칭 액션 게임입니다.
-        패리 · 자세 게이지 · 처형 등 세키로의 핵심 전투 메커니즘을 언리얼 엔진 C++로 직접 구현했습니다.
-      </p>
-      <p class="project-role">
-        <strong>담당 파트</strong> 보스 AI FSM · 타겟 락온 · 그래플링 훅 · 패링 시스템
-      </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
-        <span class="card-toggle-text">프로젝트 보기</span>
-        <i class="card-toggle-icon">→</i>
-      </button>
-
-    </div><!-- /project-card Isekiro -->
-
-    <!-- ── VIRTUALIDOL ── -->
-    <div class="project-card" data-url="projects/virtualidol.html" onclick="goProject(this)">
-      <!-- 요약 (항상 표시) -->
-      <div class="project-header">
-        <div class="project-title">VirtualIdol</div>
-        <div class="project-meta">
-          <span class="tag">Unreal Engine 5</span>
-          <span class="tag">C++</span>
-          <span class="tag">Blueprint</span>
-          <span class="tag red">Team 7인</span>
-        </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>기술</th>
+              <th>구현 내용</th>
+              <th>설계 기준</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>OnlineSubsystem</td>
+              <td>세션 생성, 검색, 참가, 종료, Subsystem 기준 LAN/Steam 세션 판정, 세션 광고 설정값 등록</td>
+              <td>Delegate 생명주기, 실패 케이스 처리, Listen Server 한계</td>
+            </tr>
+            <tr>
+              <td>Travel Flow</td>
+              <td><code style="color:var(--accent);font-size:0.85em">Host</code>는 <code style="color:var(--accent);font-size:0.85em">ServerTravel</code>, <code style="color:var(--accent);font-size:0.85em">Client</code>는 <code style="color:var(--accent);font-size:0.85em">ClientTravel</code>로 실제 맵 진입 분리</td>
+              <td>JoinSession 성공과 실제 맵 입장의 차이</td>
+            </tr>
+            <tr>
+              <td>RPC</td>
+              <td><code style="color:var(--accent);font-size:0.85em">GameMode</code> 판단, <code style="color:var(--accent);font-size:0.85em">PlayerController</code> RPC 허브, UI 개별 갱신</td>
+              <td>Server/Client/Multicast RPC 선택 기준과 권한 검증</td>
+            </tr>
+            <tr>
+              <td>Combat Targeting</td>
+              <td><code style="color:var(--accent);font-size:0.85em">Dot Product</code> 기반 우선순위와 <code style="color:var(--accent);font-size:0.85em">Line Trace</code> 시야 검증</td>
+              <td>카메라 기준 선택, 장애물 처리, 타깃 갱신 주기</td>
+            </tr>
+            <tr>
+              <td>Action Movement</td>
+              <td>그래플링 훅의 사전 지형 검증, <code style="color:var(--accent);font-size:0.85em">Curve</code> 이동, <code style="color:var(--accent);font-size:0.85em">Cable Component</code> 연출</td>
+              <td>물리 이동과 직접 보간의 장단점</td>
+            </tr>
+            <tr>
+              <td>Combat Timing</td>
+              <td>패링 타이밍, 충돌 채널 전환, <code style="color:var(--accent);font-size:0.85em">TimeDilation</code> 연출</td>
+              <td>프레임 의존성을 줄이는 타이머/DeltaTime 처리</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <p class="project-desc">
-        VRM 모델을 활용한 버튜버 온라인 콘서트 플랫폼입니다. 관객들이 가상 무대에 모여 버튜버의 공연을 감상하고, 팬들이 직접 무대 환경을 커스터마이징하여 세션을 개설할 수 있습니다.
-      </p>
-      <p class="project-role">
-        <strong>담당 파트</strong> 무대 액터 배치 시스템 · 버튜버 모델링 적용 · 무대 설정 UI 구현 · RemoCap UDP/OSC 본 데이터 손실 초기화
-      </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
-        <span class="card-toggle-text">프로젝트 보기</span>
-        <i class="card-toggle-icon">→</i>
-      </button>
+    </section>
 
-    </div><!-- /project-card VirtualIdol -->
+  </main>
 
-    <!-- ── MdCalling ── -->
-    <div class="project-card" data-url="projects/mdcalling.html" onclick="goProject(this)">
-      <!-- 요약 (항상 표시) -->
-      <div class="project-header">
-        <div class="project-title">MdCalling — 인벤토리 · 퀘스트 시스템</div>
-        <div class="project-meta">
-          <span class="tag">Unity 6</span>
-          <span class="tag">C#</span>
-          <span class="tag red">Team 3인</span>
-        </div>
-      </div>
-      <p class="project-desc">
-        오픈 월드 배달 게임에서 플레이어가 아이템을 담아 배달하는 게임의 핵심 시스템입니다.
-        테트리스 방식의 2D 그리드 인벤토리와 장소 기반 퀘스트 시스템을 설계하고 구현했으며,
-        마우스·게임패드 하이브리드 입력 처리까지 담당했습니다.
-      </p>
-      <p class="project-role">
-        <strong>담당 파트</strong> 인벤토리 시스템 전체 · 퀘스트 시스템 전체 · InventoryState (하이브리드 입력)
-      </p>
-      <button class="card-toggle" onclick="event.stopPropagation(); goProject(this.closest('.project-card'))">
-        <span class="card-toggle-text">프로젝트 보기</span>
-        <i class="card-toggle-icon">→</i>
-      </button>
-
-    </div><!-- /project-card MdCalling -->
-
-    </div><!-- /project-grid -->
-
-  </section>
-
-  <!-- CONTACT -->
-  <section>
-    <div class="section-title">Contact</div>
-    <ul class="feature-list">
-      <li>GitHub &nbsp;— <a href="https://github.com/AIMHYUK" target="_blank" style="color:var(--accent)">github.com/AIMHYUK</a></li>
-    </ul>
-  </section>
-</div>
-
-<footer>
-  &copy; 2024 JJH. Built with GitHub Pages.
-</footer>
-
-<script>
-  function goProject(card) {
-    const url = card.dataset.url;
-    if (url) window.location.href = url;
-  }
-</script>
-
+  <footer class="footer">
+    조준혁 Unreal Gameplay Programmer Portfolio
+  </footer>
 </body>
 </html>

@@ -1,0 +1,1250 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MdCalling 인벤토리 시스템 포트폴리오 설명</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --ink: #18212f;
+      --muted: #667085;
+      --line: #d8dee8;
+      --blue: #2563eb;
+      --green: #15803d;
+      --red: #b42318;
+      --amber: #b45309;
+      --teal: #0f766e;
+      --violet: #6d28d9;
+      --cell: #eef2f7;
+      --occupied: #dbeafe;
+      --hover: #fef3c7;
+      --valid: #dcfce7;
+      --invalid: #fee2e2;
+      --shadow: 0 12px 34px rgba(16, 24, 40, .08);
+      font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.58;
+    }
+
+    header {
+      background: #18212f;
+      color: white;
+      padding: 34px clamp(20px, 5vw, 72px) 30px;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: 0;
+    }
+
+    header p {
+      margin: 0;
+      max-width: 980px;
+      color: #cbd5e1;
+      font-size: 16px;
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px clamp(16px, 3vw, 32px) 64px;
+    }
+
+    section {
+      margin: 0 0 28px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0 0 12px; }
+
+    code {
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: #eef2f7;
+      color: #172554;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: .94em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: white;
+      color: #344054;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .dot.green { background: var(--green); }
+    .dot.red { background: var(--red); }
+    .dot.amber { background: var(--amber); }
+    .dot.teal { background: var(--teal); }
+    .dot.violet { background: var(--violet); }
+
+    .arch {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfcfe;
+    }
+
+    .lane h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--blue);
+      border-radius: 7px;
+      padding: 11px 12px;
+      margin: 10px 0;
+      background: white;
+      min-height: 56px;
+    }
+
+    .box.model { border-left-color: var(--green); }
+    .box.view { border-left-color: var(--teal); }
+    .box.input { border-left-color: var(--violet); }
+    .box.warn { border-left-color: var(--amber); background: #fffbeb; }
+
+    .box strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .box small {
+      display: block;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .arrow-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .event-flow {
+      display: grid;
+      gap: 16px;
+    }
+
+    .event-flow-title {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .flow {
+      counter-reset: step;
+      display: grid;
+      gap: 10px;
+    }
+
+    .step {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 13px 14px 13px 48px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #18212f;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .step strong { display: block; margin-bottom: 3px; }
+    .step span { color: var(--muted); }
+
+    .code-snippet {
+      margin: 10px 0 0;
+      border: 1px solid #d8dee8;
+      border-radius: 7px;
+      background: #0f172a;
+      color: #dbeafe;
+      padding: 11px 12px;
+      overflow-x: auto;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .code-snippet code {
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: white;
+    }
+
+    .table th,
+    .table td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table th {
+      background: #f1f5f9;
+      font-size: 13px;
+      color: #344054;
+    }
+
+    .table tr:last-child td { border-bottom: 0; }
+
+    .inventory-demo {
+      display: grid;
+      grid-template-columns: 150px 1fr 150px;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .outside {
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      min-height: 250px;
+      padding: 10px;
+      background: #fbfcfe;
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+
+    .outside-title {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .mini-item {
+      background: var(--occupied);
+      border: 1px solid #93c5fd;
+      border-radius: 6px;
+      padding: 8px;
+      text-align: center;
+      font-size: 12px;
+      color: #1e3a8a;
+    }
+
+    .board-wrap {
+      display: grid;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, 56px);
+      grid-template-rows: repeat(5, 56px);
+      gap: 4px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #d8dee8;
+      width: max-content;
+    }
+
+    .cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      background: var(--cell);
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      color: #64748b;
+      font-size: 11px;
+      min-width: 56px;
+      min-height: 56px;
+    }
+
+    .cell.occupied { background: var(--occupied); border-color: #93c5fd; color: #1d4ed8; }
+    .cell.hover { background: var(--hover); border-color: #f59e0b; color: #92400e; }
+    .cell.valid { background: var(--valid); border-color: #22c55e; color: #166534; }
+    .cell.invalid { background: var(--invalid); border-color: #ef4444; color: #991b1b; }
+
+    .overlay-item {
+      position: absolute;
+      inset: 5px;
+      border: 2px solid #2563eb;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      background: rgba(37, 99, 235, .12);
+      font-weight: 700;
+      color: #1e3a8a;
+      pointer-events: none;
+    }
+
+    .note {
+      border-left: 4px solid var(--amber);
+      background: #fffbeb;
+      padding: 12px 14px;
+      border-radius: 6px;
+      color: #78350f;
+    }
+
+    .callout {
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      padding: 12px 14px;
+      border-radius: 6px;
+      color: #1e3a8a;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .svg-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 8px;
+    }
+
+    .tilt-sim {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(330px, 520px) minmax(260px, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .sim-controls {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sim-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: white;
+      color: var(--ink);
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      display: grid;
+      gap: 3px;
+    }
+
+    .sim-button:hover,
+    .sim-button.active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .sim-button strong {
+      font-size: 14px;
+    }
+
+    .sim-button span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sim-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tool-button {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #f8fafc;
+      color: var(--ink);
+      padding: 8px 10px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    .tool-button:hover {
+      border-color: var(--blue);
+    }
+
+    .sim-stage {
+      min-height: 430px;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      overflow: hidden;
+    }
+
+    .tilt-rig {
+      position: relative;
+      width: max-content;
+      transform-origin: 50% 92%;
+      transition: transform .28s ease;
+      padding: 18px 18px 34px;
+    }
+
+    .tilt-board {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 58px);
+      grid-template-rows: repeat(5, 58px);
+      gap: 4px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #cbd5e1;
+      border: 1px solid #94a3b8;
+      box-shadow: 0 18px 24px rgba(15, 23, 42, .16);
+    }
+
+    .tilt-cell {
+      width: 58px;
+      height: 58px;
+      border: 1px solid #b6c2d2;
+      border-radius: 5px;
+      background: #f8fafc;
+      color: #94a3b8;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .tilt-cell:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+
+    .sim-item {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      border: 2px solid #1d4ed8;
+      border-radius: 7px;
+      background: rgba(37, 99, 235, .18);
+      color: #172554;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .sim-item.selected {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, .22);
+    }
+
+    .balance-axis {
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      width: 0;
+      height: 0;
+      border-left: 22px solid transparent;
+      border-right: 22px solid transparent;
+      border-bottom: 34px solid #475467;
+      transform: translateX(-50%);
+    }
+
+    .center-line {
+      position: absolute;
+      top: 10px;
+      bottom: 34px;
+      left: 50%;
+      width: 2px;
+      background: rgba(180, 83, 9, .6);
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .sim-readout {
+      display: grid;
+      gap: 10px;
+    }
+
+    .meter {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfe;
+    }
+
+    .meter-value {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .bar {
+      position: relative;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #bfdbfe, #e5e7eb 50%, #fecaca);
+      overflow: hidden;
+      margin-top: 9px;
+    }
+
+    .bar-marker {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #18212f;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .formula {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    svg text {
+      font-family: "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+    }
+
+    @media (max-width: 900px) {
+      .span-8, .span-6, .span-4 { grid-column: span 12; }
+      .arch, .two-col, .inventory-demo, .tilt-sim { grid-template-columns: 1fr; }
+      .arrow-row { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+      .board { grid-template-columns: repeat(5, minmax(42px, 1fr)); grid-template-rows: repeat(5, 42px); }
+      .cell { min-width: 42px; min-height: 42px; }
+      .tilt-board { grid-template-columns: repeat(5, 46px); grid-template-rows: repeat(5, 46px); }
+      .tilt-cell { width: 46px; height: 46px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>인벤토리 시스템 포트폴리오 설명</h1>
+    <p>
+      그리드 기반 아이템 배치, 드래그 프리뷰, 유효 위치 하이라이트, 바깥 보관 영역, 무게 중심에 따른 Tilt 연출을 중심으로 정리한 시스템 설명입니다.
+    </p>
+  </header>
+
+  <main>
+    <section class="grid">
+      <div class="panel span-12">
+        <h2>1. MVC 아키텍처</h2>
+        <div class="arch">
+          <div class="lane">
+            <h3><span class="dot violet"></span>Input</h3>
+            <div class="box input">
+              <strong>InventoryState</strong>
+              <small>사용자 입력을 집기, 놓기, 회전, 배출 같은 인벤토리 조작 명령으로 변환.</small>
+            </div>
+            <div class="box input">
+              <strong>EventSystem</strong>
+              <small>UI 선택 상태를 유지해 셀, 아이템, 바깥 보관 영역 간 포커스를 연결.</small>
+            </div>
+          </div>
+
+          <div class="lane">
+            <h3><span class="dot"></span>Controller</h3>
+            <div class="box">
+              <strong>InventoryController</strong>
+              <small>입력 명령을 받아 Model을 변경하고 View 갱신을 조율하는 중심 클래스.</small>
+            </div>
+            <div class="box warn">
+              <strong>드래그 상태 관리</strong>
+              <small><code>_isDragging</code>, <code>_draggedItem</code>, <code>_pickupOffset</code>, 원래 위치와 바깥 보관함 출처를 보관.</small>
+            </div>
+          </div>
+
+          <div class="lane">
+            <h3><span class="dot green"></span>Model</h3>
+            <div class="box model">
+              <strong>InventoryModel</strong>
+              <small>2D 배열 <code>InventoryItem[,]</code>로 점유 상태, 배치 가능성, 토크 값을 관리.</small>
+            </div>
+            <div class="box model">
+              <strong>InventoryItem</strong>
+              <small>아이템 정의, 현재 그리드 위치, 배치 여부, 회전 상태와 실제 크기(<code>EffectiveSize</code>)를 보관.</small>
+            </div>
+          </div>
+
+          <div class="lane">
+            <h3><span class="dot teal"></span>View</h3>
+            <div class="box view">
+              <strong>InventoryGridView / ItemView</strong>
+              <small>셀, 아이템 UI, 하이라이트를 표시하고 Model 이벤트에 맞춰 화면을 갱신.</small>
+            </div>
+            <div class="box view">
+              <strong>DragPreview / OutsideArea / TiltView</strong>
+              <small>드래그 프리뷰, 보관함 밖 아이템, 토크 기반 기울기 연출을 담당.</small>
+            </div>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="pill"><span class="dot violet"></span>Input</span>
+          <span class="pill"><span class="dot"></span>Controller</span>
+          <span class="pill"><span class="dot green"></span>Model</span>
+          <span class="pill"><span class="dot teal"></span>View</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-8">
+        <h2>2. 아이템을 놓으면 일어나는 일</h2>
+        <div class="flow">
+          <div class="step">
+            <strong>포인터 좌표 주입</strong>
+            <span><code>InventoryState.Update()</code>가 매 프레임 <code>SetPointerScreenPosition()</code>을 호출해 현재 조작 위치를 컨트롤러와 동기화한다.</span>
+          </div>
+          <div class="step">
+            <strong>집기 시작</strong>
+            <span>마우스 좌클릭 started 또는 패드 A가 <code>BeginPickupAt(screenPos)</code>를 호출한다. 클릭한 셀에서 아이템을 찾고, 아이템 좌상단과 클릭 셀의 차이를 <code>_pickupOffset</code>에 저장한다.</span>
+          </div>
+          <div class="step">
+            <strong>모델에서 임시 제거</strong>
+            <span><code>InventoryModel.TryRemove(item)</code>가 그리드 배열을 비우고 <code>item.Unplace()</code> 처리한다. <code>OnItemRemoved</code> 이벤트로 기존 <code>InventoryItemView</code>가 삭제된다.</span>
+          </div>
+          <div class="step">
+            <strong>드래그 프리뷰 표시</strong>
+            <span><code>InventoryDragPreviewView.Show()</code>가 아이템의 <code>EffectiveSize</code>와 회전 상태에 맞춰 반투명 아이콘을 보여준다.</span>
+          </div>
+          <div class="step">
+            <strong>드래그 중 배치 가능성 표시</strong>
+            <span><code>UpdateDragging()</code>이 현재 셀에서 <code>_pickupOffset</code>을 뺀 anchor를 계산하고, <code>CanPlace()</code> 결과에 따라 ValidDrop 또는 InvalidDrop 하이라이트를 칠한다.</span>
+            <pre class="code-snippet"><code>Vector2Int? anchorPos = GetDropAnchorPosition(_pointerScreenPosition);
+bool canPlace = _model.CanPlace(_draggedItem, anchorPos.Value);
+
+var highlightState = canPlace
+    ? CellHighlightState.ValidDrop
+    : CellHighlightState.InvalidDrop;</code></pre>
+          </div>
+          <div class="step">
+            <strong>놓기 시도</strong>
+            <span>마우스 좌클릭 canceled 또는 패드 A가 <code>ReleaseAt(screenPos)</code>를 호출한다. anchor가 유효하고 <code>TryPlace()</code>가 성공하면 새 위치에 즉시 배치된다.</span>
+            <pre class="code-snippet"><code>Vector2Int? anchorPos = GetDropAnchorPosition(_pointerScreenPosition);
+
+if (anchorPos.HasValue && _model.TryPlace(_draggedItem, anchorPos.Value))
+{
+    FinishDrag();
+    return;
+}
+
+RestoreDraggedItem();
+FinishDrag();</code></pre>
+          </div>
+          <div class="step">
+            <strong>성공 또는 복구</strong>
+            <span>성공하면 <code>OnItemPlaced</code>로 새 <code>InventoryItemView</code>가 생성된다. 실패하면 그리드 출신은 원래 셀로, 바깥 영역 출신은 원래 Outside 영역으로 복구된다.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel span-4">
+        <h2>핵심 규칙</h2>
+        <div class="callout">
+          <p><strong>배치 좌표는 아이템 좌상단 anchor입니다.</strong></p>
+          <p>커서가 아이템 내부 어느 칸을 잡았는지 유지하기 위해 <code>cursorCell - _pickupOffset</code>으로 실제 배치 좌상단을 계산합니다.</p>
+        </div>
+        <div class="note">
+          <p><strong>실패해도 아이템을 잃지 않습니다.</strong></p>
+          <p>배치할 수 없는 위치에 놓으면 <code>RestoreDraggedItem()</code> 경로로 원래 위치나 원래 보관 영역에 복구됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-12">
+        <h2>3. 배치 시퀀스</h2>
+        <div class="svg-wrap">
+          <svg width="1160" height="430" viewBox="0 0 1160 430" role="img" aria-label="아이템 배치 시퀀스 다이어그램">
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L0,6 L9,3 z" fill="#667085"></path>
+              </marker>
+              <style>
+                .lifeline { stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 5 6; }
+                .msg { stroke: #667085; stroke-width: 2; marker-end: url(#arrow); }
+                .head { fill: #18212f; rx: 8; }
+                .head2 { fill: #0f766e; rx: 8; }
+                .head3 { fill: #15803d; rx: 8; }
+                .txt { fill: white; font-size: 15px; font-weight: 700; }
+                .label { fill: #18212f; font-size: 13px; }
+                .muted { fill: #667085; font-size: 12px; }
+              </style>
+            </defs>
+
+            <rect class="head" x="30" y="20" width="180" height="42"></rect>
+            <text class="txt" x="120" y="47" text-anchor="middle">InventoryState</text>
+            <rect class="head" x="265" y="20" width="200" height="42"></rect>
+            <text class="txt" x="365" y="47" text-anchor="middle">InventoryController</text>
+            <rect class="head3" x="520" y="20" width="180" height="42"></rect>
+            <text class="txt" x="610" y="47" text-anchor="middle">InventoryModel</text>
+            <rect class="head2" x="755" y="20" width="180" height="42"></rect>
+            <text class="txt" x="845" y="47" text-anchor="middle">GridView</text>
+            <rect class="head2" x="990" y="20" width="140" height="42"></rect>
+            <text class="txt" x="1060" y="47" text-anchor="middle">DragPreview</text>
+
+            <line class="lifeline" x1="120" y1="62" x2="120" y2="402"></line>
+            <line class="lifeline" x1="365" y1="62" x2="365" y2="402"></line>
+            <line class="lifeline" x1="610" y1="62" x2="610" y2="402"></line>
+            <line class="lifeline" x1="845" y1="62" x2="845" y2="402"></line>
+            <line class="lifeline" x1="1060" y1="62" x2="1060" y2="402"></line>
+
+            <line class="msg" x1="120" y1="90" x2="365" y2="90"></line>
+            <text class="label" x="242" y="82" text-anchor="middle">BeginPickupAt(screenPos)</text>
+
+            <line class="msg" x1="365" y1="130" x2="845" y2="130"></line>
+            <text class="label" x="605" y="122" text-anchor="middle">GetGridPositionFromScreen()</text>
+
+            <line class="msg" x1="365" y1="170" x2="610" y2="170"></line>
+            <text class="label" x="488" y="162" text-anchor="middle">GetItemAt(), TryRemove()</text>
+
+            <line class="msg" x1="610" y1="210" x2="845" y2="210"></line>
+            <text class="label" x="728" y="202" text-anchor="middle">OnItemRemoved</text>
+            <text class="muted" x="728" y="224" text-anchor="middle">기존 ItemView 삭제</text>
+
+            <line class="msg" x1="365" y1="255" x2="1060" y2="255"></line>
+            <text class="label" x="713" y="247" text-anchor="middle">Show(item, cellSize, spacing)</text>
+
+            <line class="msg" x1="365" y1="300" x2="610" y2="300"></line>
+            <text class="label" x="488" y="292" text-anchor="middle">ReleaseAt → TryPlace(anchor)</text>
+
+            <line class="msg" x1="610" y1="340" x2="845" y2="340"></line>
+            <text class="label" x="728" y="332" text-anchor="middle">OnItemPlaced</text>
+            <text class="muted" x="728" y="354" text-anchor="middle">새 ItemView 생성 + 셀 상태 갱신</text>
+
+            <line class="msg" x1="365" y1="382" x2="1060" y2="382"></line>
+            <text class="label" x="713" y="374" text-anchor="middle">FinishDrag → Hide(), ClearAllHighlights()</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-12">
+        <h2>4. 그리드 좌표와 하이라이트</h2>
+        <div class="inventory-demo">
+          <div class="outside">
+            <div class="outside-title">Left Outside</div>
+            <div class="mini-item">배출 아이템 A</div>
+            <div class="mini-item">배출 아이템 B</div>
+          </div>
+
+          <div class="board-wrap">
+            <div class="board" aria-label="5x5 inventory grid">
+              <div class="cell occupied">(0,0)<div class="overlay-item">2x2</div></div>
+              <div class="cell occupied">(1,0)</div>
+              <div class="cell hover">(2,0)</div>
+              <div class="cell">(3,0)</div>
+              <div class="cell">(4,0)</div>
+              <div class="cell occupied">(0,1)</div>
+              <div class="cell occupied">(1,1)</div>
+              <div class="cell">(2,1)</div>
+              <div class="cell">(3,1)</div>
+              <div class="cell">(4,1)</div>
+              <div class="cell">(0,2)</div>
+              <div class="cell valid">(1,2)</div>
+              <div class="cell valid">(2,2)</div>
+              <div class="cell">(3,2)</div>
+              <div class="cell">(4,2)</div>
+              <div class="cell">(0,3)</div>
+              <div class="cell valid">(1,3)</div>
+              <div class="cell valid">(2,3)</div>
+              <div class="cell invalid">(3,3)</div>
+              <div class="cell invalid">(4,3)</div>
+              <div class="cell">(0,4)</div>
+              <div class="cell">(1,4)</div>
+              <div class="cell">(2,4)</div>
+              <div class="cell invalid">(3,4)</div>
+              <div class="cell invalid">(4,4)</div>
+            </div>
+            <p><code>x</code>는 오른쪽으로 증가, <code>y</code>는 아래로 증가합니다. 셀 UI도 좌상단 pivot 기준으로 배치됩니다.</p>
+          </div>
+
+          <div class="outside">
+            <div class="outside-title">Right Outside</div>
+            <div class="mini-item">배출 아이템 C</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="pill"><span class="dot" style="background:#eef2f7"></span>Normal</span>
+          <span class="pill"><span class="dot" style="background:#dbeafe"></span>Occupied</span>
+          <span class="pill"><span class="dot" style="background:#fef3c7"></span>Hover</span>
+          <span class="pill"><span class="dot" style="background:#dcfce7"></span>ValidDrop</span>
+          <span class="pill"><span class="dot" style="background:#fee2e2"></span>InvalidDrop</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-12">
+        <h2>5. 보관함 밖 아이템 처리</h2>
+        <div class="flow">
+          <div class="step">
+            <strong>드래그 중 우클릭/X</strong>
+            <span><code>TryContextActionAt()</code>가 복구 후 <code>FinishDrag()</code>. 즉 취소 동작이다.</span>
+          </div>
+          <div class="step">
+            <strong>바깥 아이템 위 우클릭/X</strong>
+            <span><code>GetOutsideItemAtScreen()</code>으로 찾은 뒤 <code>PickupOutsideItem()</code>. 원래 Outside 영역에서 제거하고 드래그 상태로 전환한다.</span>
+          </div>
+          <div class="step">
+            <strong>그리드 아이템 위 우클릭/X</strong>
+            <span><code>TryEjectHoveredItemAt()</code>. 모델에서 제거 후 왼쪽 Outside 우선, 가득 찼으면 오른쪽 Outside에 넣는다. 둘 다 가득 차면 원래 위치로 되돌린다.</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="grid">
+      <div class="panel span-6">
+        <h2>6. 주요 클래스 책임</h2>
+        <table class="table">
+          <thead>
+            <tr><th>클래스</th><th>책임</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>InventoryItem</code></td><td>아이템 정의 참조, 배치 좌표, 회전 여부, 회전 반영 크기(<code>EffectiveSize</code>) 보관</td></tr>
+            <tr><td><code>InventoryModel</code></td><td>그리드 점유 배열, 배치 가능성 검사, 배치/삭제, 토크 재계산, 이벤트 발생</td></tr>
+            <tr><td><code>InventoryController</code></td><td>드래그 상태 관리, 배치 anchor 계산, Outside 입출고, 모델-뷰 호출 조율</td></tr>
+            <tr><td><code>InventoryGridView</code></td><td>셀 UI 생성, 화면 좌표를 그리드 좌표로 변환, 아이템 View 생성/삭제, 하이라이트</td></tr>
+            <tr><td><code>InventoryDragPreviewView</code></td><td>드래그 중 반투명 아이템 프리뷰 표시, 그리드 스냅/자유 이동</td></tr>
+            <tr><td><code>OutsideInventoryAreaView</code></td><td>그리드 밖 아이템 목록, OutsideItemView 생성/삭제, Outside 포커스 탐색</td></tr>
+            <tr><td><code>InventoryTiltView</code></td><td>모델 토크 변경 이벤트를 받아 인벤토리 UI를 좌우로 기울임</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel span-6">
+        <h2>7. 모델 이벤트 전파</h2>
+        <p class="formula">
+          초록색은 <code>InventoryModel</code>에서 처리되는 단계, 파란색은 <code>InventoryController</code>, 청록색은 View 계층을 의미합니다.
+        </p>
+        <div class="event-flow">
+          <div>
+            <p class="event-flow-title">아이템 UI 갱신</p>
+            <div class="arrow-row">
+              <div class="box model">
+                <strong>InventoryModel</strong>
+                <small><code>TryPlace</code> / <code>TryRemove</code><br>배열 갱신, Item 상태 변경</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box model">
+                <strong>Model Event</strong>
+                <small><code>OnItemPlaced</code><br><code>OnItemRemoved</code></small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box view">
+                <strong>InventoryGridView</strong>
+                <small>ItemView 생성/삭제<br>셀 상태 재계산</small>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p class="event-flow-title">무게 중심 Tilt 갱신</p>
+            <div class="arrow-row">
+              <div class="box model">
+                <strong>InventoryModel</strong>
+                <small><code>RecalculateTorque</code><br>무게 중심 기반 토크 계산</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box">
+                <strong>InventoryController</strong>
+                <small><code>OnTorqueChanged</code><br>View에 토크 값 전달</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box view">
+                <strong>InventoryTiltView</strong>
+                <small>토크 값에 따라<br>인벤토리 UI 회전</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-12">
+        <h2>8. Tilt 시뮬레이션</h2>
+        <p>
+          실제 코드의 <code>InventoryModel.RecalculateTorque()</code> 토크 계산식을 기준으로 만든 간단한 시뮬레이터입니다.
+          아이템을 선택한 뒤 그리드 셀을 누르면 배치되고, 토크에 따라 인벤토리 판이 기울어집니다.
+        </p>
+        <div class="tilt-sim">
+          <div class="sim-controls">
+            <h3>아이템 팔레트</h3>
+            <button class="sim-button active" type="button" data-template="box">
+              <strong>상자</strong>
+              <span>크기 1x1, 무게 1</span>
+            </button>
+            <button class="sim-button" type="button" data-template="crate">
+              <strong>긴 상자</strong>
+              <span>크기 2x1, 무게 2</span>
+            </button>
+            <button class="sim-button" type="button" data-template="safe">
+              <strong>금고</strong>
+              <span>크기 1x2, 무게 4</span>
+            </button>
+            <button class="sim-button" type="button" data-template="sofa">
+              <strong>가구</strong>
+              <span>크기 2x2, 무게 5</span>
+            </button>
+            <div class="sim-toolbar">
+              <button class="tool-button" type="button" id="simRotate">선택 회전</button>
+              <button class="tool-button" type="button" id="simRemove">선택 삭제</button>
+              <button class="tool-button" type="button" id="simReset">초기화</button>
+            </div>
+            <p class="formula">
+              배치된 아이템을 누르면 선택됩니다. 빈 셀을 누르면 현재 팔레트 아이템 또는 선택된 아이템을 그 위치로 옮깁니다.
+            </p>
+          </div>
+
+          <div class="sim-stage">
+            <div class="tilt-rig" id="tiltRig">
+              <div class="tilt-board" id="tiltBoard" aria-label="토크 시뮬레이션 인벤토리">
+                <div class="center-line" aria-hidden="true"></div>
+              </div>
+              <div class="balance-axis" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="sim-readout">
+            <h3>현재 값</h3>
+            <div class="meter">
+              <span>Torque</span>
+              <div class="meter-value" id="torqueValue">0.00</div>
+              <div class="bar" aria-hidden="true"><div class="bar-marker" id="torqueMarker"></div></div>
+              <p class="formula">torque = Σ(weight x (itemCenterX - gridCenterX))</p>
+            </div>
+            <div class="meter">
+              <span>Tilt Angle</span>
+              <div class="meter-value" id="angleValue">0.00°</div>
+              <div class="bar" aria-hidden="true"><div class="bar-marker" id="angleMarker"></div></div>
+              <p class="formula">angle = clamp(torque x 2, -15, 15)</p>
+            </div>
+            <div class="callout">
+              <p><strong>해석</strong></p>
+              <p>토크가 양수면 오른쪽에 무게가 몰린 상태입니다. 이 시뮬레이션은 오른쪽 과중일 때 인벤토리가 오른쪽으로 기울도록 양수 각도를 적용합니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <script>
+    (() => {
+      const columns = 5;
+      const rows = 5;
+      const cellSize = 58;
+      const cellSpacing = 4;
+      const gridCenterX = columns / 2;
+      const degreesPerTorque = 2;
+      const maxTiltAngle = 15;
+
+      const templates = {
+        box: { name: "상자", width: 1, height: 1, weight: 1, color: "#dbeafe" },
+        crate: { name: "긴 상자", width: 2, height: 1, weight: 2, color: "#dcfce7" },
+        safe: { name: "금고", width: 1, height: 2, weight: 4, color: "#fee2e2" },
+        sofa: { name: "가구", width: 2, height: 2, weight: 5, color: "#fef3c7" }
+      };
+
+      const board = document.getElementById("tiltBoard");
+      const rig = document.getElementById("tiltRig");
+      const torqueValue = document.getElementById("torqueValue");
+      const angleValue = document.getElementById("angleValue");
+      const torqueMarker = document.getElementById("torqueMarker");
+      const angleMarker = document.getElementById("angleMarker");
+      const rotateButton = document.getElementById("simRotate");
+      const removeButton = document.getElementById("simRemove");
+      const resetButton = document.getElementById("simReset");
+      const paletteButtons = Array.from(document.querySelectorAll("[data-template]"));
+
+      if (!board || !rig) return;
+
+      let selectedTemplate = "box";
+      let selectedItemId = null;
+      let nextId = 1;
+      let items = [
+        { id: nextId++, template: "box", x: 0, y: 0, rotated: false },
+        { id: nextId++, template: "crate", x: 2, y: 2, rotated: false },
+        { id: nextId++, template: "safe", x: 4, y: 0, rotated: false }
+      ];
+
+      function effectiveSize(item) {
+        const base = templates[item.template];
+        return item.rotated
+          ? { width: base.height, height: base.width }
+          : { width: base.width, height: base.height };
+      }
+
+      function cellsFor(item, x = item.x, y = item.y) {
+        const size = effectiveSize(item);
+        const cells = [];
+        for (let cx = x; cx < x + size.width; cx += 1) {
+          for (let cy = y; cy < y + size.height; cy += 1) {
+            cells.push({ x: cx, y: cy });
+          }
+        }
+        return cells;
+      }
+
+      function canPlace(candidate, x, y, ignoreId = null) {
+        const size = effectiveSize(candidate);
+        if (x < 0 || y < 0 || x + size.width > columns || y + size.height > rows) return false;
+
+        const targetCells = cellsFor(candidate, x, y);
+        return !items.some(item => {
+          if (item.id === ignoreId) return false;
+          return cellsFor(item).some(occupied =>
+            targetCells.some(target => target.x === occupied.x && target.y === occupied.y)
+          );
+        });
+      }
+
+      function setPalette(templateKey) {
+        selectedTemplate = templateKey;
+        selectedItemId = null;
+        paletteButtons.forEach(button => {
+          button.classList.toggle("active", button.dataset.template === templateKey);
+        });
+        render();
+      }
+
+      function placeAt(x, y) {
+        if (selectedItemId !== null) {
+          const item = items.find(entry => entry.id === selectedItemId);
+          if (item && canPlace(item, x, y, item.id)) {
+            item.x = x;
+            item.y = y;
+          }
+          render();
+          return;
+        }
+
+        const candidate = { id: nextId, template: selectedTemplate, x, y, rotated: false };
+        if (!canPlace(candidate, x, y)) return;
+        items.push(candidate);
+        selectedItemId = nextId;
+        nextId += 1;
+        paletteButtons.forEach(button => button.classList.remove("active"));
+        render();
+      }
+
+      function rotateSelected() {
+        const item = items.find(entry => entry.id === selectedItemId);
+        if (!item) return;
+        item.rotated = !item.rotated;
+        if (!canPlace(item, item.x, item.y, item.id)) {
+          item.rotated = !item.rotated;
+        }
+        render();
+      }
+
+      function removeSelected() {
+        if (selectedItemId === null) return;
+        items = items.filter(item => item.id !== selectedItemId);
+        selectedItemId = null;
+        render();
+      }
+
+      function reset() {
+        nextId = 1;
+        items = [
+          { id: nextId++, template: "box", x: 0, y: 0, rotated: false },
+          { id: nextId++, template: "crate", x: 2, y: 2, rotated: false },
+          { id: nextId++, template: "safe", x: 4, y: 0, rotated: false }
+        ];
+        setPalette("box");
+      }
+
+      function calculateTorque() {
+        return items.reduce((sum, item) => {
+          const base = templates[item.template];
+          const centerX = item.x + base.width / 2;
+          return sum + base.weight * (centerX - gridCenterX);
+        }, 0);
+      }
+
+      function updateTilt() {
+        const torque = calculateTorque();
+        const angle = Math.max(-maxTiltAngle, Math.min(maxTiltAngle, torque * degreesPerTorque));
+        rig.style.transform = `rotate(${angle}deg)`;
+        torqueValue.textContent = torque.toFixed(2);
+        angleValue.textContent = `${angle.toFixed(2)}°`;
+
+        const torquePercent = Math.max(0, Math.min(100, 50 + torque * 5));
+        const anglePercent = Math.max(0, Math.min(100, 50 + (angle / maxTiltAngle) * 50));
+        torqueMarker.style.left = `${torquePercent}%`;
+        angleMarker.style.left = `${anglePercent}%`;
+      }
+
+      function renderCells() {
+        board.querySelectorAll(".tilt-cell").forEach(cell => cell.remove());
+
+        for (let y = 0; y < rows; y += 1) {
+          for (let x = 0; x < columns; x += 1) {
+            const cell = document.createElement("button");
+            cell.type = "button";
+            cell.className = "tilt-cell";
+            cell.textContent = `${x},${y}`;
+            cell.style.gridColumn = `${x + 1}`;
+            cell.style.gridRow = `${y + 1}`;
+            cell.addEventListener("click", () => placeAt(x, y));
+            board.appendChild(cell);
+          }
+        }
+      }
+
+      function renderItems() {
+        board.querySelectorAll(".sim-item").forEach(item => item.remove());
+
+        items.forEach(item => {
+          const base = templates[item.template];
+          const size = effectiveSize(item);
+          const node = document.createElement("button");
+          node.type = "button";
+          node.className = `sim-item${item.id === selectedItemId ? " selected" : ""}`;
+          node.textContent = `${base.name} ${base.weight}kg`;
+          node.style.left = `${10 + item.x * (cellSize + cellSpacing)}px`;
+          node.style.top = `${10 + item.y * (cellSize + cellSpacing)}px`;
+          node.style.width = `${size.width * (cellSize + cellSpacing) - cellSpacing}px`;
+          node.style.height = `${size.height * (cellSize + cellSpacing) - cellSpacing}px`;
+          node.style.background = base.color;
+          node.title = "클릭하면 선택, 빈 셀 클릭으로 이동";
+          node.addEventListener("click", event => {
+            event.stopPropagation();
+            selectedItemId = item.id;
+            paletteButtons.forEach(button => button.classList.remove("active"));
+            render();
+          });
+          board.appendChild(node);
+        });
+      }
+
+      function render() {
+        renderCells();
+        renderItems();
+        updateTilt();
+      }
+
+      paletteButtons.forEach(button => {
+        button.addEventListener("click", () => setPalette(button.dataset.template));
+      });
+
+      rotateButton?.addEventListener("click", rotateSelected);
+      removeButton?.addEventListener("click", removeSelected);
+      resetButton?.addEventListener("click", reset);
+
+      render();
+    })();
+  </script>
+</body>
+</html>

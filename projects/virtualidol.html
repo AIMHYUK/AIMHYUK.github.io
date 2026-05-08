@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>VirtualIdol - JJH Portfolio</title>
+<title>프로젝트 Stage On</title>
 <style>
 /* 100% 동일한 CSS */
 :root{--bg:#0d1117;--card:#161b22;--line:#30363d;--accent:#58a6ff;--text:#e6edf3;--muted:#8b949e}
@@ -26,11 +26,29 @@
 .feature-group-title{font-size:1.1rem;font-weight:800;color:#d7e2f0;margin-bottom:16px;border-left:4px solid var(--accent);padding-left:12px}
 .feature-list{margin:0;padding-left:20px;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.95rem;line-height:1.8}
 .feature-list li{margin:10px 0;color:#d0d7de}
+.feature-group>.feature-list:not([style]){list-style:none;padding-left:0;display:grid;gap:9px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.feature-group>.feature-list:not([style]) li{position:relative;margin:0;padding:11px 14px 11px 34px;border:1px solid rgba(48,54,61,.9);border-left:3px solid rgba(88,166,255,.65);border-radius:8px;background:#11161d;color:#d7dee8;line-height:1.65}
+.feature-group>.feature-list:not([style]) li::before{content:"";position:absolute;left:15px;top:20px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(88,166,255,.13)}
+.feature-list li strong{display:inline-flex;align-items:center;margin-right:6px;padding:2px 8px;border-radius:999px;background:rgba(88,166,255,.14);border:1px solid rgba(88,166,255,.45);color:#9dcbff;font-size:.78rem;line-height:1.4;letter-spacing:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;vertical-align:1px}
+.feature-list li:nth-child(2) strong{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
+.feature-list li:nth-child(3) strong{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
+.feature-list li strong.label-build{background:rgba(88,166,255,.14);border-color:rgba(88,166,255,.45);color:#9dcbff}
+.feature-list li strong.label-result{background:rgba(210,168,255,.12);border-color:rgba(210,168,255,.4);color:#d2a8ff}
+.feature-list li strong.label-issue{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
+.feature-list li strong.label-solve{background:rgba(88,166,255,.12);border-color:rgba(88,166,255,.42);color:#9dcbff}
+.feature-list li strong.label-improve{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
+.feature-list li code{font-weight:700}
 .code-block{background:#010409;border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto;color:#e6edf3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);margin-top:16px;}
 .code-block pre{white-space:pre-wrap;word-break:break-word;overflow-x:auto;margin:0;line-height:1.75;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.9rem;color:#e6edf3}
 .code-block .comment{color:#8b949e} .code-block .keyword{color:#ff7b72} .code-block .string{color:#a5d6ff} .code-block .func{color:#d2a8ff}
 .table-wrap{overflow-x:auto;margin-top:16px;} table{width:100%;border-collapse:collapse;min-width:500px;} th,td{border-bottom:1px solid var(--line);padding:12px 16px;text-align:left;vertical-align:top} th{color:#c7d2de;background:#11161d;font-weight:700;}
 img,video{max-width:100%;height:auto;border-radius:12px;display:block}
+.zoomable{cursor:zoom-in;transition:filter .2s, transform .2s}
+.zoomable:hover{filter:brightness(1.08)}
+.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px;background:rgba(0,0,0,.86);z-index:100}
+.lightbox.open{display:flex}
+.lightbox img{max-width:min(96vw,1400px);max-height:92vh;border-radius:10px;border:1px solid var(--line);background:#010409}
+.lightbox button{position:absolute;top:18px;right:20px;width:42px;height:42px;border:1px solid var(--line);border-radius:50%;background:#0f131a;color:var(--text);font-size:1.5rem;line-height:1;cursor:pointer}
 .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.flow-step{background:#1c2128;border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:.85rem;color:var(--muted);font-weight:500;}.flow-arrow{color:var(--line);font-size:1.1rem}
 .btn-wrap{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line);}
 .link-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--accent);color:#000;font-weight:bold;border-radius:8px;transition:0.2s;font-size:0.95rem;}
@@ -40,17 +58,18 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
 </style>
 </head>
 <body>
-<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">VirtualIdol</div><a class="back" href="../index.html">← Back to Home</a></div></div>
+<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">프로젝트 Stage On</div><a class="back" href="../index.html">← Back to Home</a></div></div>
 
 <header class="hero">
   <div class="kicker">Project Detail</div>
-  <h1>VirtualIdol</h1>
+  <h1>프로젝트 Stage On</h1>
   <p>VRM / OSC / 무대 시스템</p>
   <div class="badges">
     <span class="badge">Unreal Engine 5</span>
     <span class="badge">C++</span>
     <span class="badge">Blueprint</span>
     <span class="badge">Team 7인</span>
+    <span class="badge">과학기술정보통신부 장관상</span>
   </div>
 </header>
 
@@ -69,20 +88,49 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
       <div class="feature-group-title">1. 무대 액터 배치 시스템</div>
       <ul class="feature-list">
         <li>하늘(Sky) · 테마(Theme) · 지면(Floor) · 이펙트(VFX) 4가지 카테고리를 독립 조합하는 모듈형 무대 구성</li>
-        <li>테마 선택 시 StreamLevel 동적 로드/언로드 — 이전 레벨을 0.2초 간격 지연 타이머로 순차 언로드하여 비동기 충돌 방지</li>
+        <li>테마 선택 시 <code style="color:var(--accent);font-size:0.85em">StreamLevel</code> 동적 로드/언로드 — 이전 레벨을 0.2초 간격 지연 타이머로 순차 언로드하여 비동기 충돌 방지</li>
         <li>액터 태그(VFX · Floor · Skybox · Theme) 기반 일괄 Destroy 후 재스폰으로 깔끔한 교체 처리</li>
         <li><code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code> + <code style="color:var(--accent);font-size:0.85em">UTextureRenderTarget2D</code>로 현재 카메라 시점 실시간 캡처하여 썸네일 생성</li>
         <li>서버/클라이언트 분기 처리 — <code style="color:var(--accent);font-size:0.85em">CreateDummyStage()</code>로 클라이언트 프리뷰 동기화 제공</li>
       </ul>
-      <div class="code-block"><pre><span class="comment">// 스트리밍 레벨 교체 시 이전 레벨을 지연 언로드하여 비동기 충돌 방지</span>
-<span class="keyword">float</span> UnloadDelay = 0.4f;
-<span class="keyword">for</span> (const FName&amp; LevelName : LevelsToUnload)
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-build">구현</strong> — <code style="color:var(--accent);font-size:0.85em">Sky</code>, <code style="color:var(--accent);font-size:0.85em">Theme</code>, <code style="color:var(--accent);font-size:0.85em">Floor</code>, <code style="color:var(--accent);font-size:0.85em">VFX</code>를 독립 카테고리로 나누고, 선택된 조합에 따라 <code style="color:var(--accent);font-size:0.85em">StreamLevel</code>을 동적으로 로드/언로드했습니다. 교체 시 <code style="color:var(--accent);font-size:0.85em">Actor Tag</code> 기반으로 기존 배치 오브젝트를 정리하고, <code style="color:var(--accent);font-size:0.85em">SceneCapture</code>로 현재 무대 썸네일을 생성했습니다.</li>
+        <li><strong class="label-result">결과</strong> — 관객이 선택한 무대 조합을 즉시 프리뷰하고 썸네일로 확인할 수 있어, 가상 콘서트의 핵심 경험인 무대 커스터마이징을 시연 가능한 수준으로 완성했습니다.</li>
+      </ul>
+      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - 테마 선택 시 새 레벨 로드, 이전 레벨은 지연 언로드</span>
+<span class="keyword">void</span> AJJH_SelectManager::<span class="func">ChangeMap</span>(int32 Index)
 {
-    GetWorld()-&gt;<span class="func">GetTimerManager</span>().<span class="func">SetTimer</span>(UnloadTimerHandle,
-        [this, LevelName]() {
-            UGameplayStatics::<span class="func">UnloadStreamLevel</span>(GetWorld(), LevelName, ...);
-        }, UnloadDelay, false);
-    UnloadDelay += 0.2f;
+    <span class="func">FindActorAndDestroy</span>(TEXT(<span class="string">"Theme"</span>));
+    Stage.theme = Index;
+
+    <span class="keyword">for</span> (<span class="keyword">const</span> FName&amp; Level : Levels)
+        LevelsToUnload.<span class="func">Add</span>(Level);
+
+    FName LevelToLoad = Levels[Index - 1];
+    LevelsToUnload.<span class="func">Remove</span>(LevelToLoad);
+    UGameplayStatics::<span class="func">LoadStreamLevel</span>(GetWorld(), LevelToLoad, <span class="keyword">true</span>, <span class="keyword">true</span>, FLatentActionInfo());
+
+    <span class="keyword">float</span> UnloadDelay = 0.4f;
+    <span class="keyword">for</span> (<span class="keyword">const</span> FName&amp; LevelName : LevelsToUnload)
+    {
+        FTimerHandle UnloadTimerHandle;
+        GetWorld()-&gt;<span class="func">GetTimerManager</span>().<span class="func">SetTimer</span>(
+            UnloadTimerHandle,
+            [<span class="keyword">this</span>, LevelName]()
+            {
+                UGameplayStatics::<span class="func">UnloadStreamLevel</span>(GetWorld(), LevelName, FLatentActionInfo(), <span class="keyword">true</span>);
+            },
+            UnloadDelay, <span class="keyword">false</span>);
+        UnloadDelay += 0.2f;
+    }
+}
+
+<span class="keyword">void</span> AJJH_SelectManager::<span class="func">FindActorAndDestroy</span>(FName Tag)
+{
+    TArray&lt;AActor*&gt; Actors;
+    UGameplayStatics::<span class="func">GetAllActorsWithTag</span>(GetWorld(), Tag, Actors);
+    <span class="keyword">for</span> (AActor* Actor : Actors)
+        <span class="keyword">if</span> (Actor) Actor-&gt;<span class="func">Destroy</span>();
 }</pre></div>
     </div>
 
@@ -90,33 +138,15 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
     <div class="feature-group">
       <div class="feature-group-title">2. 버튜버 모델링 적용</div>
       <ul class="feature-list">
-        <li>VRM4U 플러그인을 통해 VRM 형식의 버튜버 모델을 언리얼 엔진에 임포트 및 적용</li>
+        <li><code style="color:var(--accent);font-size:0.85em">VRM4U</code> 플러그인을 통해 <code style="color:var(--accent);font-size:0.85em">VRM</code> 형식의 버튜버 모델을 언리얼 엔진에 임포트 및 적용</li>
         <li>게임 플레이 중 스켈레탈 메시를 런타임에 동적 교체하여 공연 도중 의상 및 모델 전환 구현</li>
-        <li>Morph Target 제어를 애니메이션과 연동하여 실시간 표정 변화 반영</li>
-        <li>Mocopi 기반 전신 모션 캡처 데이터를 UDP 소켓으로 수신하여 VRM 모델 뼈대에 적용</li>
+        <li>Morph Target 제어를 ARkit과 연동하여 카메라 기반 실시간 표정 변화 반영</li>
+        <li><code style="color:var(--accent);font-size:0.85em">Remocap</code> 기반 전신 모션 캡처 데이터를 <code style="color:var(--accent);font-size:0.85em">OSC</code> 서버로 수신하여 <code style="color:var(--accent);font-size:0.85em">VRM</code> 모델 뼈대에 적용</li>
       </ul>
-      <div class="code-block"><pre><span class="comment">// 로컬 플레이어가 선택한 메시 번호를 서버 RPC로 전달</span>
-<span class="func">ServerRPC_ChangeMyMesh</span>( gi-&gt;playerMeshNum );
-
-<span class="comment">// 서버 → 모든 클라이언트에 메시 동기화 (MulticastRPC)</span>
-<span class="keyword">void</span> UAudienceServerComponent_KMK::<span class="func">MultiRPC_ChangeMyMesh_Implementation</span>( int32 num )
-{
-    <span class="keyword">auto</span>* TargetMesh = Cast&lt;AHSW_ThirdPersonCharacter&gt;( <span class="func">GetOwner</span>() );
-    <span class="keyword">if</span> (num &gt;= 0 &amp;&amp; num &lt;= 1)
-    {
-        <span class="comment">// 관객 메시 교체</span>
-        TargetMesh-&gt;<span class="func">GetMesh</span>()-&gt;<span class="func">SetSkeletalMesh</span>( audienceMesh[num] );
-        UMaterialInstanceDynamic* meshMat = TargetMesh-&gt;<span class="func">ChangeMyMeshMat</span>( num );
-        TargetMesh-&gt;<span class="func">GetMesh</span>()-&gt;<span class="func">SetMaterial</span>( 0, meshMat );
-    }
-}
-
-<span class="comment">// DynamicMaterial 스칼라 파라미터로 표정(Morph Target) 실시간 제어</span>
-<span class="keyword">void</span> ADummy_KMK::<span class="func">SetFace</span>( <span class="keyword">float</span> faceValue )
-{
-    <span class="keyword">if</span> (FaceDynamicMat)
-        FaceDynamicMat-&gt;<span class="func">SetScalarParameterValue</span>( <span class="string">TEXT("jswFaceChange")</span>, faceValue );
-}</pre></div>
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-build">구현</strong> — <code style="color:var(--accent);font-size:0.85em">VRM4U</code>로 <code style="color:var(--accent);font-size:0.85em">VRM</code> 모델을 언리얼에 적용하고, 선택한 모델 번호를 <code style="color:var(--accent);font-size:0.85em">Server RPC</code>로 전달한 뒤 <code style="color:var(--accent);font-size:0.85em">Multicast RPC</code>로 관객 메시 교체를 동기화했습니다. 표정은 <code style="color:var(--accent);font-size:0.85em">Dynamic Material</code> 파라미터와 <code style="color:var(--accent);font-size:0.85em">Morph Target</code> 제어를 연동했습니다.</li>
+        <li><strong class="label-result">결과</strong> — VRM 모델 교체와 표정 변화가 공연 흐름 안에서 동작하도록 연결해, 단순 캐릭터 선택이 아니라 버튜버 공연 연출에 필요한 아바타 적용 흐름을 만들었습니다.</li>
+      </ul>
     </div>
 
     <!-- 3. RemoCap UDP/OSC 본 데이터 손실 초기화 -->
@@ -124,12 +154,18 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
       <div class="feature-group-title">3. RemoCap UDP/OSC 본 데이터 손실 초기화</div>
       <ul class="feature-list">
         <li>RemoCap 앱의 본(Bone) 데이터 전송 방식을 분석하여 기존 로직의 데이터 손실 원인 파악</li>
-        <li>UDP 기반 OSC 프로토콜로 수신 구조 수정 — <code style="color:var(--accent);font-size:0.85em">FUdpSocketBuilder</code>로 포트 바인딩 후 <code style="color:var(--accent);font-size:0.85em">FUdpSocketReceiver</code> 리스너 스레드 구성</li>
-        <li>패킷 수신 누락 시 이전 프레임 데이터를 유지하던 문제를 초기 상태 리셋 로직으로 교체하여 포즈 고착 현상 제거</li>
-        <li>100ms 폴링 간격 백그라운드 스레드에서 연속 수신 처리, 메인 스레드와 안전 동기화</li>
+        <li><code style="color:var(--accent);font-size:0.85em">UDP</code> 기반 <code style="color:var(--accent);font-size:0.85em">OSC</code> 프로토콜로 수신 구조 수정 — <code style="color:var(--accent);font-size:0.85em">Unreal OSC</code> 플러그인의 <code style="color:var(--accent);font-size:0.85em">Create OSCServer</code> 기반 수신 구조로 변경하고, 메시지 번들 수신 이벤트 중심으로 처리 로직 재구성</li>   
+        <li><code style="color:var(--accent);font-size:0.85em">OSC</code> 주소(path)별 분기 처리로 본 데이터와 페이스 데이터를 안정적으로 수신</li>
+      </ul>
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-issue">문제</strong> — 기존 수신 로직은 RemoCap의 OSC 메시지 구조를 온전히 반영하지 못해 본 데이터가 손실되거나 일부 값이 초기화되는 문제가 있었습니다.</li>
+        <li><strong class="label-solve">해결</strong> — <code style="color:var(--accent);font-size:0.85em">Unreal OSC</code> 서버 기반 수신 구조로 바꾸고, <code style="color:var(--accent);font-size:0.85em">OSC</code> 주소별로 본 데이터와 페이스 데이터를 분리 처리해 수신 안정성을 높였습니다.</li>
+        <li><strong class="label-improve">개선</strong> — 이후에는 수신 데이터 검증 로그와 보간 처리를 추가해 순간 패킷 손실에도 모델 포즈가 튀지 않도록 개선하겠습니다.</li>
       </ul>
       <img
-        src="../assets/images/Remocap_OSC.jpg"
+        class="zoomable"
+        data-lightbox
+        src="../assets/images/virtualidol/Remocap_OSC.jpg"
         alt="RemoCap UDP OSC bone data flow"
         style="display:block; width:100%; max-width:720px; margin-top:16px; border:1px solid var(--border); border-radius:8px;"
       />
@@ -144,52 +180,33 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
         <li>Border 배열로 선택된 항목에만 SelectedBox 텍스처를 적용하는 하이라이트 시스템</li>
         <li><code style="color:var(--accent);font-size:0.85em">WidgetSwitcher</code>로 설정 → 캡처 확인 → 최종 확인 3단계 플로우 전환</li>
         <li>0.3초 지연 타이머로 UI 버튼 은닉 후 씬 캡처 — 버튼이 썸네일에 찍히는 문제 해결</li>
-        <li>스테이지 이름 입력 후 썸네일 + 설정 정보를 HTTP Multipart로 서버 업로드</li>
+        <li>스테이지 이름 입력 후 썸네일 + 설정 정보를 <code style="color:var(--accent);font-size:0.85em">HTTP Multipart</code>로 서버 업로드</li>
       </ul>
-      <div class="code-block"><pre><span class="comment">// ① 썸네일 이미지를 Multipart/form-data로 서버 업로드</span>
-<span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqMultipartCapturedURL</span>( FStageInfo&amp; Stage, <span class="keyword">const</span> FString&amp; ImagePath )
+      <ul class="feature-list" style="margin-top:16px;">
+        <li><strong class="label-build">구현</strong> — SceneCapture로 만든 썸네일 이미지를 먼저 Multipart/form-data로 업로드하고, 서버가 반환한 이미지 URL을 무대 설정 JSON에 포함해 다시 전송하는 2단계 저장 흐름을 만들었습니다.</li>
+        <li><strong class="label-result">결과</strong> — 사용자가 구성한 무대를 서버에 저장하고 목록에서 다시 확인할 수 있는 흐름을 만들어, 단발성 프리뷰가 아니라 공유 가능한 무대 데이터로 연결했습니다.</li>
+      </ul>
+      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - 썸네일 업로드 성공 후 Stage JSON 저장 요청으로 연결</span>
+<span class="keyword">void</span> AHttpActor_KMK::<span class="func">OnReqMultipartCapturedURL</span>(FHttpRequestPtr Request, FHttpResponsePtr Response,
+    <span class="keyword">bool</span> bConnectedSuccessfully, FStageInfo* Stage)
 {
-    TSharedRef&lt;IHttpRequest&gt; Req = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();
-    Req-&gt;<span class="func">SetURL</span>( <span class="string">TEXT("http://back.reward-factory.shop:8123/api/v1/files/upload")</span> );
-    Req-&gt;<span class="func">SetVerb</span>( <span class="string">TEXT("POST")</span> );
-
-    TArray&lt;<span class="keyword">uint8</span>&gt; FileData;
-    FFileHelper::<span class="func">LoadFileToArray</span>( FileData, *ImagePath );
-
-    FString Boundary = <span class="string">"---------------------------boundary_string"</span>;
-    FString FileHeader = <span class="string">"Content-Disposition: form-data; name=\"file\"; filename=\""</span>
-                         + FPaths::<span class="func">GetCleanFilename</span>(ImagePath)
-                         + <span class="string">TEXT("\"\r\nContent-Type: image/png\r\n\r\n")</span>;
-
-    TArray&lt;<span class="keyword">uint8</span>&gt; PostData;
-    PostData.<span class="func">Append</span>( (uint8*)TCHAR_TO_ANSI(*(FString(<span class="string">"--"</span>) + Boundary + <span class="string">"\r\n"</span>)) , ... );
-    PostData.<span class="func">Append</span>( (uint8*)TCHAR_TO_ANSI(*FileHeader), FileHeader.<span class="func">Len</span>() );
-    PostData.<span class="func">Append</span>( FileData );
-
-    Req-&gt;<span class="func">SetHeader</span>( <span class="string">TEXT("Content-Type")</span>,
-        FString::Printf(<span class="string">TEXT("multipart/form-data; boundary=%s")</span>, *Boundary) );
-    Req-&gt;<span class="func">SetContent</span>( PostData );
-    Req-&gt;<span class="func">ProcessRequest</span>();
+    <span class="keyword">if</span> (bConnectedSuccessfully &amp;&amp; Response.<span class="func">IsValid</span>() &amp;&amp; Response-&gt;<span class="func">GetResponseCode</span>() == 200)
+    {
+        Stage-&gt;img = Response-&gt;<span class="func">GetContentAsString</span>();
+        <span class="func">ReqStageInfo</span>(*Stage);
+    }
 }
 
-<span class="comment">// ② 업로드 완료 후 반환된 이미지 URL을 포함한 무대 정보를 JSON으로 POST</span>
-<span class="keyword">void</span> AHttpActor_KMK::<span class="func">OnReqMultipartCapturedURL</span>( ..., FStageInfo* Stage )
-{
-    Stage-&gt;img = Response-&gt;<span class="func">GetContentAsString</span>();  <span class="comment">// 서버 반환 URL 저장</span>
-    <span class="func">ReqStageInfo</span>( *Stage );                          <span class="comment">// 무대 정보 JSON 전송</span>
-}
-
-<span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqStageInfo</span>( <span class="keyword">const</span> FStageInfo&amp; Stage )
+<span class="keyword">void</span> AHttpActor_KMK::<span class="func">ReqStageInfo</span>(<span class="keyword">const</span> FStageInfo&amp; Stage)
 {
     FString JsonString;
-    FJsonObjectConverter::<span class="func">UStructToJsonObjectString</span>( Stage, JsonString );
-
-    TSharedRef&lt;IHttpRequest&gt; Req = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();
-    Req-&gt;<span class="func">SetURL</span>( <span class="string">TEXT("http://back.reward-factory.shop:8123/api/v1/stages")</span> );
-    Req-&gt;<span class="func">SetVerb</span>( <span class="string">TEXT("POST")</span> );
-    Req-&gt;<span class="func">SetHeader</span>( <span class="string">TEXT("Content-Type")</span>, <span class="string">TEXT("application/json")</span> );
-    Req-&gt;<span class="func">SetContentAsString</span>( JsonString );
-    Req-&gt;<span class="func">ProcessRequest</span>();
+    FJsonObjectConverter::<span class="func">UStructToJsonObjectString</span>(Stage, JsonString);
+    TSharedRef&lt;IHttpRequest&gt; Request = FHttpModule::<span class="func">Get</span>().<span class="func">CreateRequest</span>();
+    Request-&gt;<span class="func">OnProcessRequestComplete</span>().<span class="func">BindUObject</span>(this, &amp;AHttpActor_KMK::OnReqStageInfo);
+    Request-&gt;<span class="func">SetVerb</span>(TEXT(<span class="string">"POST"</span>));
+    Request-&gt;<span class="func">SetHeader</span>(TEXT(<span class="string">"Content-Type"</span>), TEXT(<span class="string">"application/json"</span>));
+    Request-&gt;<span class="func">SetContentAsString</span>(JsonString);
+    Request-&gt;<span class="func">ProcessRequest</span>();
 }</pre></div>
       <div style="margin-top: 14px;">
         <div style="font-size:0.82rem; color:var(--muted); margin-bottom: 8px;">UI 플로우</div>
@@ -213,14 +230,23 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
       <div class="table-wrap">
         <table class="tech-table">
           <tr><th>기술</th><th>적용 내용</th></tr>
-          <tr><td>StreamLevel</td><td>테마별 레벨 동적 로드/언로드 — 지연 타이머로 비동기 충돌 방지</td></tr>
-          <tr><td>Actor Tag</td><td>카테고리별 배치 액터 태그 식별, 교체 시 일괄 Destroy 후 재스폰</td></tr>
-          <tr><td>SceneCaptureComponent2D</td><td>카메라 시점을 RenderTarget에 실시간 캡처, UI 썸네일로 표시</td></tr>
-          <tr><td>VRM4U</td><td>VRM 모델 임포트, 런타임 스켈레탈 메시 교체, Morph Target 표정 제어</td></tr>
-          <tr><td>UDP / OSC</td><td>FUdpSocketReceiver로 RemoCap 본 데이터 수신, 손실 시 리셋 로직 적용</td></tr>
-          <tr><td>UMG / WidgetSwitcher</td><td>3단계 설정 플로우 전환 및 카테고리 탭 UI 구현</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">StreamLevel</code></td><td>테마별 레벨 동적 로드/언로드 — 지연 타이머로 비동기 충돌 방지</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">Actor Tag</code></td><td>카테고리별 배치 액터 태그 식별, 교체 시 일괄 Destroy 후 재스폰</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">SceneCaptureComponent2D</code></td><td>카메라 시점을 <code style="color:var(--accent);font-size:0.85em">RenderTarget</code>에 실시간 캡처, UI 썸네일로 표시</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">VRM4U</code></td><td><code style="color:var(--accent);font-size:0.85em">VRM</code> 모델 임포트, 런타임 스켈레탈 메시 교체, <code style="color:var(--accent);font-size:0.85em">Morph Target</code> 표정 제어</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">UDP / OSC</code></td><td><code style="color:var(--accent);font-size:0.85em">FUdpSocketReceiver</code>로 <code style="color:var(--accent);font-size:0.85em">RemoCap</code> 본 데이터 수신, 손실 시 리셋 로직 적용</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">UMG / WidgetSwitcher</code></td><td>3단계 설정 플로우 전환 및 카테고리 탭 UI 구현</td></tr>
         </table>
       </div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-title">회고 및 개선 방향</div>
+      <ul class="feature-list">
+        <li>무대 구성, 아바타 적용, <code style="color:var(--accent);font-size:0.85em">OSC</code> 수신, <code style="color:var(--accent);font-size:0.85em">HTTP</code> 업로드까지 한 화면 흐름으로 묶어 시연 완성도를 확보한 점이 가장 큰 성과입니다.</li>
+        <li>다시 설계한다면 무대 프리셋, 아바타 프로필, 서버 업로드 요청을 데이터/서비스 단위로 분리해 기능 추가 비용을 줄이겠습니다.</li>
+        <li>운영 수준으로 확장한다면 <code style="color:var(--accent);font-size:0.85em">HTTP</code> 실패 처리, <code style="color:var(--accent);font-size:0.85em">OSC</code> 수신 데이터 검증, 레벨 전환 큐를 보강하겠습니다.</li>
+      </ul>
     </div>
 
     <!-- 하단 버튼 영역 -->
@@ -230,5 +256,36 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
     </div>
   </section>
 </main>
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button type="button" aria-label="Close image preview">×</button>
+  <img alt="" />
+</div>
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImage = lightbox.querySelector('img');
+
+  document.querySelectorAll('[data-lightbox]').forEach((image) => {
+    image.addEventListener('click', () => {
+      lightboxImage.src = image.src;
+      lightboxImage.alt = image.alt;
+      lightbox.classList.add('open');
+      lightbox.setAttribute('aria-hidden', 'false');
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImage.src = '';
+  }
+
+  lightbox.addEventListener('click', (event) => {
+    if (event.target === lightbox || event.target.tagName === 'BUTTON') closeLightbox();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeLightbox();
+  });
+</script>
 </body>
 </html>

@@ -126,17 +126,23 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
       </a>
     </div>
 
-    <!-- 2. 하이브리드 입력 -->
+    <!-- 2. 입력 추상화 -->
     <div class="feature-group">
-      <div class="feature-group-title">2. 마우스 · 게임패드 하이브리드 입력 (<code style="color:var(--accent);font-size:0.85em">InventoryState</code>)</div>
+      <div class="feature-group-title">2. 입력 방식에 의존하지 않는 인벤토리 조작</div>
+
+      <div style="margin:14px 0 4px; padding:12px 16px; border-left:3px solid var(--line); background:rgba(255,255,255,0.02); font-size:0.8rem; color:var(--muted); line-height:1.75;">
+        <strong style="color:var(--accent);">역할 구분</strong> — 마우스·게임패드 입력 체계와 모드 전환은 팀이 이미 구축해둔 것을 그대로 사용했습니다.
+        본인은 그 위에서 <strong>인벤토리 조작을 연결하고, 인벤토리가 입력 종류를 알지 않아도 되도록 추상화</strong>하는 작업을 맡았습니다.
+      </div>
+
       <ul class="feature-list">
-        <li><code style="color:var(--accent);font-size:0.85em">Mouse.current.delta.sqrMagnitude > 0.1f</code> 감지로 마우스 모드 전환, 게임패드 버튼 입력 시 패드 모드로 즉시 전환 — 하나의 인벤토리가 두 입력장치를 실시간 병행 지원</li>
-        <li>스틱 아날로그 입력을 디지털 4방향으로 변환하고 초기 딜레이(0.4s) + 반복 간격(0.12s) 타이머로 키 반복 네비게이션 구현</li>
-        <li>그리드 좌·우 경계에서 방향 입력 시 Outside 영역으로, 반대 방향 입력 시 그리드 가장자리 셀로 포커스 자동 이동하는 스마트 네비게이션</li>
-        <li>패드 A 버튼 — 토글 방식으로 집기·놓기, LB/RB — 드래그 중 아이템 90도 회전, B 버튼 — 드래그 취소 및 원위치 복구</li>
+        <li>커서 위치와 집기·취소·배출 이벤트를 <code style="color:var(--accent);font-size:0.85em">IInventoryInputProvider</code> 인터페이스로 추상화 — 연속 좌표를 갖는 마우스와 UI 요소 사이를 이산 이동하는 게임패드의 차이를 컨트롤러가 분기하지 않도록 분리</li>
+        <li>게임패드 구현은 커서 좌표를 따로 들지 않고, <code style="color:var(--accent);font-size:0.85em">EventSystem</code>이 선택 중인 셀의 <code style="color:var(--accent);font-size:0.85em">RectTransform</code> 화면 중심을 커서 좌표로 환산 — 두 입력이 같은 좌표 규약을 공유</li>
+        <li>그리드 좌·우 경계에서 방향 입력 시 Outside 영역으로, 반대 방향 입력 시 그리드 가장자리 셀로 포커스가 넘어가도록 인벤토리 쪽 이동 규칙을 처리</li>
+        <li>집기·놓기 토글, 드래그 중 90도 회전, 취소 시 원위치 복구 등 인벤토리 상태 전이를 입력 이벤트에 연결</li>
       </ul>
       <ul class="feature-list" style="margin-top:16px;">
-        <li><strong class="label-result">결과</strong> — 같은 인벤토리 UI를 마우스와 게임패드 양쪽에서 사용할 수 있게 만들어, 입력 장치가 바뀌어도 플레이 흐름이 끊기지 않도록 했습니다.</li>
+        <li><strong class="label-result">결과</strong> — 같은 인벤토리 UI가 마우스와 게임패드 양쪽에서 동일하게 동작하고, 이후 입력 방식이 추가되어도 <code style="color:var(--accent);font-size:0.85em">IInventoryInputProvider</code> 구현체만 늘리면 되도록 만들었습니다.</li>
       </ul>
     </div>
 
@@ -266,7 +272,8 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
           <tr><th>기술</th><th>적용 내용</th></tr>
           <tr><td>이벤트 기반 MVC</td><td>Model 이벤트(OnItemPlaced/Removed)로 View가 구독 — 데이터·UI 레이어 완전 분리</td></tr>
           <tr><td>2D 그리드 배치 알고리즘</td><td>아이템 크기·회전을 반영한 멀티셀 충돌 검사 및 원자적 배치/제거</td></tr>
-          <tr><td>하이브리드 입력 (New Input System)</td><td>Mouse delta · Gamepad 버튼 감지로 실시간 모드 전환, 스틱 반복 타이머</td></tr>
+          <tr><td>입력 추상화</td><td><code style="color:var(--accent);font-size:0.85em">IInventoryInputProvider</code>로 마우스·게임패드 차이를 은닉 — 인벤토리 컨트롤러가 입력 종류를 분기하지 않음</td></tr>
+          <tr><td style="opacity:0.7">마우스·게임패드 입력 체계 <span style="font-size:0.8em;color:var(--muted)">(팀 구축)</span></td><td style="opacity:0.7">모드 전환·스틱 반복 등 입력 기반은 팀의 기존 체계를 사용, 그 위에 인벤토리 조작을 연결</td></tr>
           <tr><td>장소 기반 도메인 재설계</td><td>NPC 기준 배달을 <code style="color:var(--accent);font-size:0.85em">Location</code> 기준으로 전환 — NPC 배치와 무관하게 배달지를 확장 가능하도록 조건 판정 통합</td></tr>
           <tr><td><code style="color:var(--accent);font-size:0.85em">QuestAction</code> 확장</td><td><code style="color:var(--accent);font-size:0.85em">[SerializeReference]</code> 다형성 직렬화를 활용, 프레임워크 수정 없이 새 액션을 추가해 퀘스트↔대화 연결</td></tr>
           <tr><td style="opacity:0.7">5-State Quest FSM <span style="font-size:0.8em;color:var(--muted)">(팀원 설계)</span></td><td style="opacity:0.7"><code style="font-size:0.85em">Inactive</code>→<code style="font-size:0.85em">Running</code>→<code style="font-size:0.85em">WaitForCompletion</code>→<code style="font-size:0.85em">Complete/Cancel</code> — 구조를 파악해 연동에 활용</td></tr>

@@ -55,17 +55,21 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
 </style>
 </head>
 <body>
-<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">배달왕 김족구 - 인벤토리 · 퀘스트 시스템</div><a class="back" href="../index.html">← Back to Home</a></div></div>
+<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">배달왕 김족구 - 인벤토리 · 대화 · 퀘스트 연동</div><a class="back" href="../index.html">← Back to Home</a></div></div>
 
 <header class="hero">
   <div class="kicker">Project Detail</div>
-  <h1>배달왕 김족구 - 인벤토리 · 퀘스트 시스템</h1>
-  <p>인벤토리 / 퀘스트 / 입력</p>
+  <h1>배달왕 김족구 - 인벤토리 · 대화 · 퀘스트 연동</h1>
+  <p>인벤토리 / Yarn 대화 / 퀘스트 연동</p>
   <div class="badges">
     <span class="badge">Unity 6</span>
     <span class="badge">C#</span>
     <span class="badge">Team 3인</span>
   </div>
+  <p style="margin-top:18px; font-size:0.82rem; color:var(--muted); line-height:1.7;">
+    담당 — 인벤토리 시스템 전체, Yarn Spinner 대화 연동 및 선택지 UI, 배달 도메인의 장소 기반 재설계.<br>
+    퀘스트 프레임워크(<code style="font-size:0.9em">Quest</code>/<code style="font-size:0.9em">TaskGroup</code>/<code style="font-size:0.9em">QuestTask</code>)는 팀원이 설계·구현했으며, 본인은 이를 파악해 확장 지점에 연동했습니다.
+  </p>
 </header>
 
 <main class="shell">
@@ -138,7 +142,14 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
 
     <!-- 3. 퀘스트 시스템 -->
     <div class="feature-group">
-      <div class="feature-group-title">3. 장소 기반 퀘스트 시스템</div>
+      <div class="feature-group-title">3. 장소 기반 배달 — 팀 퀘스트 프레임워크 확장</div>
+
+      <div style="margin:14px 0 4px; padding:12px 16px; border-left:3px solid var(--line); background:rgba(255,255,255,0.02); font-size:0.8rem; color:var(--muted); line-height:1.75;">
+        <strong style="color:var(--accent);">역할 구분</strong> — 아래 퀘스트 프레임워크는 팀원이 설계·구현했습니다.
+        본인은 구조를 파악한 뒤 <strong>배달 도메인을 NPC 기반에서 장소(<code style="font-size:0.9em">Location</code>) 기반으로 재설계</strong>하고,
+        프레임워크의 확장 지점인 <code style="font-size:0.9em">QuestAction</code>에 <code style="font-size:0.9em">SetPlaceYarnStartNodeQuestAction</code>을 추가해
+        퀘스트 진행과 Yarn 대화를 연결했습니다. 프레임워크 코드 자체는 수정하지 않았습니다.
+      </div>
 
       <!-- 데이터 구조 트리 -->
       <div style="margin:14px 0 20px;">
@@ -154,7 +165,7 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
       </div>
 
       <!-- 설계 의도 및 런타임 흐름 -->
-      <div style="font-size:0.8rem; color:var(--muted); margin:22px 0 10px;">설계 의도</div>
+      <div style="font-size:0.8rem; color:var(--muted); margin:22px 0 10px;">프레임워크 구조와 배달 시스템 연동 방식</div>
       <ul class="feature-list">
         <li>
           <code style="color:var(--accent);font-size:0.85em">DeliveryManager</code>는 퀘스트를 직접 알지 않고
@@ -256,8 +267,10 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
           <tr><td>이벤트 기반 MVC</td><td>Model 이벤트(OnItemPlaced/Removed)로 View가 구독 — 데이터·UI 레이어 완전 분리</td></tr>
           <tr><td>2D 그리드 배치 알고리즘</td><td>아이템 크기·회전을 반영한 멀티셀 충돌 검사 및 원자적 배치/제거</td></tr>
           <tr><td>하이브리드 입력 (New Input System)</td><td>Mouse delta · Gamepad 버튼 감지로 실시간 모드 전환, 스틱 반복 타이머</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">5-State Quest FSM</code></td><td><code style="color:var(--accent);font-size:0.85em">Inactive</code>→<code style="color:var(--accent);font-size:0.85em">Running</code>→<code style="color:var(--accent);font-size:0.85em">WaitForCompletion</code>→<code style="color:var(--accent);font-size:0.85em">Complete/Cancel</code>, 이벤트로 UI 통보</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">TaskGroup</code> 계층 구조</td><td><code style="color:var(--accent);font-size:0.85em">Quest</code> → <code style="color:var(--accent);font-size:0.85em">TaskGroup[]</code> → <code style="color:var(--accent);font-size:0.85em">QuestTask[]</code> 3계층으로 복합 목표 순차 처리</td></tr>
+          <tr><td>장소 기반 도메인 재설계</td><td>NPC 기준 배달을 <code style="color:var(--accent);font-size:0.85em">Location</code> 기준으로 전환 — NPC 배치와 무관하게 배달지를 확장 가능하도록 조건 판정 통합</td></tr>
+          <tr><td><code style="color:var(--accent);font-size:0.85em">QuestAction</code> 확장</td><td><code style="color:var(--accent);font-size:0.85em">[SerializeReference]</code> 다형성 직렬화를 활용, 프레임워크 수정 없이 새 액션을 추가해 퀘스트↔대화 연결</td></tr>
+          <tr><td style="opacity:0.7">5-State Quest FSM <span style="font-size:0.8em;color:var(--muted)">(팀원 설계)</span></td><td style="opacity:0.7"><code style="font-size:0.85em">Inactive</code>→<code style="font-size:0.85em">Running</code>→<code style="font-size:0.85em">WaitForCompletion</code>→<code style="font-size:0.85em">Complete/Cancel</code> — 구조를 파악해 연동에 활용</td></tr>
+          <tr><td style="opacity:0.7"><code style="font-size:0.85em">TaskGroup</code> 계층 구조 <span style="font-size:0.8em;color:var(--muted)">(팀원 설계)</span></td><td style="opacity:0.7"><code style="font-size:0.85em">Quest</code> → <code style="font-size:0.85em">TaskGroup[]</code> → <code style="font-size:0.85em">QuestTask[]</code> 3계층 — 구조를 파악해 연동에 활용</td></tr>
           <tr><td><code style="color:var(--accent);font-size:0.85em">Yarn Spinner</code> 연동</td><td><code style="color:var(--accent);font-size:0.85em">QuestAction</code>으로 퀘스트 진행 시 대화 분기 노드를 인스펙터에서 드롭다운 설정</td></tr>
         </table>
       </div>
@@ -273,7 +286,7 @@ img,video{max-width:100%;height:auto;border-radius:12px;display:block}
 
     <!-- 하단 버튼 영역 -->
     <div class="btn-wrap">
-      <a class="link-btn outline" href="https://github.com/AIMCOMPLETEHYUK/MdCalling" target="_blank">&#128279; 팀 레포지토리 보기</a>
+      <a class="link-btn outline" href="https://github.com/AIMHYUK/MdCalling-Showcase" target="_blank">&#128279; 본인 작성 코드 보기 (GitHub)</a>
     </div>
   </section>
 </main>

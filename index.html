@@ -594,20 +594,22 @@
           <div class="evidence">
             <div class="evidence-box">
               <strong>핵심 구현</strong>
-              <p><code style="color:var(--accent);font-size:0.85em">InventoryModel</code>, <code style="color:var(--accent);font-size:0.85em">InventoryState</code>, <code style="color:var(--accent);font-size:0.85em">QuestManager</code>, <code style="color:var(--accent);font-size:0.85em">QuestTask</code>, <code style="color:var(--accent);font-size:0.85em">QuestAction</code></p>
+              <p><code style="color:var(--accent);font-size:0.85em">InventoryModel</code>, <code style="color:var(--accent);font-size:0.85em">InventoryController</code>, <code style="color:var(--accent);font-size:0.85em">InventoryState</code>, <code style="color:var(--accent);font-size:0.85em">YarnDialogueManager</code>, <code style="color:var(--accent);font-size:0.85em">SetPlaceYarnStartNodeQuestAction</code></p>
             </div>
             <div class="evidence-box">
               <strong>설계 기준</strong>
-              <p>인벤토리는 이벤트 기반 MVC로, 퀘스트는 category + target 진행 이벤트로 시스템 간 직접 참조를 줄였습니다.</p>
+              <p>인벤토리는 이벤트 기반 MVC로 데이터·UI를 분리하고, 배달은 팀 퀘스트 프레임워크에 category + target 진행 이벤트만 보고하도록 결합도를 낮췄습니다.</p>
             </div>
           </div>
           <p>
-            2D 그리드 인벤토리, 마우스/게임패드 하이브리드 입력, 장소 기반 퀘스트 흐름을 데이터 중심으로 설계했습니다.
+            2D 그리드 인벤토리와 마우스/게임패드 하이브리드 입력을 구현하고, Yarn Spinner 대화를 게임 로직에 연동했습니다.
+            팀원이 설계한 퀘스트 프레임워크를 파악해 배달 도메인을 NPC 기반에서 장소 기반으로 재설계했습니다.
             입력 포커스 이동 로직은 이후 별도 <code style="color:var(--accent);font-size:0.85em">Navigator</code> 클래스로 분리할 수 있습니다.
           </p>
           <div class="actions">
             <a class="btn" href="projects/mdcalling.html">상세 보기</a>
             <a class="btn" href="projects/mdcalling/InventorySystemVisualization.html">인벤토리 구조</a>
+            <a class="btn" href="https://github.com/AIMHYUK/MdCalling-Showcase" target="_blank" rel="noopener">GitHub</a>
           </div>
         </article>
 

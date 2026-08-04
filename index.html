@@ -1,1054 +1,329 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>배치안 — 조준혁 Portfolio (비공개 비교본)</title>
-  <style>
-    :root {
-      --bg: #ffffff;
-      --surface: #f7f8fa;
-      --surface-2: #f0f2f5;
-      --line: #e3e6eb;
-      --line-soft: #eef0f3;
-
-      --text: #1a1d21;   /* 흰 배경 대비 16.9:1 */
-      --soft: #384252;   /* 9.7:1  본문 */
-      --muted: #5a6472;  /* 5.8:1  보조 */
-      --accent: #0b5cd5; /* 6.5:1  링크·강조 */
-
-      /* 차트 상태색 — 흰 표면 기준으로 6개 검사 통과 */
-      --st-critical: #b3261e;
-      --st-warning: #a8760f;
-      --st-good: #00744c;
-
-      --ease-out: cubic-bezier(.16, 1, .3, 1);
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--soft);
-      font-family: -apple-system, "Segoe UI", Pretendard, "Apple SD Gothic Neo",
-                   "Malgun Gothic", system-ui, sans-serif;
-      font-size: 16.5px;
-      line-height: 1.78;
-      /* 한글은 어절 단위로만 끊는다. 긴 영문 식별자는 예외적으로 허용 */
-      word-break: keep-all;
-      overflow-wrap: break-word;
-      background-image: radial-gradient(1100px 520px at 16% -12%, rgba(11, 92, 213, .055), transparent 62%);
-      background-repeat: no-repeat;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    /* 마지막 줄에 한 어절만 남는 것을 막는다 */
-    p, li, td, .fact p, .w-meta { text-wrap: pretty; }
-    h1, h2, h3, h4, figcaption, .facts-line b { text-wrap: balance; }
-    code { overflow-wrap: anywhere; }
-
-    .skip {
-      position: absolute;
-      left: -9999px;
-      top: 8px;
-      z-index: 60;
-      padding: 10px 14px;
-      border-radius: 7px;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
-    }
-
-    .skip:focus { left: 16px; }
-
-    :focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 3px;
-      border-radius: 4px;
-    }
-
-    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
-
-    /* ── 상단 ── */
-    .top {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(255, 255, 255, .88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .top-inner {
-      min-height: 58px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .brand { font-weight: 800; white-space: nowrap; color: var(--text); }
-    .brand span { color: var(--muted); font-weight: 600; }
-
-    .nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 2px;
-      color: var(--muted);
-      font-size: .9rem;
-      font-weight: 600;
-    }
-
-    .nav a {
-      position: relative;
-      padding: 6px 11px;
-      border-radius: 6px;
-      transition: color .18s var(--ease-out);
-    }
-
-    .nav a:hover,
-    .nav a.active { color: var(--text); }
-
-    .nav a.active::after {
-      content: "";
-      position: absolute;
-      left: 11px;
-      right: 11px;
-      bottom: 2px;
-      height: 2px;
-      border-radius: 2px;
-      background: var(--accent);
-    }
-
-    /* ── 히어로 ── */
-    .hero { padding: 88px 0 62px; }
-
-    .kicker {
-      margin: 0 0 16px;
-      color: var(--accent);
-      font-weight: 700;
-      font-size: .95rem;
-    }
-
-    h1 {
-      margin: 0;
-      color: var(--text);
-      font-size: clamp(2.1rem, 4.5vw, 3.5rem);
-      line-height: 1.14;
-      letter-spacing: -.022em;
-      font-weight: 800;
-      max-width: 32ch;
-    }
-
-    h1 b {
-      font-weight: 800;
-      background: linear-gradient(180deg, transparent 64%, rgba(11, 92, 213, .16) 64%);
-    }
-
-    /* 제목 아래를 2열로 나눠 폭을 채운다. 왼쪽은 읽는 글, 오른쪽은 훑는 것 */
-    .hero-body {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-      gap: 30px 58px;
-      align-items: start;
-      margin-top: 30px;
-    }
-
-    .hero-copy {
-      margin: 0;
-      font-size: 1.05rem;
-      max-width: 62ch;
-    }
-
-    /* 사실 세 가지. 타일이 아니라 판권면처럼 한 줄로 */
-    .facts-line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0 30px;
-      margin-top: 44px;
-      padding-top: 24px;
-      border-top: 1px solid var(--line);
-    }
-
-    .facts-line div { flex: 1 1 0; min-width: 190px; padding-right: 30px; border-right: 1px solid var(--line); }
-    .facts-line div:last-child { border-right: 0; padding-right: 0; }
-
-    .facts-line b {
-      display: block;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .facts-line span {
-      display: block;
-      margin-top: 1px;
-      color: var(--muted);
-      font-size: .86rem;
-    }
-
-    .hero-actions { margin-top: 30px; }
-
-    .hero-actions,
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 26px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      padding: 10px 16px;
-      border-radius: 7px;
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--text);
-      font-weight: 700;
-      font-size: .93rem;
-      transition: border-color .18s var(--ease-out), background .18s var(--ease-out);
-    }
-
-    .btn:hover { border-color: #b9c6da; background: var(--surface); }
-
-    .btn.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .btn.primary:hover { background: #0a4cb0; border-color: #0a4cb0; }
-
-    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 28px;
-      padding: 4px 11px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      color: #46505f;
-      font-size: .83rem;
-      font-weight: 700;
-    }
-
-    .badge.hl {
-      border-color: #b7dfcd;
-      background: #e8f6ef;
-      color: #00623f;
-    }
-
-    /* ── 섹션 ── */
-    /* 섹션마다 표면을 번갈아 깔아 경계를 만든다 */
-    .band { padding: 76px 0; border-top: 1px solid var(--line); }
-    .band.alt { background: var(--surface); }
-    .band.alt .btn { background: #fff; }
-    .band.alt .badge { background: #fff; }
-    .band.alt tbody tr:hover { background: #f2f7fe; }
-
-    h2 {
-      margin: 0;
-      color: var(--text);
-      font-size: 1.72rem;
-      line-height: 1.25;
-      letter-spacing: -.018em;
-      font-weight: 800;
-    }
-
-    .section-desc {
-      margin: 10px 0 32px;
-      color: var(--muted);
-      max-width: 66ch;
-    }
-
-    /* ── 대표 프로젝트 (1층) ── */
-    .work { padding: 32px 0 0; }
-    .work + .work { margin-top: 8px; }
-
-    .work-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .work h3 {
-      margin: 0;
-      color: var(--text);
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -.02em;
-    }
-
-    .work-year { color: var(--muted); font-size: .9rem; white-space: nowrap; }
-
-    /* 항목 라벨. 담당·동기·핵심 구현 전부 같은 형태로 내용 위에 붙는다.
-       본문보다 작고 진하고 굵게 두어 라벨로 읽히게 한다 */
-    .k, .fact h4 {
-      display: block;
-      margin: 0 0 7px;
-      color: var(--text);
-      font-size: 1.07rem;
-      font-weight: 800;
-      letter-spacing: -.008em;
-      line-height: 1.45;
-    }
-
-    .resp { margin: 30px 0 0; max-width: 70ch; }
-    .resp > p { margin: 0; font-size: 1.02rem; color: var(--soft); }
-
-    /* 짝지은 사실 두 칸. 상자가 아니라 헤어라인 위에 */
-    .facts {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 28px;
-      margin-top: 28px;
-    }
-
-    .fact { border-top: 2px solid #cfd6df; padding-top: 15px; }
-
-    .fact p { margin: 0; color: var(--soft); font-size: .96rem; }
-
-    .work ul { margin: 26px 0 0; padding-left: 20px; max-width: 72ch; }
-    .work li { margin: 10px 0; }
-    li::marker { color: #aab4c2; }
-
-    code {
-      padding: 1.5px 5px;
-      border-radius: 4px;
-      border: 1px solid #d3e2f8;
-      background: #eff5fe;
-      color: var(--accent);
-      font-family: Consolas, "Cascadia Code", monospace;
-      font-size: .88em;
-    }
-
-    /* 두 대표작을 잇는 표시 */
-    .bridge {
-      display: grid;
-      grid-template-columns: 2px minmax(0, 1fr);
-      gap: 20px;
-      margin: 42px 0 8px;
-      max-width: 72ch;
-      color: var(--muted);
-      font-size: .96rem;
-    }
-
-    .bridge::before {
-      content: "";
-      border-radius: 2px;
-      background: linear-gradient(180deg, var(--accent), var(--st-good));
-    }
-
-    .bridge b { color: var(--text); }
-
-    /* ── 차트 ── */
-    .figure { margin: 32px 0 0; max-width: 780px; }
-
-    .figure figcaption {
-      margin: 0;
-      color: var(--text);
-      font-size: 1.02rem;
-      font-weight: 700;
-    }
-
-    .fig-sub { margin: 4px 0 18px; color: var(--muted); font-size: .86rem; }
-
-    .fig-scroll { overflow-x: auto; }
-    .figure svg { display: block; width: 100%; min-width: 540px; height: auto; }
-
-    .figure svg g.row { transition: opacity .16s var(--ease-out); }
-    .figure svg:hover g.row { opacity: .45; }
-    .figure svg g.row:hover { opacity: 1; }
-
-    /* 이 페이지의 유일한 연출: 막대가 기준선에서 자란다 */
-    .bar { transform-box: fill-box; transform-origin: left center; }
-
-    .figure:not(.drawn) .bar { transform: scaleX(0); }
-    .figure:not(.drawn) .fail-mark { opacity: 0; }
-
-    .figure.drawn .bar {
-      transform: scaleX(1);
-      transition: transform .9s var(--ease-out);
-    }
-
-    .figure.drawn .bar.b2 { transition-delay: .1s; }
-    .figure.drawn .bar.b3 { transition-delay: .22s; }
-    .figure.drawn .fail-mark { opacity: 1; transition: opacity .5s var(--ease-out) .55s; }
-
-    .fig-table { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
-
-    .fig-table summary {
-      cursor: pointer;
-      color: var(--muted);
-      font-size: .87rem;
-      font-weight: 600;
-      list-style: none;
-    }
-
-    .fig-table summary::-webkit-details-marker { display: none; }
-    .fig-table summary::before { content: "▸ "; }
-    .fig-table[open] summary::before { content: "▾ "; }
-    .fig-table summary:hover { color: var(--text); }
-    .fig-table table { min-width: 0; margin-top: 12px; font-size: .88rem; }
-    .fig-table th, .fig-table td { padding: 8px 11px; }
-    .fig-table td { font-variant-numeric: tabular-nums; }
-
-    /* ── 시스템 구현 (2층) ── */
-    .duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 46px; }
-    .work + .duo { margin-top: 54px; padding-top: 44px; border-top: 1px solid var(--line); }
-
-    .duo h3 {
-      margin: 0;
-      color: var(--text);
-      font-size: 1.26rem;
-      font-weight: 800;
-      letter-spacing: -.015em;
-    }
-
-    .duo .k, .duo .fact h4 { font-size: 1.02rem; }
-    .duo .resp > p { font-size: .97rem; }
-    .duo .facts { grid-template-columns: 1fr; gap: 20px; margin-top: 24px; }
-    .duo p.body { margin: 22px 0 0; font-size: .96rem; }
-
-    /* ── 그 외 (3층) — 카드가 아니라 목록 ── */
-    .worklist { margin: 0; padding: 0; list-style: none; }
-
-    .worklist > li {
-      display: grid;
-      grid-template-columns: 270px minmax(0, 1fr);
-      gap: 12px 36px;
-      padding: 24px 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .worklist > li:last-child { border-bottom: 1px solid var(--line); }
-
-    .worklist h3 { margin: 0; color: var(--text); font-size: 1.06rem; font-weight: 800; }
-    .w-meta { display: block; margin-top: 4px; color: var(--muted); font-size: .85rem; }
-    .worklist p { margin: 0; font-size: .96rem; max-width: 68ch; }
-    .worklist .actions { margin-top: 15px; }
-    .worklist .btn { min-height: 36px; padding: 7px 13px; font-size: .87rem; }
-
-    /* ── 표 ── */
-    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; }
-
-    table {
-      width: 100%;
-      min-width: 760px;
-      border-collapse: collapse;
-      background: #fff;
-      font-size: .93rem;
-    }
-
-    th, td {
-      padding: 14px 15px;
-      border-bottom: 1px solid var(--line-soft);
-      text-align: left;
-      vertical-align: top;
-    }
-
-    tr:last-child td { border-bottom: 0; }
-    th { background: var(--surface-2); color: var(--text); font-weight: 700; border-bottom-color: var(--line); }
-    td { color: var(--soft); }
-    tbody tr { transition: background .15s var(--ease-out); }
-    tbody tr:hover { background: #f6f9fe; }
-    td:first-child { color: var(--text); font-weight: 800; white-space: nowrap; }
-
-    /* ── 푸터 ── */
-    .footer { padding: 46px 0 66px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
-
-    .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; }
-    .footer a { color: var(--text); font-weight: 700; }
-    .footer a:hover { color: var(--accent); }
-
-    @media (max-width: 900px) {
-      .facts, .duo, .hero-body { grid-template-columns: 1fr; }
-      .hero-body { gap: 26px; margin-top: 24px; }
-      .hero-actions { margin-top: 22px; }
-      .duo { gap: 50px; }
-      .worklist > li { grid-template-columns: 1fr; }
-      .facts-line { gap: 18px 0; }
-      .facts-line div { border-right: 0; padding-right: 0; flex: 1 1 100%; }
-    }
-
-    @media (max-width: 640px) {
-      .wrap { width: min(100% - 28px, 1120px); }
-      .top-inner { min-height: 0; padding: 12px 0; align-items: start; flex-direction: column; }
-      .nav { justify-content: flex-start; }
-      .hero { padding: 52px 0 42px; }
-      .band { padding: 52px 0; }
-      .work h3 { font-size: 1.32rem; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      * { transition: none !important; animation: none !important; }
-      .figure:not(.drawn) .bar { transform: scaleX(1); }
-      .figure:not(.drawn) .fail-mark { opacity: 1; }
-    }
-
-    /* 사실 확인이 필요해 비워둔 자리 */
-    .todo {
-      border-bottom: 1px dashed #c08a12;
-      background: #fff7e6;
-      color: #7a5300;
-    }
-
-    .banner {
-      margin: 22px auto 0;
-      border: 1px solid #f0dcae;
-      background: #fffaf0;
-      border-radius: 9px;
-      padding: 18px 20px;
-      color: #6b4a00;
-      font-size: .93rem;
-    }
-
-    .banner b { color: #503700; }
-    .banner ul { margin: 10px 0 0; padding-left: 20px; }
-    .banner li { margin: 4px 0; }
-    .banner code { border-color: #ecd9a8; background: #fdf3dd; color: #7a5300; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>조준혁 — Game Client Programmer</title>
+<meta name="description" content="게임 클라이언트 프로그래머 조준혁의 포트폴리오. Unreal Engine 5 / Unity. 무슨 게임을 만들고, 어떤 기능을 구현했고, 무엇이 막혔고, 어떤 결과가 나왔는지.">
+<link rel="stylesheet" href="assets/portfolio.css">
 </head>
 <body>
-  <a class="skip" href="#projects">본문으로 건너뛰기</a>
 
-  <div class="wrap">
-    <div class="banner">
-      <b>배치안 · 비공개 비교본.</b> 커밋하지 마세요.
-      <ul>
-        <li><b>구성</b>: 대표 2건(Stage On → MiniOscReceiver) / 시스템 구현 2건 / 그 외 3건.</li>
-        <li><b>라이트 테마</b>: 본문 대비 9.7:1, 보조 5.8:1, 강조 6.5:1. 차트 색은 흰 표면 기준으로 색각 이상 분리·대비 검사를 다시 통과시킨 값입니다.</li>
-        <li><b>노란 표시</b>는 사실을 몰라 비워둔 자리입니다. 지어내지 않았습니다.</li>
-      </ul>
+<a class="skip" href="#main">본문으로</a>
+
+<div class="top">
+  <div class="wrap top-in">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <span class="r">UNREAL ENGINE 5 · UNITY · C++ / C# ·
+      <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a></span>
+  </div>
+</div>
+
+<main class="wrap" id="main">
+
+  <!-- ══════ 머리 ══════ -->
+  <header class="hero">
+    <h1>조준혁</h1>
+    <p class="role">GAME CLIENT PROGRAMMER · UNREAL ENGINE 5 / UNITY · C++ / C#</p>
+    <p class="pitch">문제의 원인을 <b>측정으로 확인하고</b>, 그에 맞는 구조를 고르는 클라이언트 프로그래머입니다.
+    아래 프로젝트마다 <b>무엇을 만들었는지 · 무엇이 막혔는지 · 어떻게 풀었는지</b>를 화면과 함께 적었습니다.</p>
+
+    <dl class="keys">
+      <div>
+        <dt>수상</dt>
+        <dd>과학기술정보통신부 장관상 (대상)
+        <span>2024.12 · 메타버스 아카데미 3기 · Stage On</span></dd>
+      </div>
+      <div>
+        <dt>출시</dt>
+        <dd>Google Play · App Store
+        <span>Bounce Hero : 꿈돌이 · 사수와 2인 개발</span></dd>
+      </div>
+      <div>
+        <dt>학력</dt>
+        <dd>가천대학교 컴퓨터공학과
+        <span>2019.02–2026.02 · GPA 4.02 / 4.5</span></dd>
+      </div>
+    </dl>
+  </header>
+
+  <!-- ══════ 프로젝트 ══════ -->
+  <div class="sec-lbl">
+    <h2>프로젝트</h2>
+    <span>상세 페이지 8 / 8</span>
+  </div>
+
+  <ul class="plist">
+
+    <!-- Stage On -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <img src="assets/images/thumbs/stageon.jpg" alt="Stage On 공연 화면. 무대 위 아바타와 우측의 모션캡처 앱 창">
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>Stage On</h3>
+          <span class="meta">UE5 · 7인 팀 · 2024.09–11</span>
+        </div>
+        <p class="what">버튜버가 <b>실시간 모션</b>으로 무대에 서고 관객이 티켓을 사서 입장하는
+        가상 콘서트 플랫폼. 무대를 직접 만들어 저장하고 그 무대에서 공연을 엽니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>무대 구성 시스템(하늘·테마·특효·지면 조합), <code>SceneCapture</code> 썸네일 생성과 업로드,
+          <b>외부 모션캡처 데이터를 언리얼로 들여오는 수신 구조</b></dd>
+          <dt class="t">어려움</dt>
+          <dd>본 단위 <code>RPC</code> 전달이 본 개수만큼 호출이 늘어 실시간을 못 따라감 →
+          <b><code>UDP</code> 소켓으로 직행하는 <code>OSC</code> 수신으로 전환</b></dd>
+        </dl>
+        <div class="marks">
+          <span>과기정통부 장관상 (대상)</span>
+          <span class="n">2년 뒤 직접 재측정으로 검증</span>
+          <a href="projects/stageon.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- 꿈돌이 -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <img src="assets/images/thumbs/dmong.jpg" alt="App Store의 Bounce Hero 꿈돌이 리스팅">
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>Bounce Hero : 꿈돌이</h3>
+          <span class="meta">Unity · 디몽 인턴 · 사수와 2인 · 2025.03–06</span>
+        </div>
+        <p class="what">대전관광공사 마스코트가 발판을 밟고 올라가는 모바일 점프 게임.
+        <b>사수와 둘이 0부터 만들어</b> 양대 마켓에 출시하고 라이브 운영까지 했습니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>클라이언트 개발 전반. 성능 개선(오브젝트 풀링),
+          <code>Firebase</code>·<code>IAP</code>·<code>AdMob</code> 연동, 축제 현장 피드백 반영</dd>
+          <dt class="t">어려움</dt>
+          <dd>풀에서 꺼낸 오브젝트가 이전 상태를 들고 나옴 →
+          <b>재사용 시점을 명시적 초기화 지점으로</b> 두고 위치·애니메이션·타이머를 함께 되돌림</dd>
+        </dl>
+        <div class="marks">
+          <span>Google Play · App Store 출시</span>
+          <span>저사양 안드로이드 60 fps</span>
+          <a href="projects/dmong.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- 배달왕 -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <img src="assets/images/thumbs/mdcalling.jpg" alt="배달왕 김족구의 격자 인벤토리에 치킨과 피자가 놓인 화면">
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>배달왕 김족구</h3>
+          <span class="meta">Unity 6 · 3인 창업 팀 · 2026.03–06</span>
+        </div>
+        <p class="what">주문을 받아 가방에 음식을 실어 배달하는 어드벤처.
+        가방이 <b>테트리스처럼 칸을 차지하는 격자</b>라, 공간을 어떻게 쓰느냐가 곧 플레이입니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>그리드 인벤토리 설계·구현(이벤트 기반 MVC), Yarn Spinner 대화 연동과 선택지 UI,
+          배달 도메인 재설계. <b>퀘스트 프레임워크와 입력 체계는 팀원 설계분</b></dd>
+          <dt class="t">어려움</dt>
+          <dd>회전을 넣자 방향마다 판정 분기가 늘어남 →
+          <b><code>EffectiveSize</code> 파생 속성</b>으로 바꿔 판정 코드에서 분기 제거</dd>
+        </dl>
+        <div class="marks">
+          <span>NPC 종속 조건 4종 제거</span>
+          <span class="n">팀 프레임워크 수정 0</span>
+          <a href="projects/mdcalling.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- 세종대왕 -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <img src="assets/images/thumbs/kingsejong.jpg" alt="프로젝트 세종대왕의 달리기 경주 맵에서 캐릭터가 달리는 화면">
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>프로젝트 세종대왕</h3>
+          <span class="meta">UE5 · 5인 팀 · OnlineSubsystem</span>
+        </div>
+        <p class="what">한옥 마을에서 여럿이 모여 노는 멀티플레이 미니게임 모음.
+        달리기 · 대전 · 대화 세 종류의 맵이 있습니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd><b>로비에서 게임 맵까지 들어가는 길 전체</b> — 세션 생성·검색·참가,
+          <code>ServerTravel</code>/<code>ClientTravel</code> 분리, 로비 UI</dd>
+          <dt class="t">어려움</dt>
+          <dd>한글 방 이름이 Steam 세션에서 깨짐 → <b>Base64로 인코딩해 등록</b>하고 표시할 때 디코딩.
+          호스트 이탈 시 클라 고립은 <code>OnNetworkFailure</code>로 감지해 로비 복귀</dd>
+        </dl>
+        <div class="marks">
+          <span>LAN · Steam 자동 판정</span>
+          <span class="n">카테고리 3종을 세션 구조 하나로 통합</span>
+          <a href="projects/kingsejong.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- Isekiro -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <img src="assets/images/thumbs/isekiro.jpg" alt="Isekiro에서 패링에 성공해 노란 섬광이 터지는 화면">
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>Isekiro</h3>
+          <span class="meta">UE5 · 팀 프로젝트 · 전투 판정 프로토타입</span>
+        </div>
+        <p class="what">적의 공격을 타이밍에 맞춰 튕겨내며 체간을 깎는 검격 액션.
+        세키로의 패링이 왜 손맛이 좋은지 궁금해서 <b>구조를 직접 만들어 확인</b>했습니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>패링 판정, 내적 기반 락온과 <code>Line Trace</code> 시야 검증,
+          <code>Curve</code> 보간 그래플링 훅</dd>
+          <dt class="t">어려움</dt>
+          <dd>판정 창을 좁히자 입력 자체가 막힘 →
+          <b>판정 가능 시간과 쿨다운을 별개 타이머로 분리</b>해 받아낼 창만 좁힘</dd>
+        </dl>
+        <div class="marks">
+          <span>일반 8 frame · 위험 1 frame</span>
+          <span class="n">같은 입력 · 같은 코드 경로로 두 난이도</span>
+          <a href="projects/isekiro.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- MiniOscReceiver -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <div class="blank">게임이 아니라 측정 도구<br>화면 대신 <b>실제 로그</b>로 정리</div>
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>MiniOscReceiver</h3>
+          <span class="meta">UE 5.6 · 개인 · 2026.07</span>
+        </div>
+        <p class="what">Stage On에서 내린 구조 선택이 옳았는지 <b>2년 뒤 직접 재구현해 재측정</b>한 실험입니다.
+        플러그인이 감추던 소켓·수신 스레드·바이트 파서를 직접 만들었습니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>전부(개인). <code>UDP</code> 소켓, 1ms 폴링 수신 스레드,
+          OSC 바이트 파싱(4바이트 정렬·빅엔디안·비트 재해석), SPSC 락프리 큐 마샬링</dd>
+          <dt class="t">어려움</dt>
+          <dd>저부하에서는 세 방식이 똑같아 보임 →
+          <b>부하를 실제 모션캡처 수준으로 올린 뒤에야</b> 차이가 드러남. 잴 지표를 세 번 고쳐 잡음</dd>
+        </dl>
+        <div class="marks">
+          <span>OSC 전달률 100% · 유실 0</span>
+          <span class="n">Unreliable RPC 0.66% · Reliable은 연결 종료</span>
+          <a href="projects/miniosc.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- MapleBattleRoyaleArena -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <div class="blank">화면 준비 중<br>MapleStory Worlds</div>
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>MapleBattleRoyaleArena</h3>
+          <span class="meta">MSW · mLua · 4인 팀 · 커밋 110/133 · 진행중</span>
+        </div>
+        <p class="what">플레이어가 조작하지 않고 자동으로 싸우는 배틀로얄.
+        직접 하는 것은 <b>직업 스킬 · 대시 · 방향 전환 셋뿐</b>입니다.
+        넥슨 글로벌 개발 콘테스트 출품 예정.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>플레이어 이동·전투·스킬 시스템, 데이터 레이어, 서버 권위 구조</dd>
+          <dt class="t">어려움</dt>
+          <dd>내가 넣은 타격 active 구간이 <b>105스윙 실측에서 기여도 3%</b>, 뒤쪽 73%는 미사용 →
+          기능을 철회하고 그 결론을 커밋에 남김</dd>
+        </dl>
+        <div class="marks">
+          <span class="n">이동 드라이버 4단계 은퇴 → 서버 일원화</span>
+          <a href="projects/mlb.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- GASPractice -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <div class="blank">화면 준비 중<br>Gameplay Ability System</div>
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>GASPractice</h3>
+          <span class="meta">UE 5.6 · 개인 · 학습</span>
+        </div>
+        <p class="what">LoL식 QWER 스킬 구조를 Gameplay Ability System으로 재현한 학습 프로젝트입니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>전부(개인). 발동(<code>GameplayAbility</code>)과
+          비용·쿨다운·피해(<code>GameplayEffect</code>) 분리. 본인 작성 범위 8개 파일을 README에 명시</dd>
+          <dt class="t">어려움</dt>
+          <dd>스킬이 늘 때마다 캐릭터 클래스에 조건 분기가 쌓임 →
+          <b>쿨다운을 타이머가 아닌 태그의 존재 여부로</b> 표현</dd>
+        </dl>
+        <div class="marks">
+          <span class="n">스킬 추가해도 조건문이 늘지 않음</span>
+          <a href="projects/gas.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+  </ul>
+
+  <!-- ══════ 이력 ══════ -->
+  <div class="sec-lbl">
+    <h2>이력</h2>
+    <span>프로젝트가 다루지 않는 사실</span>
+  </div>
+
+  <div class="cv" style="margin-top:16px">
+    <div>
+      <h3>실무</h3>
+      <dl>
+        <dt>주식회사 디몽 — 게임 클라이언트 인턴</dt>
+        <dd><span class="d">2025.03–06 · Unity / C#</span>
+        두 프로젝트에 참여했습니다. <b>꿈돌이는 사수와 둘이 0부터 만들어 출시</b>한 신규 개발이고,
+        ZOMVIRUS는 2025년 2월에 이미 출시돼 있던 PC VR 게임에
+        <code>Steam Achievement</code> 구현과 무기 슬롯 리팩터링으로 참여했습니다.</dd>
+      </dl>
+    </div>
+    <div>
+      <h3>학력 · 과정</h3>
+      <dl>
+        <dt>가천대학교 컴퓨터공학과</dt>
+        <dd><span class="d">2019.02–2026.02 · GPA 4.02 / 4.5</span>
+        자료구조, 객체지향 프로그래밍, 소프트웨어 설계.</dd>
+        <dt>메타버스 아카데미 3기</dt>
+        <dd><span class="d">2024.04–12 · Unreal Engine</span>
+        UE5 기반 팀 프로젝트로 실시간 콘텐츠 개발 과정을 수행했습니다.</dd>
+      </dl>
+    </div>
+    <div>
+      <h3>수상</h3>
+      <dl>
+        <dt>과학기술정보통신부 장관상 (대상)</dt>
+        <dd><span class="d">2024.12 · 메타버스 아카데미 3기 성과공유회</span>
+        가상 콘서트 플랫폼 <b>Stage On</b>으로 수상했습니다.
+        무대 전환 시스템, 버튜버 모델·모션 연동, 통신 구조 개선을 담당했습니다.</dd>
+      </dl>
     </div>
   </div>
 
-  <nav class="top">
-    <div class="wrap top-inner">
-      <a class="brand" href="#top">조준혁 <span>· Game Client Programmer</span></a>
-      <div class="nav" id="nav" aria-label="포트폴리오 섹션">
-        <a href="#projects">대표 프로젝트</a>
-        <a href="#systems">시스템 구현</a>
-        <a href="#more">그 외 작업</a>
-        <a href="#tech">기술 요약</a>
-      </div>
-    </div>
-  </nav>
+  <div class="foot">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a>
+    <span>수치는 직접 측정한 것만 적었습니다</span>
+  </div>
 
-  <header class="wrap hero" id="top">
-    <p class="kicker">Game Client Programmer · Unreal Engine 5 / Unity</p>
-    <h1>문제의 원인을 <b>측정으로</b> 확인하고, 그에 맞는 구조를 선택합니다.</h1>
+</main>
 
-    <div class="hero-body">
-      <div>
-        <p class="hero-copy">
-          실시간 모션 동기화의 병목을 <code>RPC</code>에서 <code>UDP/OSC</code> 구조로 바꿔 해결했고,
-          그 판단이 옳았는지 2년 뒤 플러그인이 감추고 있던 계층을 열어보고 직접 측정했습니다.
-          모바일에서는 프레임 드랍의 원인을 프로파일링으로 <code>GC</code> 부하로 특정하고 오브젝트 풀링으로 구조를 바꿨습니다.
-        </p>
-        <div class="hero-actions">
-          <a class="btn primary" href="#projects">대표 프로젝트 보기</a>
-          <a class="btn" href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">GitHub</a>
-        </div>
-      </div>
-
-      <div class="badges">
-        <span class="badge">Unreal Engine 5</span>
-        <span class="badge">C++</span>
-        <span class="badge hl">UDP / OSC</span>
-        <span class="badge">OnlineSubsystem</span>
-        <span class="badge">Gameplay Ability System</span>
-        <span class="badge">Unity / C#</span>
-      </div>
-    </div>
-
-    <div class="facts-line">
-      <div>
-        <b>과학기술정보통신부 장관상</b>
-        <span>2024 메타버스 아카데미 3기 · Stage On</span>
-      </div>
-      <div>
-        <b>스토어 출시 2건</b>
-        <span>Google Play, Steam · 인턴십 참여작</span>
-      </div>
-      <div>
-        <b>Unreal Engine 5 · Unity</b>
-        <span>C++ / C# · 팀 4건, 개인 3건</span>
-      </div>
-    </div>
-  </header>
-
-  <main>
-
-    <!-- ══════ 1층 ══════ -->
-    <section class="band" id="projects">
-      <div class="wrap">
-      <h2>대표 프로젝트</h2>
-      <p class="section-desc">실시간 데이터 수신 구조를 실제 프로젝트에서 바꾼 일과, 그 판단을 2년 뒤 직접 측정해 검증한 일입니다.</p>
-
-      <article class="work">
-        <div class="work-head">
-          <h3>Stage On</h3>
-          <span class="work-year">2024.09 – 2024.11 · 7인 팀</span>
-        </div>
-        <div class="badges">
-          <span class="badge">Unreal Engine 5</span>
-          <span class="badge">Blueprint 중심, 일부 C++</span>
-          <span class="badge">VRM4U</span>
-          <span class="badge">OSC / UDP</span>
-          <span class="badge hl">과학기술정보통신부 장관상</span>
-        </div>
-
-        <div class="resp">
-            <span class="k">담당</span>
-            <p>버튜버 모션 데이터를 실시간으로 받아 무대에 반영하는 공연 플랫폼입니다.
-          무대 프리셋 선택 UI, <code>StreamLevel</code> 기반 무대 교체, <code>Actor Tag</code> 기반 오브젝트 정리,
-          <code>SceneCapture</code> 썸네일 생성, <code>OSC</code> 수신 흐름 정리를 맡았습니다.
-          구현은 Blueprint 중심이며 일부를 C++로 작성했습니다.</p>
-          </div>
-
-        <div class="facts">
-          <div class="fact">
-            <h4>문제와 선택</h4>
-            <p>모션 데이터를 본 단위로 <code>RPC</code> 전달하던 구조는 본 개수만큼 호출이 늘어 실시간 전송을 따라가지 못했습니다. <code>UDP</code> 기반 <code>OSC</code> 수신으로 전환해 외부 모션캡처 데이터를 직접 받도록 바꿨습니다.</p>
-          </div>
-          <div class="fact">
-            <h4>성과와 검증</h4>
-            <p>과학기술정보통신부 장관상 수상작. 무대 구성, 아바타 적용, <code>OSC</code> 수신, <code>HTTP</code> 업로드까지 하나의 시연 흐름으로 연결했습니다.</p>
-          </div>
-        </div>
-
-        <ul>
-          <li>Sky / Theme / Floor / VFX 카테고리를 조합하는 무대 구성 시스템과 설정 UI를 제작했습니다.</li>
-          <li><code>StreamLevel</code> 동적 로드·언로드와 <code>Actor Tag</code> 기반 정리 로직으로, 아트 리소스가 늦게 들어와도 코드 수정 없이 반영되게 했습니다.</li>
-          <li><code>SceneCaptureComponent2D</code>와 <code>RenderTarget</code>으로 현재 카메라 시점 썸네일을 생성하고, <code>HTTP Multipart</code> 업로드 응답 URL을 무대 저장에 연결했습니다.</li>
-          <li>당시 <code>OSC</code> 수신은 <code>VRM4U</code>와 <code>UOSCServer</code> 플러그인을 사용했습니다. 그 내부가 어떻게 동작하는지, 그리고 이 전환이 실제로 유효했는지는 아래에서 비교 실험을 설계해 측정했습니다.</li>
-        </ul>
-
-        <div class="actions">
-          <a class="btn" href="projects/virtualidol.html">상세 보기</a>
-          <a class="btn" href="https://github.com/FavoriteIdol/VirtualIdol" target="_blank" rel="noreferrer">Repository</a>
-          <a class="btn" href="https://github.com/FavoriteIdol/VirtualIdol/tree/main/Source/VirtualIdol/Private/JJH" target="_blank" rel="noreferrer">본인 작성 코드</a>
-          <a class="btn primary" href="https://youtu.be/D8ZNVKkEmxU" target="_blank" rel="noreferrer">Demo</a>
-        </div>
-      </article>
-
-      <p class="bridge">
-        <span><b>2024년의 판단을 2026년에 직접 검증했습니다.</b>
-        플러그인이 대신 해주던 소켓, 수신 스레드, 바이트 파싱을 하나씩 열어보고,
-        같은 데이터를 RPC로도 보내 부하를 올려가며 비교했습니다.</span>
-      </p>
-
-      <article class="work">
-        <div class="work-head">
-          <h3>MiniOscReceiver</h3>
-          <span class="work-year">2026.07 · 개인 프로젝트</span>
-        </div>
-        <div class="badges">
-          <span class="badge">Unreal Engine 5.6</span>
-          <span class="badge">C++</span>
-          <span class="badge hl">UDP Socket</span>
-          <span class="badge">Lock-free Queue</span>
-        </div>
-
-        <div class="resp">
-            <span class="k">동기</span>
-            <p>Stage On에서 쓴 OSC 수신은 <code>VRM4U</code> → <code>UOSCServer</code> 두 겹에 소켓, 스레드, 파싱이 가려져 있었습니다.
-          플러그인이 대신 해주던 일을 계층별로 열어보고, 당시의 <code>RPC</code> → <code>OSC</code> 전환이 실제로 유효했는지 측정하려고 만들었습니다.</p>
-          </div>
-
-        <figure class="figure" id="fig">
-          <figcaption>같은 데이터를 전송 방식만 바꿔 보냈을 때의 전달률</figcaption>
-          <p class="fig-sub">본 100~200개 · 120Hz · UE 5.6 PIE 리슨서버</p>
-
-          <div class="fig-scroll">
-            <svg viewBox="0 0 660 196" role="img"
-                 aria-label="전송 방식별 전달률 비교. Reliable RPC는 초당 24,000회 요청에서 버퍼 오버플로우로 연결이 종료되어 측정 불가. Unreliable RPC는 초당 12,000회에서 전달률 0.66퍼센트. OSC는 초당 24,000회에서 전달률 100퍼센트.">
-
-              <line x1="164" y1="12" x2="164" y2="156" stroke="#c8cfd8" stroke-width="1"/>
-              <line x1="364" y1="12" x2="364" y2="156" stroke="#e8ebf0" stroke-width="1"/>
-              <line x1="564" y1="12" x2="564" y2="156" stroke="#e8ebf0" stroke-width="1"/>
-              <line x1="164" y1="156" x2="564" y2="156" stroke="#c8cfd8" stroke-width="1"/>
-
-              <text x="164" y="174" fill="#5a6472" font-size="10.5" text-anchor="middle" font-family="Segoe UI, Malgun Gothic, sans-serif">0</text>
-              <text x="364" y="174" fill="#5a6472" font-size="10.5" text-anchor="middle" font-family="Segoe UI, Malgun Gothic, sans-serif">50%</text>
-              <text x="564" y="174" fill="#5a6472" font-size="10.5" text-anchor="middle" font-family="Segoe UI, Malgun Gothic, sans-serif">100%</text>
-
-              <!-- 1행: Reliable RPC. 0으로 그리면 '측정했더니 0'이 되므로 막대 없이 실패 상태로 표기 -->
-              <g class="row">
-                <title>RPC Reliable · 초당 24,000회 요청 → RPCReliableBufferOverflow로 연결 종료. 전달률을 측정할 수 없음.</title>
-                <text x="152" y="33" fill="#1a1d21" font-size="12.5" font-weight="700" text-anchor="end" font-family="Segoe UI, Malgun Gothic, sans-serif">RPC · Reliable</text>
-                <text x="152" y="47" fill="#5a6472" font-size="10.5" text-anchor="end" font-family="Segoe UI, Malgun Gothic, sans-serif">초당 24,000회 요청</text>
-                <g class="fail-mark">
-                  <circle cx="176" cy="36" r="7" fill="none" stroke="#b3261e" stroke-width="1.7"/>
-                  <path d="M172.8 32.8 L179.2 39.2 M179.2 32.8 L172.8 39.2" stroke="#b3261e" stroke-width="1.7" stroke-linecap="round"/>
-                  <text x="192" y="40" fill="#384252" font-size="11.5" font-family="Segoe UI, Malgun Gothic, sans-serif">연결 종료, 버퍼 오버플로우</text>
-                </g>
-                <text x="574" y="40" fill="#1a1d21" font-size="12" font-weight="700" font-family="Segoe UI, Malgun Gothic, sans-serif">측정 불가</text>
-              </g>
-
-              <!-- 2행: Unreliable RPC, 0.66% (400px 기준 실척 2.6px) -->
-              <g class="row">
-                <title>RPC Unreliable · 초당 12,000회 요청 중 클라이언트 수신 79.4회. 전달률 0.66%. 연결은 유지되나 누적 유실 약 36만.</title>
-                <text x="152" y="85" fill="#1a1d21" font-size="12.5" font-weight="700" text-anchor="end" font-family="Segoe UI, Malgun Gothic, sans-serif">RPC · Unreliable</text>
-                <text x="152" y="99" fill="#5a6472" font-size="10.5" text-anchor="end" font-family="Segoe UI, Malgun Gothic, sans-serif">초당 12,000회 요청</text>
-                <rect class="bar b2" x="164" y="76" width="2.6" height="24" fill="#a8760f" shape-rendering="crispEdges"/>
-                <text x="180" y="92" fill="#384252" font-size="11.5" font-family="Segoe UI, Malgun Gothic, sans-serif">연결은 유지, 누적 유실 36만</text>
-                <path d="M574 82 v8 M574 93 v1.6" stroke="#a8760f" stroke-width="1.9" stroke-linecap="round"/>
-                <text x="584" y="92" fill="#1a1d21" font-size="12" font-weight="700" font-family="Segoe UI, Malgun Gothic, sans-serif" style="font-variant-numeric:tabular-nums">0.66%</text>
-              </g>
-
-              <!-- 3행: OSC 100%. 데이터 끝만 4px 라운드, 기준선 쪽은 각지게 -->
-              <g class="row">
-                <title>OSC(UDP) · 초당 24,000회 요청, 클라이언트 수신 24,120회. 전달률 100%, 유실 0. Unreliable RPC의 2배 부하 조건.</title>
-                <text x="152" y="137" fill="#1a1d21" font-size="12.5" font-weight="700" text-anchor="end" font-family="Segoe UI, Malgun Gothic, sans-serif">OSC · UDP</text>
-                <text x="152" y="151" fill="#5a6472" font-size="10.5" text-anchor="end" font-family="Segoe UI, Malgun Gothic, sans-serif">초당 24,000회 요청</text>
-                <path class="bar b3" d="M164 132 H560 A4 4 0 0 1 564 136 V144 A4 4 0 0 1 560 148 H164 Z" fill="#00744c"/>
-                <path d="M571 140.5 l3.2 3.4 l6.2 -7.4" fill="none" stroke="#00744c" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-                <text x="586" y="144" fill="#1a1d21" font-size="12" font-weight="700" font-family="Segoe UI, Malgun Gothic, sans-serif" style="font-variant-numeric:tabular-nums">100%</text>
-              </g>
-            </svg>
-          </div>
-
-          <details class="fig-table">
-            <summary>수치 표로 보기</summary>
-            <table style="min-width:0">
-              <thead>
-                <tr><th>전송 방식</th><th>초당 요청</th><th>클라 수신</th><th>전달률</th><th>결과</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>RPC · Reliable</td><td>24,000</td><td>&mdash;</td><td>측정 불가</td><td>연결 종료 (<code>RPCReliableBufferOverflow</code>)</td></tr>
-                <tr><td>RPC · Unreliable</td><td>12,000</td><td>79.4</td><td>0.66%</td><td>연결 유지, 누적 유실 36만</td></tr>
-                <tr><td>OSC · UDP</td><td>24,000</td><td>24,120</td><td>100%</td><td>유실 0, 초기 FPS 하락 후 회복</td></tr>
-              </tbody>
-            </table>
-          </details>
-        </figure>
-
-        <div class="facts">
-          <div class="fact">
-            <h4>열어본 계층</h4>
-            <p><code>FUdpSocketBuilder</code> 소켓 생성 → <code>FUdpSocketReceiver</code> 수신 스레드 → OSC 바이트 직접 파싱 → SPSC 락프리 큐로 게임 스레드 마샬링</p>
-          </div>
-          <div class="fact">
-            <h4>결론이 뒤집힌 지점</h4>
-            <p>본 1개의 저부하에서는 세 방식 모두 차이가 없었습니다. 거기서 멈췄다면 &ldquo;차이 없음&rdquo;이라는 반대 결론을 낼 뻔했습니다.</p>
-          </div>
-        </div>
-
-        <ul>
-          <li>파싱에서 걸린 지점 세 가지: 4바이트 정렬 <code>(n+3)&amp;~3</code>, 빅엔디안 조립, float는 캐스팅이 아니라 <code>Memcpy</code> 비트 재해석.</li>
-          <li>수신 스레드가 액터를 직접 건드리지 않도록 SPSC 락프리 큐로 넘기고, 게임 스레드에서 꺼내 <code>Transform</code>에 반영했습니다.</li>
-          <li>한계도 함께 남겼습니다. <code>OSC</code>도 큐를 전부 비우는 설계 탓에 초기 프레임레이트가 떨어졌고(프레임당 상한 또는 최신 값만 유지로 개선 가능), PIE 리슨서버라 실제 네트워크 지연은 없는 조건이었습니다.</li>
-        </ul>
-
-        <div class="actions">
-          <a class="btn primary" href="https://github.com/AIMHYUK/MiniOscReceiver" target="_blank" rel="noreferrer">Repository</a>
-          <a class="btn" href="projects/miniosc.html">상세 보기 — 8단계 흐름과 측정 전문</a>
-        </div>
-      </article>
-      </div>
-    </section>
-
-    <!-- ══════ 2층 ══════ -->
-    <section class="band alt" id="systems">
-      <div class="wrap">
-      <h2>시스템 구현</h2>
-      <p class="section-desc">직접 설계한 전투·성장 시스템, 남이 설계한 구조 위에서 확장한 일, 좋아하는 장르의 판정 설계를 뜯어본 일입니다.</p>
-
-      <article class="work">
-        <div class="work-head">
-          <h3>MapleBattleRoyaleArena</h3>
-          <span class="work-year">2026.07 – 진행중 · 4인 팀 · 커밋 133개 중 본인 110</span>
-        </div>
-        <div class="badges">
-          <span class="badge">MapleStory Worlds</span>
-          <span class="badge">mLua</span>
-          <span class="badge hl">서버 권위 구조</span>
-          <span class="badge">데이터 주도 설계</span>
-          <span class="badge">Maker MCP 자동 검증</span>
-        </div>
-
-        <div class="resp">
-          <span class="k">담당</span>
-          <p>플레이어가 조작하지 않고 자동으로 싸우는 배틀로얄입니다. 직접 하는 것은
-          <b>직업 스킬 · 대시 · 방향 전환 셋뿐</b>이라, 무엇으로 이기는지를 남기려면 전투의 모든 수치가 데이터에 있고
-          판정이 프레임 단위로 정의돼야 했습니다. 플레이어 이동·전투·스킬 시스템과 데이터 레이어, 서버 권위 구조를 맡았습니다.
-          넥슨 글로벌 개발 콘테스트 출품 예정(10/7 마감).</p>
-        </div>
-
-        <div class="facts">
-          <div class="fact">
-            <h4>권위는 한 곳에</h4>
-            <p>HP가 서버와 클라 두 벌로 갈라져 <code>786</code> / <code>1000</code>으로 어긋난 뒤,
-            "이 값의 주인이 누구인가"를 먼저 정하고 시작했습니다.
-            클라 구동 이동 드라이버 스택을 <b>4단계에 걸쳐 은퇴</b>시켜 서버 컨트롤러로 통합했습니다.</p>
-          </div>
-          <div class="fact">
-            <h4>내 설계를 데이터로 반박</h4>
-            <p>타격 판정에 넣은 active 구간을 2인 실측 105스윙으로 뜯어보니
-            <b>기여도가 3%였고 구간의 뒤쪽 73%는 죽어 있었습니다.</b>
-            제가 만든 기능이 근거 없다는 결론을 커밋 메시지에 그대로 남겼습니다.</p>
-          </div>
-          <div class="fact">
-            <h4>패턴은 요구사항에서</h4>
-            <p>유물 52종을 얹을 때 데코레이터가 첫 발상이었지만 기각했습니다. 이유는 구식이라서가 아니라
-            <b>획득 순서가 매 판 랜덤</b>이라는 게임 규칙 때문입니다 — 체인은 감싼 순서가 곧 연산 순서라
-            같은 조합을 든 두 플레이어의 수치가 달라집니다. 애그리게이터로 통합했습니다.</p>
-          </div>
-        </div>
-
-        <ul>
-          <li><b>엔진과 싸우지 않되, 어디까지 위임할지는 실측으로 정했습니다.</b> 커스텀 이동을 직접 굴리다 애니메이션과 접지가 계속 깨져 엔진 기본 지상 물리로 되돌리니 세 문제가 한 번에 풀렸고, 반대로 넉백은 엔진 물리로 갔다가 되돌아왔습니다 — 그쪽은 권위 모델이 맞지 않았습니다.</li>
-          <li>1511줄까지 자란 서버 컨트롤러를 셋으로 분리하고, 같은 파일을 만지게 된 시점에 <b>API 계약 문서를 먼저 쓰고</b> 경계를 다시 세웠습니다. 그 전까지는 폴더로 완전히 분리해 작업해 PR 머지 시 충돌 0건이었습니다.</li>
-          <li><b>&ldquo;동작한다&rdquo;를 두 층으로 나눠 묻게 됐습니다.</b> 훅 핸들러 다섯 개가 직접 호출하면 정상 동작하는데 실전에서는 한 번도 불리지 않고 있었습니다 — 코드가 갈라지는 축(서버/클라 · 근접/원거리)에서 한쪽 분기에만 호출부를 둔 탓이고, 게임을 띄우기 전 <code>grep</code> 한 번으로 보였을 문제였습니다.</li>
-          <li>검증은 Maker MCP로 에디터를 자동 조작해 측정했습니다(<code>refresh → play →</code> 서버 컨텍스트에 Lua 주입 <code>→ 로그 수집 → stop</code>). 런타임 주장에는 실행 결과를 붙이고, 멀티플레이 기능은 <b>원격 대상으로</b> 측정합니다 — 개발 환경은 서버와 클라가 한 프로세스에 떠서 권위 문제를 가립니다.</li>
-          <li>밸런스 수치의 내적 모순을 발견했을 때는 임의로 고치지 않고 선택지 세 개와 각각의 대가를 정리해 결정을 요청했고, 유물 중첩을 가산으로 할지 곱으로 할지 같은 <b>구조 결정은 근거를 명시하고 직접</b> 정했습니다.</li>
-        </ul>
-      </article>
-
-      <div class="duo">
-        <article>
-          <h3>배달왕 김족구</h3>
-          <div class="badges">
-            <span class="badge">Unity 6</span>
-            <span class="badge">C#</span>
-            <span class="badge">MVC</span>
-            <span class="badge">Yarn Spinner</span>
-            <span class="badge">3인 창업 팀</span>
-          </div>
-          <div class="resp">
-            <span class="k">담당</span>
-            <p>인벤토리 설계와 구현, Yarn Spinner 대화 연동과 선택지 UI를 맡았습니다.
-            퀘스트 프레임워크와 입력 체계는 <b>팀원이 설계한 것</b>이며, 그 위에서 배달 도메인을 장소 기반으로 재설계했습니다.</p>
-          </div>
-          <div class="facts">
-            <div class="fact">
-              <h4>핵심 구현</h4>
-              <p><code>InventoryModel</code>, <code>InventoryController</code>, <code>InventoryState</code>, <code>YarnDialogueManager</code>, <code>IInventoryInputProvider</code></p>
-            </div>
-            <div class="fact">
-              <h4>설계 기준</h4>
-              <p>인벤토리는 이벤트 기반 MVC로 데이터와 UI를 분리했고, 배달은 팀 퀘스트 프레임워크에 진행 이벤트만 보고하도록 결합도를 낮췄습니다.</p>
-            </div>
-          </div>
-          <p class="body">
-            테트리스형 2D 그리드 인벤토리를 이벤트 기반 MVC로 구현했습니다. 회전은 상태를 늘리는 대신
-            <code>EffectiveSize</code> 파생 속성으로 처리해 충돌 판정의 분기를 없앴습니다.
-            팀 퀘스트 프레임워크는 수정하지 않고 확장 지점인 <code>QuestAction</code>에 새 액션을 추가하는 방식으로 연결했습니다.
-            기여 범위는 저장소 README에 <code>git blame</code> 기준으로 정리해 뒀습니다.
-          </p>
-          <div class="actions">
-            <a class="btn" href="projects/mdcalling.html">상세 보기</a>
-            <a class="btn" href="projects/mdcalling/InventorySystemVisualization.html">인벤토리 구조</a>
-            <a class="btn" href="https://github.com/AIMHYUK/MdCalling-Showcase" target="_blank" rel="noopener">GitHub</a>
-          </div>
-        </article>
-
-        <article>
-          <h3>Isekiro</h3>
-          <div class="badges">
-            <span class="badge">Unreal Engine 5</span>
-            <span class="badge">C++</span>
-            <span class="badge">Combat Design</span>
-            <span class="badge">개인 프로젝트</span>
-          </div>
-          <div class="resp">
-            <span class="k">동기</span>
-            <p>소울류를 오래 해왔고, 그중에서도 세키로의 패링이 왜 그렇게 손맛이 좋은지 궁금했습니다.
-            특히 위험 공격은 같은 패링인데 체감 난이도가 전혀 달랐고, 그게 어떤 구조에서 나오는지 직접 만들어 확인하고 싶었습니다.</p>
-          </div>
-          <div class="facts">
-            <div class="fact">
-              <h4>핵심 설계</h4>
-              <p><b>판정 가능 시간과 쿨다운을 분리</b>했습니다. 둘을 하나로 두면 난이도를 올릴 때 입력 자체가 막히는데, 분리하면 받아낼 수 있는 창만 좁힐 수 있습니다.</p>
-            </div>
-            <div class="fact">
-              <h4>결과</h4>
-              <p>일반 공격은 <b>8프레임</b>, 위험 공격은 <b>1프레임</b>으로 판정 창을 다르게 주어, 같은 입력과 같은 코드 경로로 두 가지 난이도를 만들었습니다.</p>
-            </div>
-          </div>
-          <p class="body">
-            그 외에 벡터 내적으로 화면 중앙에 가까운 적을 고르고 <code>Line Trace</code>로 시야를 검증하는 락온,
-            <code>Timeline/Curve</code> 기반 그래플링 훅, 컴포넌트 기반 보스 FSM을 구현했습니다.
-            전투 판정은 프로토타입 범위에서 검증했고 네트워크 복제는 다루지 않았습니다.
-          </p>
-          <div class="actions">
-            <a class="btn" href="projects/isekiro.html">상세 보기</a>
-            <a class="btn" href="https://github.com/AIMHYUK/Isekiro" target="_blank" rel="noreferrer">Repository</a>
-            <a class="btn primary" href="https://youtu.be/BzzkD_gu2F0" target="_blank" rel="noreferrer">Demo</a>
-          </div>
-        </article>
-      </div>
-      </div>
-    </section>
-
-    <!-- ══════ 3층 ══════ -->
-    <section class="band" id="more">
-      <div class="wrap">
-      <h2>그 외 작업</h2>
-      <p class="section-desc">기본기 확인과 학습 목적으로 진행한 작업입니다.</p>
-
-      <ul class="worklist">
-        <li>
-          <div>
-            <h3>KingSejong</h3>
-            <span class="w-meta">Unreal Engine 5 · C++ · OnlineSubsystem · 5인 팀</span>
-          </div>
-          <div>
-            <p>
-              세션 생성, 검색, 참가, 맵 이동까지 멀티플레이 진입 흐름 전체를 담당했습니다.
-              호스트는 <code>ServerTravel</code>, 클라이언트는 <code>ClientTravel</code>로 경로를 분리하고,
-              <b>호스트 이탈과 연결 실패 시 로비 복귀</b>까지 처리했습니다.
-              활성 Subsystem이 <code>NULL</code>인지로 LAN과 Steam 세션을 자동 판정합니다.
-            </p>
-            <div class="actions">
-              <a class="btn" href="projects/JJH_OnlineSubsystem_Visualization.html">세션 구조 시각화</a>
-              <a class="btn" href="projects/kingsejong.html">상세</a>
-              <a class="btn" href="https://youtu.be/ybDS-EG7wro" target="_blank" rel="noreferrer">Demo</a>
-            </div>
-          </div>
-        </li>
-
-        <li>
-          <div>
-            <h3>GASPractice</h3>
-            <span class="w-meta">Unreal Engine 5.6 · C++ · Gameplay Ability System</span>
-          </div>
-          <div>
-            <p>
-              LoL식 QWER 스킬 구조를 GAS로 재현했습니다. 발동(<code>GameplayAbility</code>)과
-              비용, 쿨다운, 피해(<code>GameplayEffect</code>)를 분리하고,
-              <b>쿨다운을 타이머가 아닌 태그의 존재 여부로 표현</b>해 캐릭터 클래스에 조건 분기가 쌓이지 않게 했습니다.
-              본인 작성 범위(8개 파일)는 README에 명시돼 있습니다.
-            </p>
-            <div class="actions">
-              <a class="btn" href="https://github.com/AIMHYUK/GASPractice" target="_blank" rel="noreferrer">Repository</a>
-            </div>
-          </div>
-        </li>
-      </ul>
-      </div>
-    </section>
-
-    <section class="band alt" id="tech">
-      <div class="wrap">
-      <h2>기술 구현 요약</h2>
-      <p class="section-desc">프로젝트에서 직접 다룬 기능과, 구현 과정에서 어떤 기준으로 설계 결정을 했는지 정리했습니다.</p>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>기술</th><th>구현 내용</th><th>설계 기준</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>UDP / OSC</td>
-              <td>소켓 생성, 수신 스레드, OSC 바이트 파싱(4바이트 정렬, 빅엔디안, 비트 재해석), SPSC 락프리 큐 마샬링</td>
-              <td>수신 스레드가 게임 오브젝트를 직접 건드리지 않도록 큐 하나로 경계를 만들고, 부하를 바꿔가며 RPC와 비교 측정했습니다.</td>
-            </tr>
-            <tr>
-              <td>Realtime Sync</td>
-              <td>본 단위 RPC 전달을 UDP/OSC 수신으로 전환, 모션과 페이셜을 주소(Path)별로 분리 처리</td>
-              <td>본 개수에 비례해 호출이 늘어나는 구조를 데이터 스트림 수신으로 바꿔, 전송 횟수가 아니라 최신성을 기준으로 삼았습니다.</td>
-            </tr>
-            <tr>
-              <td>Optimization</td>
-              <td>프로파일러로 <code>Instantiate</code>/<code>Destroy</code> 반복에 따른 GC 부하 특정, 오브젝트 풀링 도입</td>
-              <td>추측으로 고치지 않고 원인을 먼저 측정으로 확인한 뒤, 생성과 파괴 자체를 없애는 쪽으로 구조를 바꿨습니다.</td>
-            </tr>
-            <tr>
-              <td>OnlineSubsystem</td>
-              <td>세션 생성, 검색, 참가, 종료, Subsystem 기준 LAN/Steam 판정, 세션 광고 설정값 등록</td>
-              <td>비동기 Delegate 완료 시점 기준으로 UI 상태, 실패 처리, Delegate 정리를 함께 관리했습니다.</td>
-            </tr>
-            <tr>
-              <td>Travel Flow</td>
-              <td>Host는 <code>ServerTravel</code>, Client는 <code>ClientTravel</code>로 맵 진입 분리, 호스트 이탈 시 로비 복귀</td>
-              <td>세션 참가 성공과 실제 맵 입장을 분리해 실패 지점을 추적할 수 있게 했습니다.</td>
-            </tr>
-            <tr>
-              <td>Gameplay Ability System</td>
-              <td>발동과 비용, 쿨다운, 피해를 <code>GameplayAbility</code> / <code>GameplayEffect</code>로 분리, 쿨다운을 태그로 표현</td>
-              <td>상태를 캐릭터 클래스의 분기로 쌓지 않고 태그의 존재 여부로 표현해, 스킬이 늘어도 조건문이 늘지 않게 했습니다.</td>
-            </tr>
-            <tr>
-              <td>Combat Timing</td>
-              <td>패링의 판정 가능 시간과 쿨다운을 분리, 충돌 채널 전환, <code>TimeDilation</code> 연출</td>
-              <td>둘을 붙여두면 난이도를 올릴 때 입력이 막히므로, 받아낼 수 있는 창만 좁혀 8프레임과 1프레임 두 난이도를 만들었습니다.</td>
-            </tr>
-            <tr>
-              <td>Event-driven MVC</td>
-              <td>2D 그리드 인벤토리의 모델과 뷰 분리, 회전을 <code>EffectiveSize</code> 파생 속성으로 처리</td>
-              <td>뷰가 모델을 역참조하지 않도록 이벤트 단방향으로 두고, 상태를 늘리는 대신 파생 값으로 분기를 없앴습니다.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <div>조준혁 · Game Client Programmer &mdash; 배치안 (비공개)</div>
-      <div>
-        <a href="mailto:chojun917@naver.com">chojun917@naver.com</a> ·
-        <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">GitHub</a> ·
-        <a href="https://www.youtube.com/channel/UCFwgeAWo9OP8tOfDBck9gRw" target="_blank" rel="noreferrer">데모 영상</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    (function () {
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var fig = document.getElementById('fig');
-
-      // 이 페이지의 유일한 연출: 차트가 시야에 들어올 때 막대가 기준선에서 자란다
-      if (fig) {
-        if (reduce || !('IntersectionObserver' in window)) {
-          fig.classList.add('drawn');
-        } else {
-          var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) {
-              if (e.isIntersecting) { fig.classList.add('drawn'); io.disconnect(); }
-            });
-          }, { threshold: .35 });
-          io.observe(fig);
-        }
-      }
-
-      // 현재 보고 있는 섹션을 상단 메뉴에 표시
-      var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
-      var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
-      if ('IntersectionObserver' in window && targets.length) {
-        var spy = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (!e.isIntersecting) return;
-            links.forEach(function (a) {
-              a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
-            });
-          });
-        }, { rootMargin: '-58px 0px -62% 0px', threshold: 0 });
-        targets.forEach(function (t) { spy.observe(t); });
-      }
-    })();
-  </script>
 </body>
 </html>

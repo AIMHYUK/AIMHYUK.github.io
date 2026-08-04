@@ -1,198 +1,251 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>프로젝트 Isekiro - JJH Portfolio</title>
-<style>
-:root{--bg:#0d1117;--card:#161b22;--line:#30363d;--accent:#58a6ff;--text:#e6edf3;--muted:#8b949e}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}a{color:inherit;text-decoration:none}
-.top{position:sticky;top:0;background:rgba(13,17,23,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:10}
-.top .inner{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.back{color:var(--accent);font-weight:700;transition:0.2s;}
-.back:hover{color:#79c0ff;}
-.hero{max-width:1100px;margin:0 auto;padding:56px 20px 32px;text-align:center;}
-.kicker{color:var(--accent);font-size:.86rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
-.hero h1{margin:12px 0 8px;font-size:clamp(2rem,4vw,2.8rem)}
-.hero p{margin:0;color:var(--muted);font-size:1.1rem;}
-.badges{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}
-.badge{padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:#0f131a;color:#c7d2de;font-size:.85rem;font-weight:600;}
-.shell{max-width:1100px;margin:0 auto;padding:0 20px 80px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-@media (max-width: 600px) { .panel { padding: 20px; } }
-.feature-group{background:#0f131a;border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:20px}
-.feature-group:first-child{margin-top:0}
-.feature-group-title{font-size:1.1rem;font-weight:800;color:#d7e2f0;margin-bottom:16px;border-left:4px solid var(--accent);padding-left:12px}
-.feature-list{margin:0;padding-left:20px;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.95rem;line-height:1.8}
-.feature-list li{margin:10px 0;color:#d0d7de}
-.feature-group>.feature-list:not([style]){list-style:none;padding-left:0;display:grid;gap:9px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-.feature-group>.feature-list:not([style]) li{position:relative;margin:0;padding:11px 14px 11px 34px;border:1px solid rgba(48,54,61,.9);border-left:3px solid rgba(88,166,255,.65);border-radius:8px;background:#11161d;color:#d7dee8;line-height:1.65}
-.feature-group>.feature-list:not([style]) li::before{content:"";position:absolute;left:15px;top:20px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(88,166,255,.13)}
-.feature-list li strong{display:inline-flex;align-items:center;margin-right:6px;padding:2px 8px;border-radius:999px;background:rgba(88,166,255,.14);border:1px solid rgba(88,166,255,.45);color:#9dcbff;font-size:.78rem;line-height:1.4;letter-spacing:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;vertical-align:1px}
-.feature-list li:nth-child(2) strong{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
-.feature-list li:nth-child(3) strong{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
-.feature-list li strong.label-build{background:rgba(88,166,255,.14);border-color:rgba(88,166,255,.45);color:#9dcbff}
-.feature-list li strong.label-issue{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
-.feature-list li strong.label-improve{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
-.feature-list li code{font-weight:700}
-.code-block{background:#010409;border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto;color:#e6edf3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);margin-top:16px;}
-.code-block pre{white-space:pre-wrap;word-break:break-word;overflow-x:auto;margin:0;line-height:1.75;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.9rem;color:#e6edf3}
-.code-block .comment{color:#8b949e} .code-block .keyword{color:#ff7b72} .code-block .string{color:#a5d6ff} .code-block .func{color:#d2a8ff}
-.table-wrap{overflow-x:auto;margin-top:16px;} table{width:100%;border-collapse:collapse;min-width:500px;} th,td{border-bottom:1px solid var(--line);padding:12px 16px;text-align:left;vertical-align:top} th{color:#c7d2de;background:#11161d;font-weight:700;}
-img,video{max-width:100%;height:auto;border-radius:12px;display:block}
-.zoomable{cursor:zoom-in;transition:filter .2s, transform .2s}
-.zoomable:hover{filter:brightness(1.08)}
-.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px;background:rgba(0,0,0,.86);z-index:100}
-.lightbox.open{display:flex}
-.lightbox img{max-width:min(96vw,1400px);max-height:92vh;border-radius:10px;border:1px solid var(--line);background:#010409}
-.lightbox button{position:absolute;top:18px;right:20px;width:42px;height:42px;border:1px solid var(--line);border-radius:50%;background:#0f131a;color:var(--text);font-size:1.5rem;line-height:1;cursor:pointer}
-.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.flow-step{background:#1c2128;border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:.85rem;color:var(--muted);font-weight:500;}.flow-arrow{color:var(--line);font-size:1.1rem}
-.btn-wrap{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line);}
-.link-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--accent);color:#000;font-weight:bold;border-radius:8px;transition:0.2s;font-size:0.95rem;}
-.link-btn:hover{background:#79c0ff;}
-.link-btn.outline{background:transparent;color:var(--text);border:1px solid var(--line);}
-.link-btn.outline:hover{background:var(--line);}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Isekiro — 조준혁 포트폴리오</title>
+
+<!--
+  형식 표준안. 게임 클라이언트 포트폴리오의 통상 구조를 따른다.
+
+    프로젝트  →  무슨 게임인가 · 환경 · 역할 · 대표 화면
+    기능 N     →  ① 무엇을 구현했나  ② 화면(사진1/사진2)
+                  ③ 어려움과 해결(트러블슈팅)  ④ 성과
+
+  화면이 없는 기능에는 무엇을 찍어야 하는지 적은 자리를 남긴다.
+  가짜 스크린샷을 넣지 않는다.
+-->
+
+<link rel="stylesheet" href="../assets/portfolio.css">
 </head>
 <body>
-<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:0.05em;">프로젝트 Isekiro</div><a class="back" href="../index.html">← Back to Home</a></div></div>
 
-<header class="hero">
-  <div class="kicker">Project Detail</div>
-  <h1>프로젝트 Isekiro</h1>
-  <p>패링 / 그래플링 / 타겟 락온</p>
-  <div class="badges">
-    <span class="badge">Unreal Engine 5</span>
-    <span class="badge">C++</span>
-    <span class="badge">Blueprint</span>
-    <span class="badge">Team 3인</span>
+<a class="skip" href="#main">본문으로</a>
+
+<div class="top">
+  <div class="wrap top-in">
+    <a href="../index.html">← 조준혁 포트폴리오</a>
+    <span class="r">UNREAL ENGINE 5 · C++ ·
+      <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a></span>
   </div>
-</header>
+</div>
 
-<main class="shell">
-  <section class="panel">
-    <!-- 0. 시연 영상 -->
-    <div class="feature-group">
-      <div class="feature-group-title">시연 영상</div>
-      <a href="https://youtu.be/BzzkD_gu2F0" target="_blank" style="display:inline-block; margin-top:6px;">
-        <img src="https://img.youtube.com/vi/BzzkD_gu2F0/hqdefault.jpg" alt="Isekiro Demo" style="width:100%; max-width:480px; border-radius:8px; border:1px solid var(--line);" />
-      </a>
+<main class="wrap" id="main">
+
+  <!-- ══════ 프로젝트 개요 ══════ -->
+  <header class="ph">
+    <h1>Isekiro</h1>
+    <p class="sub">세키로식 검격 액션의 <b>패링 판정</b>을 뜯어보려고 만든 3인칭 전투 프로토타입입니다.</p>
+
+    <dl class="facts">
+      <div><dt>장르</dt><dd>3인칭 검격 액션</dd></div>
+      <div><dt>엔진 · 언어</dt><dd>Unreal Engine 5 · C++</dd></div>
+      <div><dt>규모</dt><dd>팀 프로젝트</dd></div>
+      <div><dt>담당</dt><dd>전투 판정 · 락온 · 이동</dd></div>
+    </dl>
+
+    <div class="about">
+      <div>
+        <h2>어떤 게임인가</h2>
+        <p>플레이어가 적의 공격 타이밍에 맞춰 튕겨내며 체간을 깎아 처치하는 전투를 만들었습니다.
+        일반 공격과 <b>위험 공격</b>(붉은 표식)이 있고, 둘은 같은 패링 입력을 쓰지만
+        받아낼 수 있는 시간이 다릅니다.</p>
+        <p>소울류를 오래 해왔는데, 세키로의 패링이 왜 그렇게 손맛이 좋은지 궁금했습니다.
+        특히 위험 공격은 같은 조작인데 체감 난이도가 전혀 달랐고,
+        그게 어떤 구조에서 나오는지 직접 만들어 확인하는 게 목표였습니다.</p>
+        <p>전투 외에 <b>락온 타게팅</b>과 <b>그래플링 훅 이동</b>을 구현했습니다.</p>
+      </div>
+      <figure>
+        <a href="https://youtu.be/BzzkD_gu2F0" target="_blank" rel="noreferrer">
+          <img src="https://img.youtube.com/vi/BzzkD_gu2F0/hqdefault.jpg" alt="Isekiro 시연 영상 썸네일">
+        </a>
+        <figcaption>시연 영상 (YouTube) — 클릭하면 재생됩니다</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <!-- ══════ 기능 01 ══════ -->
+  <section class="feat" id="f1">
+    <div class="feat-h">
+      <span class="no">기능 01</span>
+      <h2>락온 타게팅</h2>
+      <p class="one">화면 중앙에 가까운 적을 자동으로 잠그고, 카메라와 이동을 그 대상에 묶습니다.</p>
     </div>
 
-    <!-- 1. 타겟 락온 -->
-    <div class="feature-group">
-      <div class="feature-group-title">1. 타겟 락온 시스템</div>
-      <ul class="feature-list">
-        <li><code style="color:var(--accent);font-size:0.85em">UActorComponent</code> 기반 모듈형 설계 — 모든 캐릭터에 즉시 탑재 가능</li>
-        <li>내적(<code style="color:var(--accent);font-size:0.85em">Dot Product</code>)으로 카메라 정면 벡터와 타겟 벡터 유사도 측정, 화면 중앙에 가장 가까운 적 우선 선택</li>
-        <li>RInterp To로 카메라 회전 부드럽게 보간, 락온 상태에서 Strafing 이동 자동 전환</li>
-        <li><code style="color:var(--accent);font-size:0.85em">Line Trace</code>로 장애물 뒤의 적은 타겟 대상에서 자동 제외</li>
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>카메라 전방 벡터와 적 방향 벡터의 <code>Dot Product</code>로 후보 우선순위를 매겨,
+        각도상 화면 중앙에 가장 가까운 적을 선택합니다.</li>
+        <li><code>Line Trace</code>로 대상까지 시야가 통하는지 한 번 더 검증합니다.</li>
+        <li><code>RInterp To</code>로 카메라 회전을 부드럽게 보간하고,
+        락온 상태에서는 이동을 자동으로 Strafing으로 전환합니다.</li>
       </ul>
-      <img class="zoomable" data-lightbox src="../assets/gifs/isekiro/lockon.gif" alt="Isekiro lock-on system" style="width:100%; max-width:720px; margin-top:16px; border:1px solid var(--line);" />
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:14px;">
-        <img class="zoomable" data-lightbox src="../assets/images/isekiro/dotProduct.png" alt="Lock-on target selection using dot product" style="width:100%; border:1px solid var(--line);" />
-        <img class="zoomable" data-lightbox src="../assets/images/isekiro/checkVisible.png" alt="Lock-on visibility check using line trace" style="width:100%; border:1px solid var(--line);" />
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/isekiro/dotProduct.png" alt="내적으로 락온 대상 우선순위를 계산하는 로직">
+          <figcaption><b>사진 1 — 대상 선정</b>카메라 전방 기준 내적값으로 후보를 정렬합니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/isekiro/checkVisible.png" alt="라인 트레이스로 시야를 검증하는 로직">
+          <figcaption><b>사진 2 — 시야 검증</b>가려진 대상을 후보에서 제외합니다.</figcaption>
+        </figure>
+      </div>
+      <div class="shots" style="margin-top:12px">
+        <figure>
+          <img src="../assets/gifs/isekiro/lockon.gif" alt="락온 시스템 동작 장면">
+          <figcaption><b>동작</b>대상 전환과 카메라 보간이 이어지는 장면입니다.</figcaption>
+        </figure>
       </div>
     </div>
 
-    <!-- 2. 그래플링 훅 -->
-    <div class="feature-group">
-      <div class="feature-group-title">2. 그래플링 훅 시스템</div>
-      <ul class="feature-list">
-        <li>타겟 지점 감지 후 하단 트레이스로 실제 착지 가능 지형(Walkable Surface) 사전 검증</li>
-        <li><code style="color:var(--accent);font-size:0.85em">Timeline + Curve</code>로 발사 가속 / 도착 감속을 조합한 물리적으로 자연스러운 이동 궤적 구현</li>
-        <li>Cable Component로 발사체와 캐릭터 손 소켓 사이의 물리 연결 및 환경 충돌 구현</li>
-        <li>애니메이션 노티파이(Anim Notify)로 이동 시작 · 종료 시점과 Flying / Falling 상태 정밀 동기화</li>
-      </ul>
-      <img class="zoomable" data-lightbox src="../assets/gifs/isekiro/hook.gif" alt="Isekiro grappling hook system" style="width:100%; max-width:720px; margin-top:16px; border:1px solid var(--line);" />
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd><b>벽 뒤의 적이 잠겼습니다.</b> 플레이어가 보고 있지도 않은 대상으로 카메라가 돌아가 조작이 끊겼습니다.</dd></div>
+        <div><dt>원인</dt><dd>각도만으로 우선순위를 정했기 때문입니다. 내적값은 &ldquo;화면 중앙에 가까운가&rdquo;만 말해줄 뿐, 그 사이에 무엇이 있는지는 모릅니다.</dd></div>
+        <div><dt>해결</dt><dd>각도로 후보를 추린 뒤 <code>Line Trace</code>로 시야를 한 번 더 검증해, 가려진 대상을 후보에서 제외했습니다. <b>후보 선정과 유효성 검사를 두 단계로 나눈 것</b>이 핵심입니다.</dd></div>
+      </dl>
     </div>
 
-    <!-- 3. 패링 시스템 -->
-    <div class="feature-group">
-      <div class="feature-group-title">3. 패링 시스템</div>
-      <ul class="feature-list">
-        <li>USphereComponent 기반 <code style="color:var(--accent);font-size:0.85em">URealParryBox</code>의 Overlap으로 패리 판정 — 일반 약 8프레임, 위험(Hazard) 상태 1프레임으로 난이도 연동</li>
-        <li>패리 입력 시 데미지 채널 충돌 응답을 즉시 Ignore로 전환하여 무적 판정 구현, 패리 종료 시 복구</li>
-        <li>패리 성공 시 <code style="color:var(--accent);font-size:0.85em">SetGlobalTimeDilation(0.85f)</code>로 슬로우 모션 적용 후 0.5초 뒤 타이머로 복구</li>
-        <li>패리 성공마다 보스 자세 데미지(3) 누적, 자세 붕괴 시 처형 연출 트리거</li>
-        <li>패리 윈도우와 쿨다운을 별도 FTimerHandle로 분리 — 연속 패리 어뷰징 방지</li>
-      </ul>
-      <ul class="feature-list" style="margin-top:16px;">
-        <li><strong class="label-build">구현</strong> — <code style="color:var(--accent);font-size:0.85em">URealParryBox::ParryStarted</code>에서 짧은 패리 윈도우를 열고, <code style="color:var(--accent);font-size:0.85em">FTimerHandle</code>로 판정 종료와 쿨다운을 분리했습니다. 성공 시 <code style="color:var(--accent);font-size:0.85em">OnParryCheckBeginOverlap</code>에서 패리 몽타주, 충돌 이펙트, 보스 자세 데미지, 히트스톱을 처리했습니다.</li>
-      </ul>
-      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - 입력 순간 패리 윈도우를 열고 타이머로 닫는 구조</span>
-<span class="keyword">void</span> URealParryBox::<span class="func">ParryStarted</span>()
-{
-    <span class="keyword">if</span> (!bCanParry) <span class="keyword">return</span>;
-
-    bIsParryWindow = <span class="keyword">true</span>;
-    <span class="func">SetCollisionEnabled</span>(ECollisionEnabled::QueryAndPhysics);
-    MyCharacter-&gt;<span class="func">GetCapsuleComponent</span>()-&gt;<span class="func">SetCollisionResponseToChannel</span>(
-        ECC_GameTraceChannel3, ECR_Ignore);
-
-    <span class="keyword">const float</span> WindowFrame =
-        MyCharacter-&gt;<span class="func">GetHazardState</span>() == EHazardState::EHS_Hazard ? 1.f : 8.f;
-    GetWorld()-&gt;<span class="func">GetTimerManager</span>().<span class="func">SetTimer</span>(
-        ParryTimerHandle, <span class="keyword">this</span>, &amp;URealParryBox::ParryEnded, WindowFrame / 60.f, <span class="keyword">false</span>);
-}</pre></div>
-      <ul class="feature-list" style="margin-top:16px;">
-        <li><strong class="label-issue">문제</strong> — 프로토타입 단계라 패리 박스가 캐릭터, 보스, 슬로우 모션, 자세 데미지를 모두 알고 있어 책임이 큽니다. 또한 보스 참조와 전역 <code style="color:var(--accent);font-size:0.85em">TimeDilation</code> 사용은 확장 시 부작용이 생길 수 있습니다.</li>
-        <li><strong class="label-improve">개선 방향</strong> — 패리 박스는 “패리 성공 이벤트 발생”까지만 담당하게 줄이고, 자세 데미지·히트스톱·처형 가능 여부는 전투 컴포넌트나 이벤트 구독 쪽으로 분리하겠습니다. 판정 시간도 프레임 상수보다 데이터 에셋/애니메이션 노티파이 기반으로 옮기겠습니다.</li>
-      </ul>
-    </div>
-
-    <!-- 4. 핵심 기술 -->
-    <div class="feature-group">
-      <div class="feature-group-title">핵심 기술</div>
-      <div class="table-wrap">
-        <table class="tech-table">
-          <tr><th>기술</th><th>적용 내용</th></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">Dot Product</code></td><td>카메라 정면 기준 최적 타겟 자동 선택</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">Line Trace</code></td><td>착지 가능 지형 사전 검증 · 시야 차단 감지</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">Timeline + Curve</code></td><td>그래플링 이동 가속 / 감속 곡선 제어</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">TimeDilation</code></td><td>패리 성공 시 히트스탑 슬로우 모션 연출</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">Anim Notify</code></td><td>애니메이션 타이밍과 게임 로직 정밀 동기화</td></tr>
-        </table>
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>벽 뒤 오탐 제거</span>
+        <span class="n">대상 전환이 플레이어 시선과 일치</span>
       </div>
-    </div>
-
-    <!-- 하단 버튼 영역 -->
-    <div class="btn-wrap">
-      <a class="link-btn outline" href="https://github.com/AIMHYUK/Isekiro" target="_blank">&#128279; 레포지토리 보기</a>
-      <a class="link-btn" href="https://youtu.be/BzzkD_gu2F0" target="_blank">&#9654; 시연 영상 보기</a>
     </div>
   </section>
+
+  <!-- ══════ 기능 02 ══════ -->
+  <section class="feat" id="f2">
+    <div class="feat-h">
+      <span class="no">기능 02</span>
+      <h2>그래플링 훅 이동</h2>
+      <p class="one">지정한 지점으로 갈고리를 쏘아 캐릭터를 끌어당기는 이동입니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>발사 전에 도착 지점의 지형을 먼저 검증하고,
+        <code>Timeline</code>과 <code>Curve</code>로 이동 궤적을 보간합니다.</li>
+        <li><code>Cable Component</code>로 발사체와 캐릭터 손 소켓을 물리적으로 연결하고 환경 충돌을 처리합니다.</li>
+        <li><code>Anim Notify</code>로 이동 시작·종료 시점과 <code>Flying</code> / <code>Falling</code> 상태를 동기화합니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <figure>
+          <img src="../assets/gifs/isekiro/hook.gif" alt="그래플링 훅 이동 장면">
+          <figcaption><b>동작</b>발사 → 케이블 연결 → 곡선 이동 → 착지까지 이어집니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>물리 힘을 계속 더해 끌어당기니 <b>도착 지점이 매번 달라지고</b>, 지형에 걸려 이동이 실패하거나 연출 타이밍이 어긋났습니다.</dd></div>
+        <div><dt>원인</dt><dd>누적된 힘의 결과는 프레임 수와 충돌 상황에 따라 달라집니다. 궤적을 예측할 수 없으니 애니메이션 시점도 맞출 수 없었습니다.</dd></div>
+        <div><dt>해결</dt><dd>힘을 누적하는 대신 <b>사전 지형 검증 후 <code>Curve</code> 기반 보간으로 이동을 직접 제어</b>했습니다. 도착 지점과 소요 시간이 발사 순간에 확정되므로, 그 값에 맞춰 <code>Anim Notify</code>로 연출을 붙였습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>도착 지점 결정론적</span>
+        <span>지형 충돌로 인한 이동 실패 제거</span>
+        <span class="n">연출과 이동이 같은 타임라인에서 동기</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 03 ══════ -->
+  <section class="feat" id="f3">
+    <div class="feat-h">
+      <span class="no">기능 03</span>
+      <h2>패링 판정</h2>
+      <p class="one">이 프로젝트를 만든 이유입니다. 같은 입력으로 두 가지 난이도를 만들었습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li><b>판정 가능 시간</b>과 <b>쿨다운</b>을 별도의 타이머로 분리했습니다.</li>
+        <li>판정 성공 시 충돌 채널을 전환해 피격을 무효화하고, <code>TimeDilation</code>으로 타격감을 연출합니다.</li>
+        <li>일반 공격은 판정 창 <b>8프레임</b>, 위험 공격은 <b>1프레임</b>으로 값만 다르게 주었습니다.
+        입력 처리와 코드 경로는 완전히 같습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/isekiro/parry-success.png" alt="적의 공격을 받아낸 순간 노란 섬광이 터지는 화면">
+          <figcaption><b>사진 1 — 패링 성공</b>판정 창 안에서 받아내면 섬광이 터지고 적의 체간(하단 노란 게이지)이 깎입니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/isekiro/parry-danger.png" alt="적 머리 위에 붉은 위험 표식이 뜬 화면">
+          <figcaption><b>사진 2 — 위험 공격 예고</b>붉은 <b>危</b>가 뜨면 같은 입력인데 판정 창이 8프레임에서 1프레임으로 좁혀집니다.</figcaption>
+        </figure>
+      </div>
+      <div class="shots" style="margin-top:12px">
+        <figure>
+          <img src="../assets/gifs/isekiro/parry.gif" alt="패링이 성립하는 전후 1초 구간">
+          <figcaption><b>동작</b>받아내는 순간 전후 1초. 연출은 판정과 독립적으로 재생됩니다.</figcaption>
+        </figure>
+      </div>
+      <div class="shots" style="margin-top:12px">
+        <div class="need">
+          <b>촬영 권장 — 판정 창 시각화</b>
+          <p>디버그 표시를 켜고 판정 가능 구간과 쿨다운 구간이 서로 다른 길이로 도는 화면.
+          이 기능의 설계가 한 장으로 설명되는 그림이라 가장 값이 큽니다. 녹화본에는 없어 직접 찍어야 합니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>위험 공격의 난이도를 올리려고 판정 창을 좁혔더니, <b>입력 자체가 먹지 않는 구간</b>이 생겼습니다. 플레이어 입장에서는 &ldquo;눌렀는데 아무 일도 안 일어난&rdquo; 상태가 됩니다.</dd></div>
+        <div><dt>원인</dt><dd>판정 가능 시간과 재사용 대기 시간을 한 값으로 관리했기 때문입니다. 창을 좁히면 다음 입력을 받을 수 있는 시점까지 함께 당겨졌습니다.</dd></div>
+        <div><dt>해결</dt><dd>둘을 <b>별개의 타이머로 분리</b>했습니다. 그러면 &ldquo;언제 입력을 받는가&rdquo;와 &ldquo;언제 다시 쓸 수 있는가&rdquo;를 따로 조절할 수 있어, 받아낼 수 있는 창만 좁힐 수 있습니다. 연출은 판정과 독립적으로 재생되게 두었습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>일반 8 frame · 위험 1 frame</span>
+        <span>같은 입력 · 같은 코드 경로로 두 난이도</span>
+        <span class="n">난이도를 올려도 입력이 막히지 않음</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 마무리 ══════ -->
+  <div class="close">
+    <h2>범위와 한계</h2>
+    <p>전투 판정은 <b>프로토타입 범위에서 검증</b>했고 네트워크 복제는 다루지 않았습니다.
+    패링 판정 값(8프레임 / 1프레임)은 60fps 기준이며, 가변 프레임 환경에서의 동작은 확인하지 않았습니다.</p>
+  </div>
+
+  <div class="foot">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a>
+    <a href="https://youtu.be/BzzkD_gu2F0" target="_blank" rel="noreferrer">시연 영상</a>
+  </div>
+
 </main>
-<div class="lightbox" id="lightbox" aria-hidden="true">
-  <button type="button" aria-label="Close image preview">×</button>
-  <img alt="" />
-</div>
-<script>
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImage = lightbox.querySelector('img');
 
-  document.querySelectorAll('[data-lightbox]').forEach((image) => {
-    image.addEventListener('click', () => {
-      lightboxImage.src = image.src;
-      lightboxImage.alt = image.alt;
-      lightbox.classList.add('open');
-      lightbox.setAttribute('aria-hidden', 'false');
-    });
-  });
-
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-    lightbox.setAttribute('aria-hidden', 'true');
-    lightboxImage.src = '';
-  }
-
-  lightbox.addEventListener('click', (event) => {
-    if (event.target === lightbox || event.target.tagName === 'BUTTON') closeLightbox();
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeLightbox();
-  });
-</script>
 </body>
 </html>

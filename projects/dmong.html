@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bounce Hero : 꿈돌이 — 조준혁 포트폴리오</title>
+<link rel="stylesheet" href="../assets/portfolio.css">
+</head>
+<body>
+
+<a class="skip" href="#main">본문으로</a>
+
+<div class="top">
+  <div class="wrap top-in">
+    <a href="../index.html">← 조준혁 포트폴리오</a>
+    <span class="r">UNITY · C# · 주식회사 디몽 인턴십 ·
+      <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a></span>
+  </div>
+</div>
+
+<main class="wrap" id="main">
+
+  <!-- ══════ 프로젝트 개요 ══════ -->
+  <header class="ph">
+    <h1>Bounce Hero : 꿈돌이</h1>
+    <p class="sub">대전관광공사 마스코트를 주인공으로 한 모바일 점프 게임입니다.
+    <b>Google Play와 App Store 양쪽에 출시</b>했고, 라이브 운영까지 참여했습니다.</p>
+
+    <dl class="facts">
+      <div><dt>장르</dt><dd>모바일 점프 액션</dd></div>
+      <div><dt>엔진 · 언어</dt><dd>Unity · C#</dd></div>
+      <div><dt>소속 · 규모</dt><dd>주식회사 디몽 인턴 · 사수와 2인 개발</dd></div>
+      <div><dt>담당</dt><dd>클라이언트 개발 · 2025.03–06</dd></div>
+    </dl>
+
+    <div class="about">
+      <div>
+        <h2>어떤 게임인가</h2>
+        <p>대전관광공사의 마스코트 <b>꿈돌이</b>가 발판을 밟고 위로 올라가는 캐주얼 점프 게임입니다.
+        대전관광공사와 협업한 프로젝트라 오프라인 축제 현장에서도 시연했습니다.</p>
+        <p>사수와 <b>둘이서 0부터 만든 게임</b>입니다. 프로토타입부터 스토어 배포,
+        그리고 출시 후 라이브 운영까지 전 과정을 함께 했습니다.</p>
+        <p>기획이 정해진 상태에서 코드를 얹은 것이 아니라, 만들면서 문제를 발견하고
+        구조를 바꿔가며 완성했습니다. <b>실제 이용자에게 나간 제품을 처음부터 끝까지</b> 겪은 경험입니다.</p>
+      </div>
+      <figure>
+        <img src="../assets/images/dmong/kkumdol-appstore.png" alt="App Store의 Bounce Hero 꿈돌이 리스팅">
+        <figcaption>App Store 리스팅. Google Play에도 함께 출시했습니다.</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <!-- ══════ 기능 01 ══════ -->
+  <section class="feat" id="f1">
+    <div class="feat-h">
+      <span class="no">기능 01</span>
+      <h2>오브젝트 풀링으로 프레임 확보</h2>
+      <p class="one">라이브 중 발생한 프레임 드랍의 원인을 먼저 측정하고, 그다음에 구조를 바꿨습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>프로파일러로 프레임 드랍 구간을 잡아, 원인이
+        <code>Instantiate</code>/<code>Destroy</code> 반복에 따른 <b>GC 부하</b>임을 특정했습니다.</li>
+        <li>발판·이펙트 등 반복 생성되는 오브젝트를 <b>풀에서 꺼내 쓰고 되돌리는</b> 방식으로 바꿨습니다.</li>
+        <li>재사용 시점에 <b>위치 · 애니메이션 · 타이머 상태를 함께 초기화</b>하도록 설계에 포함했습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <div class="need">
+          <b>촬영 필요 — 사진 1 · 플레이 화면</b>
+          <p>꿈돌이가 발판을 밟고 올라가는 실제 게임 화면. 발판과 이펙트가 여러 개 떠 있는 순간이면
+          풀링 대상이 무엇인지 보입니다. 스토어 페이지의 스크린샷을 그대로 써도 됩니다.</p>
+        </div>
+        <div class="need">
+          <b>촬영 권장 — 사진 2 · 프로파일러</b>
+          <p>Unity Profiler에서 GC Alloc 스파이크가 보이는 화면. 남아 있다면
+          <b>&ldquo;추측이 아니라 측정으로 원인을 잡았다&rdquo;</b>는 말의 가장 강한 증거입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>풀링을 넣은 뒤 <b>꺼내 쓴 오브젝트가 이전 상태를 그대로 들고 나왔습니다.</b> 위치가 엉뚱한 곳에서 시작하거나, 이전 애니메이션이 이어서 재생됐습니다.</dd></div>
+        <div><dt>원인</dt><dd><code>Destroy</code>는 오브젝트를 없애지만 풀링은 <b>비활성화했다가 다시 켜는 것</b>이라, 컴포넌트에 남아 있던 값이 초기화되지 않습니다. 생성과 재사용은 같은 일이 아니었습니다.</dd></div>
+        <div><dt>해결</dt><dd>풀에서 꺼내는 시점을 <b>명시적인 초기화 지점</b>으로 두고, 위치·애니메이션·타이머를 거기서 함께 되돌리도록 했습니다. 지워지는 것에 기대던 처리를 전부 그 자리로 옮겼습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>저사양 안드로이드 60 fps 유지</span>
+        <span class="n">원인 특정 → 구조 변경 순서로 처리</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 02 ══════ -->
+  <section class="feat" id="f2">
+    <div class="feat-h">
+      <span class="no">기능 02</span>
+      <h2>플랫폼 SDK 연동과 라이브 운영</h2>
+      <p class="one">인증·결제·광고를 붙이고, 축제 현장에서 받은 피드백을 패치로 넣었습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li><code>Firebase Auth</code>와 <code>Realtime Database</code>로 계정과 기록을 처리했습니다.</li>
+        <li><code>IAP</code> 인앱 결제와 <code>AdMob</code> 보상형 광고 SDK를 연동했습니다.</li>
+        <li>오프라인 축제 현장에서 수집한 피드백을 <b>버그 수정과 레벨 밸런스 패치</b>에 반영했습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/dmong/kkumdol-googleplay.png" alt="Google Play 스토어의 Bounce Hero 꿈돌이 리스팅. 주식회사 디몽, 광고 포함 인앱 구매 표기">
+          <figcaption><b>Google Play</b>&lsquo;광고 포함 · 인앱 구매&rsquo; 표기가 붙어 있는 것이 <code>AdMob</code>과 <code>IAP</code> 연동 결과입니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/dmong/kkumdol-appstore.png" alt="App Store의 Bounce Hero 꿈돌이 리스팅">
+          <figcaption><b>App Store</b>같은 빌드를 iOS로도 출시했습니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>미작성</dt><dd>이 기능의 트러블슈팅은 아직 정리하지 않았습니다.
+        <b>SDK 연동에서 막혔던 것</b>(광고 콜백 타이밍, 결제 검증, Firebase 규칙, 심사 반려 등)이 있었다면
+        문제 / 원인 / 해결 세 칸에 맞춰 알려주시면 채웁니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>Google Play · App Store 양대 마켓 출시</span>
+        <span>1,000+ 다운로드</span>
+        <span class="n">대전관광공사 협업 · 오프라인 축제 시연</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 같은 인턴십의 다른 프로젝트 ══════ -->
+  <section class="feat" id="f3">
+    <div class="feat-h">
+      <span class="no">함께</span>
+      <h2>ZOMVIRUS — 기존 출시작 참여</h2>
+      <p class="one">같은 인턴십에서 참여한 두 번째 프로젝트입니다. 신규 출시가 아닙니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>디몽이 <b>2025년 2월에 이미 Steam에 출시</b>한 PC VR 좀비 서바이벌 게임입니다.
+        제가 합류한 것은 그 뒤이며, 기능 추가와 리팩터링으로 참여했습니다.</li>
+        <li>게임 내 이벤트에 연동되는 <code>Steam Achievement</code>를 구현했습니다.</li>
+        <li>무기 장착·인벤토리 <b>레거시 코드를 파악해</b> 무기 슬롯을 추가하며 리팩터링했습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <figure>
+          <img src="../assets/images/dmong/zomvirus-achievements.png" alt="Steam 상점 페이지의 도전 과제 3개 아이콘">
+          <figcaption><b>Steam 도전 과제</b>상점 페이지에 노출된 도전 과제 셋. 게임 내 이벤트와 연동되도록 구현한 부분입니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>무기 장착과 인벤토리가 <b>이미 서비스 중인 코드</b>였습니다. 슬롯을 하나 늘리는 일인데 어디를 건드려야 안전한지 알 수 없었습니다.</dd></div>
+        <div><dt>원인</dt><dd>제가 쓴 코드가 아니었고, 출시된 게임이라 <b>되돌리기 비용이 큽니다.</b> 구조를 모른 채 고치면 기존 동작을 깨뜨립니다.</dd></div>
+        <div><dt>해결</dt><dd>먼저 <b>레거시 코드의 흐름을 파악하는 데 시간을 썼고</b>, 그 위에서 슬롯을 추가하며 필요한 만큼만 리팩터링했습니다. 남이 만든 구조 위에서 확장하는 방식은 이후 배달왕에서도 같은 방식으로 이어졌습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span class="n">Steam 도전 과제 3종 연동</span>
+        <span class="n">무기 슬롯 추가 · 레거시 리팩터링</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 마무리 ══════ -->
+  <div class="close">
+    <h2>범위와 한계</h2>
+    <p>인턴십 기간에 참여한 두 프로젝트이고, <b>성격이 다릅니다.</b>
+    꿈돌이는 <b>사수와 둘이 0부터 만들어 출시</b>한 신규 개발이고,
+    ZOMVIRUS는 제가 합류하기 전인 <b>2025년 2월에 이미 출시돼 있던 게임</b>에
+    기능 추가와 리팩터링으로 참여한 것이라 출시 실적으로 세지 않습니다.
+    두 프로젝트 모두 아트는 팀의 것이며, 제 담당은 클라이언트 구현입니다.</p>
+  </div>
+
+  <div class="foot">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <a href="https://play.google.com/store/apps/details?id=com.Dmong.Project_Jump&amp;hl=ko" target="_blank" rel="noreferrer">Google Play</a>
+    <a href="https://store.steampowered.com/app/3222270/ZOMVIRUS/" target="_blank" rel="noreferrer">ZOMVIRUS (Steam)</a>
+    <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a>
+  </div>
+
+</main>
+
+</body>
+</html>

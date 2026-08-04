@@ -1,339 +1,237 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>프로젝트 세종대왕 - JJH Portfolio</title>
-<style>
-:root{--bg:#0d1117;--card:#161b22;--line:#30363d;--accent:#58a6ff;--text:#e6edf3;--muted:#8b949e;--accent2:#f78166}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}a{color:inherit;text-decoration:none}
-.top{position:sticky;top:0;background:rgba(13,17,23,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:10}
-.top .inner{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.back{color:var(--accent);font-weight:700;transition:.2s}.back:hover{color:#79c0ff}
-.hero{max-width:1100px;margin:0 auto;padding:56px 20px 32px;text-align:center}.kicker{color:var(--accent);font-size:.86rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
-.hero h1{margin:12px 0 8px;font-size:clamp(2rem,4vw,2.8rem)}.hero p{margin:0;color:var(--muted);font-size:1.1rem}
-.badges{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}.badge{padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:#0f131a;color:#c7d2de;font-size:.85rem;font-weight:600}
-.shell{max-width:1100px;margin:0 auto;padding:0 20px 80px}.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-@media (max-width:600px){.panel{padding:20px}}
-.feature-group{background:#0f131a;border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:20px}.feature-group:first-child{margin-top:0}
-.feature-group-title{font-size:1.1rem;font-weight:800;color:#d7e2f0;margin-bottom:16px;border-left:4px solid var(--accent);padding-left:12px}
-.feature-list{margin:0;padding-left:20px;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.95rem;line-height:1.8}.feature-list li{margin:10px 0;color:#d0d7de}
-.feature-group>.feature-list:not([style]){list-style:none;padding-left:0;display:grid;gap:9px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-.feature-group>.feature-list:not([style]) li{position:relative;margin:0;padding:11px 14px 11px 34px;border:1px solid rgba(48,54,61,.9);border-left:3px solid rgba(88,166,255,.65);border-radius:8px;background:#11161d;color:#d7dee8;line-height:1.65}
-.feature-group>.feature-list:not([style]) li::before{content:"";position:absolute;left:15px;top:20px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(88,166,255,.13)}
-.feature-list li strong{display:inline-flex;align-items:center;margin-right:6px;padding:2px 8px;border-radius:999px;background:rgba(88,166,255,.14);border:1px solid rgba(88,166,255,.45);color:#9dcbff;font-size:.78rem;line-height:1.4;letter-spacing:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;vertical-align:1px}
-.feature-list li:nth-child(2) strong{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
-.feature-list li:nth-child(3) strong{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
-.feature-list li strong.label-build{background:rgba(88,166,255,.14);border-color:rgba(88,166,255,.45);color:#9dcbff}
-.feature-list li strong.label-result{background:rgba(210,168,255,.12);border-color:rgba(210,168,255,.4);color:#d2a8ff}
-.feature-list li strong.label-issue{background:rgba(255,166,87,.13);border-color:rgba(255,166,87,.45);color:#ffd08a}
-.feature-list li strong.label-solve{background:rgba(88,166,255,.12);border-color:rgba(88,166,255,.42);color:#9dcbff}
-.feature-list li strong.label-improve{background:rgba(126,231,135,.12);border-color:rgba(126,231,135,.42);color:#9ff2a8}
-.feature-list li code{font-weight:700}
-.code-block{background:#010409;border:1px solid var(--line);border-radius:12px;padding:20px;overflow:auto;color:#e6edf3;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);margin-top:16px}
-.code-block pre{white-space:pre-wrap;word-break:break-word;overflow-x:auto;margin:0;line-height:1.75;font-family:"Consolas","Cascadia Code","Fira Code",monospace;font-size:.9rem;color:#e6edf3}
-.code-block .comment{color:#8b949e}.code-block .keyword{color:#ff7b72}.code-block .string{color:#a5d6ff}.code-block .func{color:#d2a8ff}
-.table-wrap{overflow-x:auto;margin-top:16px}table{width:100%;border-collapse:collapse;min-width:500px}th,td{border-bottom:1px solid var(--line);padding:12px 16px;text-align:left;vertical-align:top}th{color:#c7d2de;background:#11161d;font-weight:700}
-img,video{max-width:100%;height:auto;border-radius:12px;display:block}.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.flow-step{background:#1c2128;border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:.85rem;color:var(--muted);font-weight:500}.flow-arrow{color:var(--line);font-size:1.1rem}
-.zoomable{cursor:zoom-in;transition:filter .2s, transform .2s}
-.zoomable:hover{filter:brightness(1.08)}
-.image-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:16px}
-.image-grid img{width:100%;border:1px solid var(--line);background:#010409}
-.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px;background:rgba(0,0,0,.86);z-index:100}
-.lightbox.open{display:flex}
-.lightbox img{max-width:min(96vw,1400px);max-height:92vh;border-radius:10px;border:1px solid var(--line);background:#010409}
-.lightbox button{position:absolute;top:18px;right:20px;width:42px;height:42px;border:1px solid var(--line);border-radius:50%;background:#0f131a;color:var(--text);font-size:1.5rem;line-height:1;cursor:pointer}
-.note{margin-top:16px;padding:14px 16px;border-left:3px solid var(--accent);background:#11161d;border-radius:0 8px 8px 0;color:var(--muted);font-size:.92rem}
-.btn-wrap{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}.inline-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-.link-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;background:var(--accent);color:#000;font-weight:bold;border-radius:8px;transition:.2s;font-size:.95rem}.link-btn:hover{background:#79c0ff}.link-btn.outline{background:transparent;color:var(--text);border:1px solid var(--line)}.link-btn.outline:hover{background:var(--line)}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>프로젝트 세종대왕 — 조준혁 포트폴리오</title>
+<link rel="stylesheet" href="../assets/portfolio.css">
 </head>
 <body>
-<div class="top"><div class="inner"><div style="font-weight:800;letter-spacing:.05em;">프로젝트 세종대왕</div><a class="back" href="../index.html">← Back to Home</a></div></div>
 
-<header class="hero">
-  <div class="kicker">Project Detail</div>
-  <h1>프로젝트 세종대왕</h1>
-  <p>세션 / 로비 / 미니게임</p>
-  <div class="badges">
-    <span class="badge">Unreal Engine 5</span>
-    <span class="badge">C++</span>
-    <span class="badge">Blueprint</span>
-    <span class="badge">Team 5인</span>
+<a class="skip" href="#main">본문으로</a>
+
+<div class="top">
+  <div class="wrap top-in">
+    <a href="../index.html">← 조준혁 포트폴리오</a>
+    <span class="r">UNREAL ENGINE 5 · C++ · ONLINESUBSYSTEM ·
+      <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a></span>
   </div>
-</header>
-
-<main class="shell">
-  <section class="panel">
-    <div class="feature-group">
-      <div class="feature-group-title">시연 영상</div>
-      <a href="https://youtu.be/ybDS-EG7wro" target="_blank" style="display:inline-block;margin-top:6px;">
-        <img src="https://img.youtube.com/vi/ybDS-EG7wro/hqdefault.jpg" alt="KingSejong Demo" style="width:100%;max-width:480px;border-radius:8px;border:1px solid var(--line);" />
-      </a>
-    </div>
-
-    <div class="feature-group">
-      <div class="feature-group-title">1. 멀티플레이어 세션 시스템</div>
-      <ul class="feature-list">
-        <li><code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code>의 <code style="color:var(--accent);font-size:0.85em">IOnlineSessionInterface</code>를 직접 사용해 세션 생성, 검색, 참가, 파괴 흐름을 구현했습니다.</li>
-        <li>활성 <code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code>이 <code style="color:var(--accent);font-size:0.85em">NULL</code>인지 확인해 LAN 여부를 판정하고, <code style="color:var(--accent);font-size:0.85em">Steam Subsystem</code> 환경에서는 Steam 세션 설정으로 동작하도록 구성했습니다.</li>
-        <li>방 생성 시 <code style="color:var(--accent);font-size:0.85em">Category</code>, <code style="color:var(--accent);font-size:0.85em">Room_Name</code>, <code style="color:var(--accent);font-size:0.85em">Host_Name</code>, 최대 인원을 <code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code>의 세션 광고 설정값으로 등록하고, 검색 결과에서 읽어 로비 UI 표시용 <code style="color:var(--accent);font-size:0.85em">roomInfo</code> 구조체로 변환했습니다.</li>
-        <li>Steam 서버에 한글 방 이름을 안정적으로 저장하기 위해 방 이름을 Base64로 인코딩하고, 검색 결과 표시 시 디코딩했습니다.</li>
-        <li>호스트는 세션 생성 성공 후 <code style="color:var(--accent);font-size:0.85em">ServerTravel</code>로 listen server 맵을 열고, 클라이언트는 <code style="color:var(--accent);font-size:0.85em">JoinSession</code> 결과의 connect string으로 <code style="color:var(--accent);font-size:0.85em">ClientTravel</code>합니다.</li>
-        <li>세션 퇴장 시 서버 RPC, Multicast RPC, Client RPC를 역할별로 분리해 모든 플레이어가 같은 로비 복귀 경로를 타도록 처리했습니다.</li>
-        <li>호스트 종료나 연결 실패는 <code style="color:var(--accent);font-size:0.85em">OnNetworkFailure</code> 콜백에서 감지해 클라이언트가 고립되지 않고 로비로 복귀하도록 보강했습니다.</li>
-      </ul>
-      <ul class="feature-list" style="margin-top:16px;">
-        <li><strong class="label-build">구현</strong> — <code style="color:var(--accent);font-size:0.85em">UJJH_GameInstance</code>에서 <code style="color:var(--accent);font-size:0.85em">IOnlineSessionInterface</code>를 보관하고, 세션 생성/검색/참가/파괴 완료 델리게이트를 등록했습니다. <code style="color:var(--accent);font-size:0.85em">FOnlineSessionSettings</code>에는 Subsystem 기준 LAN 판정, Presence, 중간 참가 허용, 공개 세션, 카테고리와 방 이름 같은 세션 광고 설정값을 넣었습니다.</li>
-        <li><strong class="label-result">결과</strong> — 로비에서 방 생성, 검색, 참가, 게임 맵 진입까지 이어지는 멀티플레이 진입 흐름을 완성했고, Run/Battle/Talk 카테고리별 맵 이동을 하나의 세션 구조로 통합했습니다.</li>
-      </ul>
-      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - Subsystem 기준 LAN 판정과 로비 검색용 세션 광고 설정값 구성</span>
-FOnlineSessionSettings SessionSettings;
-SessionSettings.bUseLobbiesIfAvailable = <span class="keyword">true</span>;
-SessionSettings.bIsLANMatch =
-    IOnlineSubsystem::<span class="func">Get</span>()-&gt;<span class="func">GetSubsystemName</span>() == <span class="string">"NULL"</span>;
-SessionSettings.bShouldAdvertise = <span class="keyword">true</span>;
-SessionSettings.bUsesPresence = <span class="keyword">true</span>;
-SessionSettings.bAllowJoinInProgress = <span class="keyword">true</span>;
-SessionSettings.NumPublicConnections = PlayerCount;
-
-SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="string">"Category"</span>), Category,
-    EOnlineDataAdvertisementType::<span class="keyword">ViaOnlineServiceAndPing</span>);
-SessionSettings.<span class="func">Set</span>&lt;FString&gt;(FName(<span class="string">"Room_Name"</span>), <span class="func">StringBase64Encode</span>(RoomName),
-    EOnlineDataAdvertisementType::<span class="keyword">ViaOnlineServiceAndPing</span>);</pre></div>
-      <div class="code-block"><pre><span class="comment">// 실제 구현 요약 - 세션 성공 후 카테고리별 맵 이동과 참가자 ClientTravel</span>
-<span class="keyword">void</span> UJJH_GameInstance::<span class="func">OnMyCreateSessionComplete</span>(FName SessionName, <span class="keyword">bool</span> Success)
-{
-    <span class="keyword">if</span> (!Success) <span class="keyword">return</span>;
-
-    <span class="keyword">if</span> (CategoryValue == TEXT(<span class="string">"Run"</span>))
-        GetWorld()-&gt;<span class="func">ServerTravel</span>(<span class="string">"/Game/JJH/BetaRunningMap?listen"</span>);
-    <span class="keyword">else if</span> (CategoryValue == TEXT(<span class="string">"Battle"</span>))
-        GetWorld()-&gt;<span class="func">ServerTravel</span>(<span class="string">"/Game/HJS/Maps/AlphaBattleMap?listen"</span>);
-    <span class="keyword">else if</span> (CategoryValue == TEXT(<span class="string">"Talk"</span>))
-        GetWorld()-&gt;<span class="func">ServerTravel</span>(<span class="string">"/Game/KJH/Maps/KJH_CommunityMap?listen"</span>);
-}
-
-<span class="keyword">void</span> UJJH_GameInstance::<span class="func">OnMyJoinSessionComplete</span>(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
-{
-    <span class="keyword">if</span> (Result != EOnJoinSessionCompleteResult::Success) <span class="keyword">return</span>;
-
-    FString Url;
-    SessionInterface-&gt;<span class="func">GetResolvedConnectString</span>(SessionName, Url);
-    <span class="keyword">if</span> (!Url.<span class="func">IsEmpty</span>())
-        GetWorld()-&gt;<span class="func">GetFirstPlayerController</span>()-&gt;<span class="func">ClientTravel</span>(Url, ETravelType::TRAVEL_Absolute);
-}</pre></div>
-      <div class="note">
-        포트폴리오에서 설계 흐름을 한눈에 볼 수 있도록 세션 라이프사이클, 클래스 책임, RPC 흐름을 별도 시각화 페이지로 정리했습니다.
-      </div>
-      <div class="inline-actions">
-        <a class="link-btn" href="JJH_OnlineSubsystem_Visualization.html">세션 시스템 설계 시각화 보기</a>
-      </div>
-    </div>
-
-    <div class="feature-group">
-      <div class="feature-group-title">2. 로비 UI</div>
-      <ul class="feature-list">
-        <li><code style="color:var(--accent);font-size:0.85em">WidgetSwitcher</code>로 방 만들기, 방 찾기, 캐릭터 선택 화면을 전환했습니다.</li>
-        <li>슬라이더로 최대 인원을 실시간 설정하고, 선택 값은 세션 생성 파라미터와 UI 텍스트에 동시에 반영했습니다.</li>
-        <li>세션 검색 완료 델리게이트에서 결과 배열을 수신한 뒤 스크롤박스에 방 슬롯 위젯을 동적으로 생성했습니다.</li>
-        <li>방이 꽉 찼거나 이미 시작된 상태에서는 입장 버튼을 비활성화해 잘못된 참가 요청을 줄였습니다.</li>
-      </ul>
-      <div class="image-grid">
-        <img class="zoomable" data-lightbox src="../assets/images/kingsejong/lobbyui1.png" alt="KingSejong lobby UI room creation and category selection">
-        <img class="zoomable" data-lightbox src="../assets/images/kingsejong/lobbyui2.png" alt="KingSejong lobby UI session search list">
-      </div>
-    </div>
-
-    <div class="feature-group">
-      <div class="feature-group-title">3. 달리기 미니게임</div>
-      <ul class="feature-list">
-        <li><code style="color:var(--accent);font-size:0.85em">FinishLine</code>의 <code style="color:var(--accent);font-size:0.85em">OnComponentBeginOverlap</code>로 결승선 통과를 감지하고 <code style="color:var(--accent);font-size:0.85em">GameMode</code>에 순서를 전달했습니다.</li>
-        <li>결승선 통과 순서에 따라 초성 퀴즈 기회를 부여하고, 오답이면 다음 플레이어에게 입력 권한을 넘겼습니다.</li>
-        <li>DataTable에서 퀴즈 데이터를 선택하고 Multicast RPC로 모든 클라이언트 UI에 같은 문제를 동기화했습니다.</li>
-        <li>Client RPC로 특정 플레이어의 입력 UI만 활성화해 답변 권한이 없는 플레이어의 입력을 차단했습니다.</li>
-        <li>정답, 오답, 결과 화면, 로비 복귀까지 게임 진행 단계를 네트워크 이벤트 흐름에 포함했습니다.</li>
-      </ul>
-      <div style="margin-top:14px;">
-        <div style="font-size:.82rem;color:var(--muted);margin-bottom:8px;">게임 흐름</div>
-        <div class="flow">
-          <div class="flow-step">모든 플레이어 입장</div><div class="flow-arrow">-&gt;</div>
-          <div class="flow-step">카운트다운</div><div class="flow-arrow">-&gt;</div>
-          <div class="flow-step">결승선 순서 기록</div><div class="flow-arrow">-&gt;</div>
-          <div class="flow-step">초성 퀴즈</div><div class="flow-arrow">-&gt;</div>
-          <div class="flow-step">정답 판정</div><div class="flow-arrow">-&gt;</div>
-          <div class="flow-step">로비 복귀</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="feature-group">
-      <div class="feature-group-title">4. 캐릭터 선택 시스템</div>
-      <ul class="feature-list">
-        <li>이전, 다음 버튼으로 선택 가능한 메시를 실시간 교체하고 프리뷰에 반영했습니다.</li>
-        <li>선택 확정 시 메시 인덱스를 <code style="color:var(--accent);font-size:0.85em">GameInstance</code>에 저장해 맵 이동 이후에도 같은 캐릭터를 사용했습니다.</li>
-        <li>선택 완료 후 마우스 커서 표시와 입력 모드를 게임 플레이 상태로 전환했습니다.</li>
-      </ul>
-      <div class="image-grid">
-        <img class="zoomable" data-lightbox src="../assets/images/kingsejong/characterChange1.png" alt="KingSejong character selection preview first character">
-        <img class="zoomable" data-lightbox src="../assets/images/kingsejong/characterChange2.png" alt="KingSejong character selection preview changed character">
-      </div>
-    </div>
-
-    <div class="feature-group">
-      <div class="feature-group-title">핵심 기술</div>
-      <div class="table-wrap">
-        <table class="tech-table">
-          <tr><th>기술</th><th>적용 내용</th></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">OnlineSubsystem</code></td><td>Steam / LAN 세션 생성, 검색, 참가, 파괴 전 과정을 <code style="color:var(--accent);font-size:0.85em">IOnlineSessionInterface</code>로 구현</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">RPC</code></td><td><code style="color:var(--accent);font-size:0.85em">Server RPC</code>, <code style="color:var(--accent);font-size:0.85em">Multicast RPC</code>, <code style="color:var(--accent);font-size:0.85em">Client RPC</code>로 게임 상태와 UI 표시를 역할별로 동기화</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">Delegate</code></td><td>세션 생성, 검색, 참가 완료 이벤트를 비동기 콜백으로 처리하고 UI 업데이트와 연결</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">Base64</code></td><td>한글 방 이름을 Steam 세션 광고 설정값에 안전하게 저장하기 위한 인코딩 처리</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">DataTable</code></td><td>초성 퀴즈 데이터를 에디터에서 관리하고 서버에서 선택</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:0.85em">UMG / WidgetSwitcher</code></td><td>로비 화면 전환과 검색 결과 슬롯 동적 생성</td></tr>
-        </table>
-      </div>
-    </div>
-
-    <div class="feature-group">
-      <div class="feature-group-title">시스템 흐름</div>
-      <div style="margin-bottom:20px;">
-        <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:8px;">세션 전체 생명주기</div>
-        <div class="mermaid">
-flowchart TD
-    A(["게임 시작"]) --> B(["로비 맵 로드"])
-    B --> C(["UJJH_GameInstance::LoadMenu"])
-    C --> D{"플레이어 선택"}
-    D -->|"방 만들기"| E(["카테고리 선택"])
-    E --> F(["방 이름 및 인원 설정"])
-    F --> G(["CreateSession 호출"])
-    G --> H(["OnlineSubsystem::CreateSession"])
-    H --> I{"OnCreateSessionComplete"}
-    I -->|"Run"| J(["ServerTravel - RunningMap?listen"])
-    I -->|"Battle"| K(["ServerTravel - BattleMap?listen"])
-    I -->|"Talk"| L(["ServerTravel - CommunityMap?listen"])
-    D -->|"방 찾기"| M(["FindSessions 호출"])
-    M --> N(["OnFindSessionsComplete"])
-    N --> O(["방 목록 슬롯 생성"])
-    O --> P(["방 선택"])
-    P --> Q(["JoinSession"])
-    Q --> R(["ClientTravel"])
-    J --> S(["게임 맵 로드 완료"])
-    K --> S
-    L --> S
-    R --> S
-    S --> T(["GameMode::PostLogin"])
-    T --> U{"필요 인원 도달?"}
-    U -->|"No"| T
-    U -->|"Yes"| V(["카운트다운 후 게임 시작"])
-    V --> W(["게임 진행"])
-    W --> X(["EndGame / DestroySession"])
-    X --> Y(["로비 복귀"])
-    Y --> B
-        </div>
-      </div>
-
-      <div style="margin-bottom:20px;">
-        <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:8px;">달리기 퀴즈 RPC 흐름</div>
-        <div class="mermaid">
-sequenceDiagram
-    participant GM as RunningGameMode(Server)
-    participant PC as RunnerController
-    participant UI as UQuizWidget
-    GM->>GM: StartQuiz() / SelectRandomQuizData()
-    GM->>PC: MulticastSendQuizData(FWordsData)
-    PC->>UI: ClientCreateQuizWidget(QuizData)
-    PC->>PC: ClientDisableInput()
-    GM->>PC: ClientShowAnswerTextBox()
-    PC->>PC: ClientAbleInput()
-    PC->>GM: ServerSubmitAnswer(UserAnswer)
-    alt 정답
-        GM->>PC: MulticastShowTeachSpeak(true)
-        GM->>PC: ClientSwitchToEndWidget()
-        GM->>PC: ClientReturnToLobby()
-    else 오답
-        GM->>PC: MulticastShowTeachSpeak(false)
-        GM->>GM: MoveToNextPlayer()
-        GM->>PC: ClientShowAnswerTextBox()
-    end
-        </div>
-      </div>
-
-      <div>
-        <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:8px;">클래스 책임 구조</div>
-        <div class="mermaid">
-graph TB
-    subgraph SessionManagement["세션 관리"]
-        GI["UJJH_GameInstance<br/>세션 생성, 검색, 참가, 삭제"]
-    end
-    subgraph ServerLogic["게임 로직 - 서버"]
-        GM["RunningGameModeBase<br/>퀴즈 선택, 판정, 게임 종료"]
-    end
-    subgraph NetworkBridge["네트워크 통신"]
-        PC["RunnerController<br/>Client/Server RPC 허브"]
-    end
-    subgraph ClientUI["클라이언트 UI"]
-        LW["ULobbyWidget"]
-        QW["UQuizWidget"]
-    end
-    LW -->|"ILobbyInterface"| GI
-    GI -->|"ServerTravel / ClientTravel"| PC
-    GM -->|"Multicast RPC"| PC
-    PC -->|"Client RPC"| QW
-        </div>
-      </div>
-    </div>
-
-    <div class="feature-group">
-      <div class="feature-group-title">네트워크 구조에서 배운 점</div>
-      <ul class="feature-list" style="margin-top:16px;">
-        <li><strong class="label-issue">문제</strong> — 세션 로직이 <code style="color:var(--accent);font-size:0.85em">GameInstance</code>에 모여 있어 구현 속도는 빨랐지만, 실패 원인별 UI 피드백과 <code style="color:var(--accent);font-size:0.85em">Delegate</code> 해제 같은 생명주기 관리가 명확하지 않았습니다.</li>
-        <li><strong class="label-solve">해결</strong> — 세션 생성/검색/참가/파괴 콜백을 기준으로 흐름을 정리하고, 호스트 종료나 연결 실패 시 로비로 복귀하는 보호 경로를 추가했습니다.</li>
-        <li><strong class="label-improve">개선</strong> — 다시 만든다면 세션 상태 머신과 Dedicated Server 기준의 매치 진입 구조를 분리하고, 실패 원인을 UI까지 전달하는 에러 모델을 두겠습니다.</li>
-      </ul>
-    </div>
-
-    <div class="btn-wrap">
-      <a class="link-btn outline" href="https://github.com/hjs101/KingSejong" target="_blank">팀 레포지토리 보기</a>
-      <a class="link-btn" href="https://youtu.be/ybDS-EG7wro" target="_blank">시연 영상 보기</a>
-      <a class="link-btn outline" href="JJH_OnlineSubsystem_Visualization.html">세션 설계 시각화 보기</a>
-    </div>
-  </section>
-</main>
-<div class="lightbox" id="lightbox" aria-hidden="true">
-  <button type="button" aria-label="Close image preview">×</button>
-  <img alt="" />
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js"></script>
-<script>
-  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+<main class="wrap" id="main">
 
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImage = lightbox.querySelector('img');
+  <!-- ══════ 프로젝트 개요 ══════ -->
+  <header class="ph">
+    <h1>프로젝트 세종대왕</h1>
+    <p class="sub">한옥 마을에서 여럿이 모여 노는 <b>멀티플레이 미니게임 모음</b>입니다.
+    저는 <b>로비에서 게임 맵까지 들어가는 길 전체</b>를 맡았습니다.</p>
 
-  document.querySelectorAll('[data-lightbox]').forEach((image) => {
-    image.addEventListener('click', () => {
-      lightboxImage.src = image.src;
-      lightboxImage.alt = image.alt;
-      lightbox.classList.add('open');
-      lightbox.setAttribute('aria-hidden', 'false');
-    });
-  });
+    <dl class="facts">
+      <div><dt>장르</dt><dd>멀티플레이 미니게임</dd></div>
+      <div><dt>엔진 · 언어</dt><dd>Unreal Engine 5 · C++ · Blueprint</dd></div>
+      <div><dt>규모</dt><dd>5인 팀</dd></div>
+      <div><dt>담당</dt><dd>세션 · 트래블 · 로비 UI</dd></div>
+    </dl>
 
-  function closeLightbox() {
-    lightbox.classList.remove('open');
-    lightbox.setAttribute('aria-hidden', 'true');
-    lightboxImage.src = '';
-  }
+    <div class="about">
+      <div>
+        <h2>어떤 게임인가</h2>
+        <p>플레이어가 방을 만들거나 찾아 들어가면 <b>달리기 · 대전 · 대화</b> 세 종류의
+        맵 중 하나로 함께 이동합니다. 달리기 경주에서는 결승선을 먼저 통과한 순서가 집계됩니다.</p>
+        <p>제가 만든 것은 게임 콘텐츠가 아니라 <b>거기까지 도달하는 흐름</b>입니다 —
+        세션을 만들고, 찾고, 참가하고, 모두가 같은 맵에 들어가고, 문제가 생기면 로비로 되돌아오는 길.</p>
+        <p>카테고리가 셋이지만 <b>세션 구조는 하나</b>로 통합했습니다.</p>
+      </div>
+      <figure>
+        <img src="../assets/images/kingsejong/running.png" alt="한옥 배경 맵에서 캐릭터가 달리는 게임 화면">
+        <figcaption>달리기 경주 맵. 로비에서 이 화면까지가 제 담당 구간입니다.</figcaption>
+      </figure>
+    </div>
+  </header>
 
-  lightbox.addEventListener('click', (event) => {
-    if (event.target === lightbox || event.target.tagName === 'BUTTON') closeLightbox();
-  });
+  <!-- ══════ 기능 01 ══════ -->
+  <section class="feat" id="f1">
+    <div class="feat-h">
+      <span class="no">기능 01</span>
+      <h2>세션 생성 · 검색 · 참가</h2>
+      <p class="one">개발 중에는 LAN으로, Steam 환경에서는 Steam 세션으로 같은 코드가 동작합니다.</p>
+    </div>
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeLightbox();
-  });
-</script>
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li><code>IOnlineSessionInterface</code>를 <code>UJJH_GameInstance</code>에 보관하고,
+        생성 · 검색 · 참가 · 파괴 <b>완료 델리게이트</b>를 등록했습니다.</li>
+        <li><code>Category</code>, <code>Room_Name</code>, <code>Host_Name</code>, 최대 인원을
+        <b>세션 광고 설정값</b>으로 등록하고, 검색 결과에서 읽어 로비 표시용 <code>roomInfo</code> 구조체로 변환합니다.</li>
+        <li>LAN 여부는 활성 Subsystem 이름으로 판정합니다 —
+        <code>bIsLANMatch = GetSubsystemName() == "NULL"</code>.
+        같은 코드가 개발 단계에서는 LAN, Steam 환경에서는 Steam 세션으로 돕니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/kingsejong/session-empty.png" alt="달리기 경주 로비 화면. 세션 목록이 비어 있고 방 만들기·방 들어가기·새로고침 버튼이 있다">
+          <figcaption><b>사진 1 — 검색 전</b>목록이 비어 있는 상태. 창 제목의 <code>Development PCD3D_SM6</code>가 개발 빌드입니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/kingsejong/session-found.png" alt="검색 결과로 세션 한 건이 표시된 화면. 호스트명 qwer1234, 방 이름 My Session Game, 인원 1/2, 핑 387">
+          <figcaption><b>사진 2 — 검색 결과</b>한 줄에 <b>호스트명 · 방 이름 · 인원 1/2 · 핑 387</b>. 전부 세션 광고 설정값에서 읽어온 값입니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd><b>한글로 지은 방 이름이 Steam 세션에서 제대로 돌아오지 않았습니다.</b> 로컬 LAN에서는 멀쩡한데 Steam을 거치면 검색 결과의 방 이름이 깨졌습니다.</dd></div>
+        <div><dt>원인</dt><dd>세션 광고 설정값은 Steam 서버를 거쳐 저장·전달됩니다. 그 경로에서 비ASCII 문자열이 안정적으로 보존된다는 보장이 없습니다.</dd></div>
+        <div><dt>해결</dt><dd>방 이름을 <b>Base64로 인코딩해 등록</b>하고, 검색 결과를 표시할 때 디코딩하도록 바꿨습니다. 광고값에는 항상 ASCII만 올라가므로 경로와 무관하게 같은 문자열이 돌아옵니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>LAN · Steam 자동 판정</span>
+        <span>한글 방 이름 정상 표시</span>
+        <span class="n">카테고리 3종을 세션 구조 하나로 통합</span>
+      </div>
+    </div>
+
+    <div class="links">
+      <a class="p" href="JJH_OnlineSubsystem_Visualization.html">세션 라이프사이클 · RPC 흐름 시각화</a>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 02 ══════ -->
+  <section class="feat" id="f2">
+    <div class="feat-h">
+      <span class="no">기능 02</span>
+      <h2>맵 진입과 로비 복귀</h2>
+      <p class="one">참가에 성공했다는 것과 맵에 들어갔다는 것은 다른 사건입니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>호스트는 세션 생성 성공 후 <code>ServerTravel</code>로 listen server 맵을 엽니다.
+        카테고리에 따라 <code>Run</code> / <code>Battle</code> / <code>Talk</code> 맵으로 분기합니다.</li>
+        <li>클라이언트는 <code>JoinSession</code> 결과에서
+        <code>GetResolvedConnectString</code>으로 접속 주소를 얻어
+        <code>ClientTravel(TRAVEL_Absolute)</code>합니다.</li>
+        <li>세션 퇴장은 <b>서버 RPC · Multicast RPC · Client RPC를 역할별로 나눠</b>
+        모든 플레이어가 같은 로비 복귀 경로를 타게 했습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <figure>
+          <img src="../assets/images/kingsejong/map-entered.png" alt="세션 참가 후 이동한 게임 맵. 성벽 사이 트랙에 캐릭터가 서 있다">
+          <figcaption><b>맵 진입 완료</b>로비에서 이 화면까지 도달하면 흐름이 끝납니다. 앞의 검색 화면과 같은 실행에서 이어진 장면입니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd><b>호스트가 나가면 클라이언트가 아무 화면에도 속하지 못한 채 남았습니다.</b> 연결이 끊겼는데 로비로도 돌아오지 못하는 상태였습니다.</dd></div>
+        <div><dt>원인</dt><dd><code>JoinSession</code> 성공을 &ldquo;맵에 들어간 것&rdquo;과 같은 사건으로 다뤘기 때문입니다. 참가 성공은 <b>접속 주소를 얻었다는 뜻</b>일 뿐이고, 그 뒤 트래블·연결 유지는 별개로 실패할 수 있습니다.</dd></div>
+        <div><dt>해결</dt><dd>두 단계를 <b>분리해 각각의 실패를 따로</b> 다뤘습니다. 호스트 종료나 연결 실패는 <code>OnNetworkFailure</code> 콜백에서 감지해 클라이언트를 로비로 되돌립니다. 어느 단계에서 끊겼는지 추적할 수 있게 된 것이 부수 효과입니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>호스트 이탈 시 클라이언트 고립 제거</span>
+        <span class="n">실패 지점을 단계별로 추적 가능</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 03 ══════ -->
+  <section class="feat" id="f3">
+    <div class="feat-h">
+      <span class="no">기능 03</span>
+      <h2>로비 UI와 캐릭터 선택</h2>
+      <p class="one">방 만들기 · 방 찾기 · 캐릭터 선택을 한 위젯 안에서 전환합니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li><code>WidgetSwitcher</code>로 방 만들기 · 방 찾기 · 캐릭터 선택 화면을 전환합니다.</li>
+        <li>슬라이더로 최대 인원을 실시간 조절하고, 그 값이 <b>세션 생성 파라미터와 UI 텍스트에 동시에</b> 반영됩니다.</li>
+        <li>검색 완료 델리게이트에서 결과 배열을 받아 스크롤박스에 <b>방 슬롯 위젯을 동적으로 생성</b>합니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/kingsejong/lobbyui1.png" alt="방 만들기 화면. 카테고리 선택과 인원 설정">
+          <figcaption><b>사진 1 — 방 만들기</b>카테고리와 최대 인원을 정합니다. 이 값이 그대로 세션 광고 설정값이 됩니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/kingsejong/lobbyui2.png" alt="방 찾기 화면. 검색된 세션 목록">
+          <figcaption><b>사진 2 — 방 찾기</b>검색 결과마다 슬롯 위젯이 하나씩 만들어집니다.</figcaption>
+        </figure>
+      </div>
+      <div class="shots two" style="margin-top:12px">
+        <figure>
+          <img src="../assets/images/kingsejong/characterChange1.png" alt="캐릭터 선택 화면의 첫 번째 캐릭터 미리보기">
+          <figcaption><b>사진 3 — 캐릭터 선택</b>선택한 캐릭터가 미리보기에 반영됩니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/kingsejong/characterChange2.png" alt="캐릭터를 바꿨을 때의 미리보기">
+          <figcaption><b>사진 4 — 변경 후</b>같은 화면에서 다른 캐릭터로 전환한 상태입니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>검색 목록에서 <b>이미 꽉 찼거나 시작된 방에도 참가를 누를 수 있었습니다.</b> 눌러도 실패로 돌아올 뿐이라 사용자 입장에서는 이유를 알 수 없었습니다.</dd></div>
+        <div><dt>원인</dt><dd>목록이 세션 광고값을 <b>보여주기만 하고</b> 그 값으로 조작 가능 여부를 판단하지는 않았기 때문입니다.</dd></div>
+        <div><dt>해결</dt><dd>슬롯 위젯이 인원과 시작 여부를 읽어 <b>입장 버튼 자체를 비활성화</b>하도록 했습니다. 실패할 요청을 보내기 전에 막습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span class="n">잘못된 참가 요청 사전 차단</span>
+        <span class="n">검색 결과 수만큼 슬롯 동적 생성</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 마무리 ══════ -->
+  <div class="close">
+    <h2>범위와 한계</h2>
+    <p>5인 팀 프로젝트이며 <b>제 담당은 세션·트래블·로비 UI</b>입니다.
+    대전 맵(<code>HJS</code>)과 커뮤니티 맵(<code>KJH</code>)의 콘텐츠는 팀원이 만들었고,
+    저는 그 맵들로 <b>들어가는 경로</b>를 하나의 세션 구조로 통합했습니다.
+    Steam 환경은 Subsystem 판정과 세션 설정까지 구성했으나, 실제 상용 배포는 하지 않았습니다.</p>
+  </div>
+
+  <div class="foot">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <a href="https://youtu.be/ybDS-EG7wro" target="_blank" rel="noreferrer">시연 영상</a>
+    <a href="JJH_OnlineSubsystem_Visualization.html">세션 구조 시각화</a>
+    <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a>
+  </div>
+
+</main>
+
 </body>
 </html>

@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MapleBattleRoyaleArena — 조준혁 포트폴리오</title>
+<link rel="stylesheet" href="../assets/portfolio.css">
+</head>
+<body>
+
+<a class="skip" href="#main">본문으로</a>
+
+<div class="top">
+  <div class="wrap top-in">
+    <a href="../index.html">← 조준혁 포트폴리오</a>
+    <span class="r">MAPLESTORY WORLDS · mLUA ·
+      <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a></span>
+  </div>
+</div>
+
+<main class="wrap" id="main">
+
+  <header class="ph">
+    <h1>MapleBattleRoyaleArena</h1>
+    <p class="sub">플레이어가 <b>조작하지 않고</b> 자동으로 싸우는 배틀로얄입니다.
+    직접 하는 것은 직업 스킬 · 대시 · 방향 전환 셋뿐입니다.</p>
+
+    <dl class="facts">
+      <div><dt>장르</dt><dd>실시간 멀티 오토배틀러</dd></div>
+      <div><dt>플랫폼 · 언어</dt><dd>MapleStory Worlds · mLua</dd></div>
+      <div><dt>규모</dt><dd>4인 팀 · 커밋 133개 중 본인 110</dd></div>
+      <div><dt>담당</dt><dd>이동 · 전투 · 스킬 · 데이터 레이어</dd></div>
+    </dl>
+
+    <div class="about">
+      <div>
+        <h2>어떤 게임인가</h2>
+        <p>캐릭터는 스스로 전진하고, 마주치면 무기 가중치로 밀고 밀리며 자동으로 공격을 주고받습니다.
+        플레이어가 개입하는 것은 <b>직업 고유 스킬 · 대시 · 방향 전환</b> 세 가지뿐입니다.</p>
+        <p>&ldquo;조작을 줄이면 무엇으로 이기는가&rdquo;가 설계의 중심 질문이었습니다.
+        답은 <b>무기와 직업의 조합, 그리고 세 개입의 타이밍</b>입니다.
+        그래서 전투의 모든 수치가 데이터로 빠져 있고, 판정은 프레임 단위로 정의됩니다.</p>
+        <p>넥슨 글로벌 개발 콘테스트 출품 예정(10/7 마감). <b>진행 중인 프로젝트</b>입니다.</p>
+      </div>
+      <div class="need" style="min-height:190px">
+        <b>촬영 필요 — 대표 화면</b>
+        <p>자동 전투가 벌어지는 아레나 화면. 여러 캐릭터가 붙어 있고 체력·유물 UI가 보이면
+        &ldquo;무슨 게임인지&rdquo;가 한 장으로 전달됩니다. MSW Maker의 Play 화면을 캡처하면 됩니다.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════ 기능 01 ══════ -->
+  <section class="feat" id="f1">
+    <div class="feat-h">
+      <span class="no">기능 01</span>
+      <h2>타격 판정을 &ldquo;닿는 순간&rdquo;으로</h2>
+      <p class="one">공격하는 일과 맞는 일을 분리했더니 회피가 성립했습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>한 함수였던 공격을 둘로 갈랐습니다 —
+        <code>AutoAttack</code>은 쿨 소모와 스윙 모션만(적이 있든 없든 실행),
+        <code>ResolveHit</code>은 <code>impactDelay</code> 뒤의 판정.</li>
+        <li>무기마다 <code>WeaponData.impactDelay</code>를 뒀습니다 —
+        주먹 <code>0.10</code> / 대검·둔기 <code>0.22</code> / 활 <code>0.18</code>.</li>
+        <li><b><code>ResolveHit</code>은 그 시점의 위치와 방향으로 대상을 다시 찾습니다.</b>
+        스윙 시작 때 찾아둔 대상을 기억하지 않습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <div class="need">
+          <b>촬영 권장 — 사진 1 · 스윙 시작</b>
+          <p>공격 모션이 시작되는 프레임. 아직 체력이 깎이지 않은 상태.</p>
+        </div>
+        <div class="need">
+          <b>촬영 권장 — 사진 2 · 대시로 회피</b>
+          <p>스윙 도중 대시로 빠져나가 <b>맞지 않는</b> 순간.
+          이 기능이 만든 게임성이 눈에 보이는 유일한 장면입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd><b>주먹이나 검이 아직 닿지도 않았는데 숫자가 먼저 내려갔습니다.</b> 스윙 시작 프레임에 체력이 깎여 눈에 띄게 어색했습니다.</dd></div>
+        <div><dt>원인</dt><dd>구조 문제였습니다. <b>&ldquo;공격한다&rdquo;와 &ldquo;맞는다&rdquo;가 한 함수</b>였습니다. 쿨 확인 → 대상 찾기 → 데미지 → 모션 재생이 한 줄로 이어져 있었습니다.</dd></div>
+        <div><dt>해결</dt><dd>둘을 분리하고, 판정 시점에 <b>대상을 다시 찾도록</b> 했습니다. 그러자 스윙 도중 대시나 방향 전환으로 빠져나가면 안 맞습니다. <b>근접전에서 회피가 성립</b>하게 됐고, 플레이어의 세 개입 중 둘이 여기서 의미를 갖습니다. 판정이 닿는 순간으로 옮겨졌으므로 피격 연출의 이중 지연(<code>HitFlashDelay</code> 0.13)도 0으로 내렸습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>근접전에서 회피 성립</span>
+        <span class="n">체력이 깎이는 순간과 연출이 일치</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 02 ══════ -->
+  <section class="feat" id="f2">
+    <div class="feat-h">
+      <span class="no">기능 02</span>
+      <h2>105 스윙 실측 — 내 설계를 데이터로 반박</h2>
+      <p class="one">판정을 관대하게 만들려고 넣은 기능이, 재보니 거의 일하지 않고 있었습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li><code>impactDelay</code>는 <b>한 점</b>이라 그 순간 그 자리에 없으면 무조건 빗나갑니다.
+        격투게임의 active 프레임처럼 <b>판정이 열려 있는 구간</b>을 줬습니다.</li>
+        <li><code>WeaponData.activeDuration</code> — 대검 <code>0.18</code> / 둔기 <code>0.16</code> /
+        주먹·표창·스태프·활 <code>0.10</code> / 단검·너클 <code>0.08</code> / 권총 <code>0.06</code>.
+        <b>무거울수록 관대, 빠를수록 좁게</b>가 배분 규칙이고,
+        전부 <code>impactDelay + activeDuration &lt; attackInterval</code> 안에 들어갑니다.</li>
+        <li><b>다단히트가 아닙니다</b> — 적중하면 구간을 즉시 닫습니다.
+        안 닫으면 한 스윙이 10회 이상 때립니다. 다음 공격이 시작되면 이전 구간을 강제 종료합니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <figure>
+        <pre class="logbox"><span class="c">// 판정 구조의 변화</span>
+이전:  ─────────<span class="hi">●</span>─────────         한 점 (impactDelay)
+지금:  ─────────<span class="hi">▮▮▮▮▮</span>────         impactDelay ~ +activeDuration
+
+<span class="c">// 2인 실측 105 스윙 (주먹 vs 대검, 대시 16회 포함)</span>
+무기 (구간)      스윙   시작 적중   <span class="hi">구간 적중</span>   빗나감
+주먹 (0.10)       73        22      <span class="bad">2 (2.7%)</span>       49
+대검 (0.18)       32        18      <span class="bad">1 (3.1%)</span>       13
+
+<span class="c">// 로그 정합성 먼저 확인 — 수치를 믿기 전에</span>
+시작 + 구간 + 빗나감 = <span class="ok">105</span>   <span class="c">← 전체 스윙 로그 줄 수와 정확히 일치</span>
+스윙 하나가 두 번 때린 사례 <span class="ok">0건</span>   <span class="c">← 다단히트 방지가 실제로 작동</span></pre>
+        <p class="logcap"><b>실측 결과</b>구간이 건진 것은 105 스윙 중 <b>3건, 약 3%</b>였습니다.</p>
+      </figure>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>판정을 관대하게 만들려고 <b>제가 직접 도입한 active 구간</b>이, 실측해보니 <b>기여도 3%</b>였습니다. 넣을 가치가 있었는지 자체가 의심스러워졌습니다.</dd></div>
+        <div><dt>원인</dt><dd>적중 3건이 <b>모두 구간 앞 0.05초 안</b>에 잡혔습니다(경과 0.016 / 0.048 / 0.048). 대검의 0.18초 중 <b>뒤 0.132초는 한 번도 일하지 않았습니다.</b> 원리로도 맞습니다. 구간이 건지는 상황은 사거리를 살짝 벗어난 상대가 걸어 들어오는 경우인데, 이동 속도가 2~3 유닛/초면 0.05초에 <b>0.1~0.15 유닛</b>밖에 못 좁힙니다.</dd></div>
+        <div><dt>해결</dt><dd>구간을 <b>실제로 일하는 길이로 줄였습니다.</b> 그리고 제가 만든 기능이 근거가 약하다는 결론을 <b>커밋 메시지에 그대로 남겼습니다.</b> 여기서 얻은 것은 수치보다, 만든 사람이 자기 기능의 효과를 재는 습관입니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>기여도 3% · 뒤쪽 73% 미사용을 수치로 확인</span>
+        <span class="n">로그 정합성 검증 후에 결론</span>
+        <span class="n">다단히트 0건</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 03 ══════ -->
+  <section class="feat" id="f3">
+    <div class="feat-h">
+      <span class="no">기능 03</span>
+      <h2>서버 권위 일원화</h2>
+      <p class="one">같은 값이 두 벌로 갈라진 사건 이후의 원칙입니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>클라이언트가 구동하던 이동 드라이버 스택을 <b>4단계에 걸쳐 은퇴</b>시키고
+        서버 컨트롤러로 통합했습니다. 한 번에 걷어내지 않은 것은 되돌릴 여지를 남기기 위해서입니다.</li>
+        <li>커스텀 이동을 직접 굴리다 애니메이션과 접지가 계속 깨져
+        <b>엔진 기본 지상 물리로 되돌렸더니 세 문제가 한 번에</b> 풀렸습니다.</li>
+        <li>반대로 <b>넉백은 엔진 물리로 갔다가 되돌아왔습니다.</b>
+        물리 권위가 클라이언트에 있는 환경이라 위치 판정을 서버가 쥘 수 없었습니다.
+        결정론적 공식으로 회수했습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <div class="need">
+          <b>촬영 권장 — 권위 불일치 로그</b>
+          <p>서버와 클라이언트의 HP가 갈라진 로그(<code>786</code> vs <code>1000</code>)가 남아 있으면
+          이 항목의 출발점이 그대로 보입니다. 없으면 이 칸은 비워도 됩니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd><b>HP가 서버와 클라이언트 두 벌로 갈라져 <code>786</code>과 <code>1000</code>으로 어긋났습니다.</b> 어느 쪽이 진짜인지 코드만 봐서는 알 수 없었습니다.</dd></div>
+        <div><dt>원인</dt><dd>값의 주인을 정하지 않고 양쪽에서 갱신하고 있었습니다. 이동도 마찬가지로 클라 구동 드라이버와 서버 로직이 겹쳐 있었습니다.</dd></div>
+        <div><dt>해결</dt><dd>이후로는 <b>&ldquo;이 값의 주인이 누구인가&rdquo;를 매번 먼저 정하고</b> 시작했습니다. 다만 <b>엔진에 위임할 것과 직접 할 것은 감이 아니라 실측으로 갈랐습니다</b> — 이동은 엔진에 넘기고, 넉백은 되찾아왔습니다. 같은 원칙이 두 번은 위임으로, 한 번은 회수로 나타났습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>이동 드라이버 4단계 은퇴 → 서버 일원화</span>
+        <span class="n">1511줄 컨트롤러를 셋으로 분리 · API 계약 문서화</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 04 ══════ -->
+  <section class="feat" id="f4">
+    <div class="feat-h">
+      <span class="no">기능 04</span>
+      <h2>유물 52종 스탯 파이프라인</h2>
+      <p class="one">패턴을 취향이 아니라 게임 규칙에서 도출한 사례입니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>로그라이크 성장으로 유물 52종(A 18 · B 16 · C 16)을 얹었습니다.</li>
+        <li>스탯 경로가 이미 두 갈래인 것을 확인하고, <b>유물을 세 번째 경로로 만들지 않기로</b> 했습니다.
+        <b>애그리게이터</b>로 통합했습니다.</li>
+        <li>치명타·흡혈·방어막·피해 숫자를 신설하고, 임시 라운드 스텁으로 15종을 검증 가능하게 만들었습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <div class="need">
+          <b>촬영 필요 — 유물 선택 화면</b>
+          <p>라운드 사이에 유물을 고르는 화면. 52종이 있다는 것과 등급(A/B/C) 구분이 보이면 좋습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>유물이 스탯을 고치는 구조를 짜야 하는데, <b>데코레이터 체인이 첫 발상</b>이었습니다. 각 유물이 앞의 결과를 감싸는 방식입니다.</dd></div>
+        <div><dt>원인</dt><dd>기각한 이유는 &ldquo;구식이라서&rdquo;가 아닙니다. <b>이 게임은 획득 순서가 매 판 랜덤</b>입니다. 체인은 감싼 순서가 곧 연산 순서라, <b>같은 유물 조합을 든 두 플레이어의 수치가 달라집니다.</b></dd></div>
+        <div><dt>해결</dt><dd>순서에 무관하게 합산되는 <b>애그리게이터</b>로 갔습니다. 요구사항(획득 순서 랜덤)을 먼저 적어두면 패턴은 거기서 나옵니다. <b>패턴을 고르고 요구사항을 맞추는 순서가 아니었습니다.</b></dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>유물 52종 · 순서 무관 합산</span>
+        <span class="n">스탯 경로를 셋으로 늘리지 않음</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="close">
+    <h2>범위와 한계</h2>
+    <p>4인 팀이며 <b>제 담당은 플레이어 이동·전투·스킬 시스템, 데이터 레이어, 서버 권위 구조</b>입니다.
+    초기 서버 권위 이동 프로토타입과 플레이어 충돌·애니메이션 동기화는 팀원(PR #1),
+    스킬 키 UI 그룹은 다른 팀원(PR #2), 매치메이킹은 별도 담당입니다.</p>
+    <p style="margin-top:9px"><b>진행 중인 프로젝트</b>라 위 수치와 구조는 바뀔 수 있습니다.
+    측정은 MSW Maker MCP로 에디터를 자동 조작해 수행했고
+    (<code>refresh → play →</code> 서버 컨텍스트에 Lua 주입 <code>→ 로그 수집 → stop</code>),
+    <b>런타임 주장에는 실행 결과를 붙인다</b>를 원칙으로 삼았습니다.</p>
+    <p style="margin-top:9px">개선점 하나를 남겨둡니다 — 훅 핸들러 다섯 개가 직접 호출하면 동작하는데
+    실전에서는 한 번도 불리지 않고 있었습니다. 코드가 갈라지는 축(서버/클라 · 근접/원거리)에서
+    <b>한쪽 분기에만 호출부를 둔</b> 탓이고, 게임을 띄우기 전 <code>grep</code> 한 번으로 보였을 문제였습니다.</p>
+  </div>
+
+  <div class="foot">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a>
+    <span>진행중 · 넥슨 글로벌 개발 콘테스트 출품 예정</span>
+  </div>
+
+</main>
+
+</body>
+</html>

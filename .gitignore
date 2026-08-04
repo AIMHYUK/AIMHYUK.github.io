@@ -13,3 +13,12 @@ PRODUCT.md
 
 # 면접 답변 초안. 공개할 성격이 아니다
 projects/interview-design-notes.md
+
+# 방향 검토용 시안
+시안-*.html
+
+# 시각 체계 문서. PRODUCT.md와 같은 이유로 올리지 않는다
+DESIGN.md
+
+# impeccable 도구 상태
+.impeccable/

@@ -10,3 +10,6 @@
 # 작업용 문서. Pages는 저장소 전체를 서빙하므로 올리면 URL로 그냥 열린다.
 # 로컬 절대경로와 지원 전략이 들어 있다
 PRODUCT.md
+
+# 면접 답변 초안. 공개할 성격이 아니다
+projects/interview-design-notes.md

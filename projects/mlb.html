@@ -209,7 +209,7 @@
       <h3>성과</h3>
       <div class="res">
         <span>이동 드라이버 4단계 은퇴 → 서버 일원화</span>
-        <span class="n">1511줄 컨트롤러를 셋으로 분리 · API 계약 문서화</span>
+        <span class="n">상태마다 소유자를 먼저 정하는 습관</span>
       </div>
     </div>
   </section>
@@ -218,6 +218,88 @@
   <section class="feat" id="f4">
     <div class="feat-h">
       <span class="no">기능 04</span>
+      <h2>협업 경계 — 1511줄을 셋으로</h2>
+      <p class="one">파일이 길어서 나눈 것이 아니라, <b>두 사람의 손이 한 파일에서 겹쳐서</b> 나눴습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>컨트롤러 한 파일을 <b>컴포넌트 셋으로 갈랐습니다</b> — 공용 714줄, 무기 300줄, 스킬 470줄.
+        기준은 줄 수가 아니라 <b>공유 상태에 얼마나 의존하는가</b>였습니다.</li>
+        <li>컨트롤러가 <b>파이터 위치·방향의 유일한 주인</b>으로 남습니다.
+        동기화 프로퍼티라 소유한 컴포넌트만 쓸 수 있고, 나머지는 <b>공개 동사를 거쳐야만</b> 닿습니다.</li>
+        <li><b>경계를 API 계약 문서에 먼저 쓰고, 그다음에 코드를 옮겼습니다.</b>
+        각자 자기 구역을 옮기는 동안 서로 무엇을 부를 수 있는지가 이미 정해져 있었습니다.</li>
+        <li>형제 컴포넌트는 <b>필요할 때 찾습니다</b>. 초기화 순서가 보장되지 않아
+        시작 시점에 캐시하면 한쪽이 아직 없을 수 있습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <pre class="logbox"><span class="c">// 한 파일 1511줄 → 컴포넌트 셋</span>
+
+<span class="ok">ArenaAutoMoveController</span>  714줄   공용
+    FighterX · FighterFacing
+    <span class="hi">← 이 둘의 유일한 주인</span>
+
+BRCombatResolver         300줄   무기 담당
+BRJobSkills              470줄   스킬 담당
+
+<span class="c">// 경계를 그은 기준</span>
+<span class="bad">✗</span> 줄 수를 삼등분
+<span class="ok">✓</span> 공유 상태에 얼마나 의존하는가</pre>
+          <p class="logcap"><b>분할 구조</b>파일을 나눈 게 아니라 <b>상태의 소유자를 나눴습니다.</b>
+          경계가 흐릿하면 나눠도 다시 겹칩니다.</p>
+        </figure>
+        <figure>
+          <pre class="logbox"><span class="c">// 전투·스킬은 파이터에 직접 못 닿는다</span>
+GetFighterX(userId)        읽기
+SetFighterX(userId, x)     쓰기 <span class="hi">— 경계 클램프 내장</span>
+ApplyKnockback(...)        밀림
+TryConsumeSkill(...)       스킬 사용
+FindOpponentsWithin(...)   탐색
+
+<span class="c">// 형제는 필요할 때 찾는다</span>
+Ctrl() / Combat() / Skills()
+<span class="c">//   시작 시점에 캐시하면 아직 없을 수 있다</span>
+
+<span class="c">// 안 붙이면 조용히 죽는 배선에 경고를 심었다</span>
+시작 시:
+    if 형제 컴포넌트가 없다:
+        <span class="bad">log_error("자동공격이 돌지 않는다")</span></pre>
+          <p class="logcap"><b>공개 계약</b>새 맵에 컴포넌트 하나를 빠뜨리면
+          <b>에러 없이 그 기능만 사라집니다.</b> 조용한 실패를 첫 실행에서 드러나게 만들었습니다.</p>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>스킬과 무기가 붙으면서 컨트롤러가 <b>1511줄</b>이 됐습니다. 무기 담당과 스킬 담당이 <b>같은 파일의 다른 구역</b>을 고치는 상태가 됐고, 브랜치를 나눠 작업하면 <b>서로 손대지 않은 코드까지 충돌 후보</b>가 됐습니다.</dd></div>
+        <div><dt>원인</dt><dd>파일이 길어서가 아닙니다. <b>두 사람의 손이 한 파일에서 겹치는 것</b>이 문제였습니다. 그리고 이 환경에는 부분 클래스가 없어서, <b>파일을 나누려면 컴포넌트를 나눠야</b> 했습니다. 코드를 옮기는 일이 곧 소유권을 다시 정하는 일이었습니다.</dd></div>
+        <div><dt>해결</dt><dd><b>계약을 먼저 쓰고 코드를 나중에 옮겼습니다.</b> 누가 무엇을 소유하고 남의 것은 어떤 함수로 부르는지를 문서로 정한 뒤, 각자 자기 구역을 옮겼습니다. 순서를 뒤집었다면 옮기는 중에 경계를 협상하느라 서로를 기다렸을 것입니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>1511줄 → 714 · 300 · 470 컴포넌트 셋</span>
+        <span class="n">담당자별 브랜치에서 충돌 없이 병행</span>
+        <span class="n">분리 후 2인 실측 2판 · 에러 경고 0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 05 ══════ -->
+  <section class="feat" id="f5">
+    <div class="feat-h">
+      <span class="no">기능 05</span>
       <h2>유물 52종 스탯 파이프라인</h2>
       <p class="one">패턴을 취향이 아니라 게임 규칙에서 도출한 사례입니다.</p>
     </div>

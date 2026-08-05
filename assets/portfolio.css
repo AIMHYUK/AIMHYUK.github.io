@@ -79,10 +79,12 @@
   .p-trouble> h3 { background: var(--trouble); }
   .p-result > h3 { background: var(--result); }
 
-  .part ul { margin: 0; padding-left: 18px; max-width: 74ch; }
+  /* 한 줄 길이 제한. ch는 라틴 기준이라 한글에서는 절반밖에 못 쓴다.
+     100ch ≈ 한글 50자로, 읽기 편한 폭을 지키면서 여백을 줄인 값이다. */
+  .part ul { margin: 0; padding-left: 18px; max-width: 100ch; }
   .part li { margin: 0 0 7px; font-size: 14.5px; }
   .part li:last-child { margin-bottom: 0; }
-  .part > p { margin: 0 0 9px; font-size: 14.5px; max-width: 74ch; }
+  .part > p { margin: 0 0 9px; font-size: 14.5px; max-width: 100ch; }
   .part > p:last-child { margin-bottom: 0; }
 
   /* 트러블슈팅 — 문제 / 원인 / 해결 */
@@ -92,7 +94,7 @@
   .tbl div:first-child { border-top: 0; }
   .tbl dt { font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
             padding: 11px 0 11px 13px; color: var(--trouble); font-weight: 700; }
-  .tbl dd { margin: 0; padding: 11px 14px 11px 4px; font-size: 14.5px; max-width: 72ch; }
+  .tbl dd { margin: 0; padding: 11px 14px 11px 4px; font-size: 14.5px; max-width: 98ch; }
   .tbl dd b { color: var(--ink); }
 
   /* 성과 */
@@ -131,7 +133,7 @@
   .close { margin-top: 38px; border-top: 1px solid var(--line); padding-top: 16px; }
   .close h2 { margin: 0 0 8px; font-family: var(--mono); font-size: 12px;
               letter-spacing: .12em; color: var(--ink-3); font-weight: 400; }
-  .close p { margin: 0; font-size: 14.5px; color: var(--ink-2); max-width: 74ch; }
+  .close p { margin: 0; font-size: 14.5px; color: var(--ink-2); max-width: 100ch; }
 
   .foot { margin-top: 30px; border-top: 1px solid var(--line); padding: 16px 0 46px;
           font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);

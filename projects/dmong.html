@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -89,6 +89,17 @@
         SpawnPlatforms()          <span class="c">// 한 뭉치를 위에 깐다</span>
         임계선 += 반 화면          <span class="c">// 다음 임계선을 올린다</span>
 
+<span class="c">// SpawnPlatforms() — 한 뭉치 안에서</span>
+반복 (뭉치 개수만큼):
+    종류 = 확률표에서 뽑는다
+    x    = 화면 폭 안에서 무작위
+    y   += 간격                   <span class="c">// 위로 쌓아 올린다</span>
+    발판 = <span class="ok">풀에서 꺼내</span> 그 자리에 놓는다
+
+    if 종류가 일반 발판이면:
+        아이템 또는 적을 얹어 본다
+        단, <span class="bad">겹치면 취소</span>하고 풀로 되돌린다
+
 <span class="c">// Platform.RemovePlatform() — 언제 사라질지</span>
 if 내가 카메라보다 <span class="ok">위에</span> 있다:
     return                        <span class="c">// 위쪽은 건드리지 않는다</span>
@@ -98,7 +109,7 @@ if 카메라와의 거리 &gt;= 한 화면:
           스포너는 <b>언제 더 깔지</b>만 알고, <b>언제 사라질지</b>는 발판이 스스로 압니다.</p>
         </figure>
         <figure>
-          <img src="../assets/images/dmong/kkumdol-play-cave.webp" alt="꿈돌이 플레이 화면. 동굴 배경에 발판이 위쪽으로 길게 이어지고 몬스터와 블랙홀이 발판 사이에 배치돼 있다">
+          <img class="phone" src="../assets/images/dmong/kkumdol-play-cave.webp" alt="꿈돌이 플레이 화면. 동굴 배경에 발판이 위쪽으로 길게 이어지고 몬스터와 블랙홀이 발판 사이에 배치돼 있다">
           <figcaption><b>플레이 화면</b>화면 위쪽으로 발판이 계속 이어집니다.
           보이는 발판은 <b>실제로 존재하는 것의 일부일 뿐</b>이고, 아래로 지나간 것은 이미 풀로 돌아갔습니다.</figcaption>
         </figure>
@@ -150,7 +161,12 @@ if 카메라와의 거리 &gt;= 한 화면:
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <pre class="logbox"><span class="c">// GetRandomPlatformType() — 티어가 오르면 종류가 하나씩 열린다</span>
+          <pre class="logbox"><span class="c">// 고치기 전 — 점수와 무관한 고정 확률</span>
+<span class="bad">7종을 처음부터 거의 균등하게 뽑았다</span>
+  → 기본 발판이 2할뿐,
+    시작하자마자 부서지는 발판이 쏟아진다
+
+<span class="c">// GetRandomPlatformType() — 티어가 오르면 종류가 하나씩 열린다</span>
 tier = 점수 / 티어단위
 
 tier 0    기본 · 좌우이동                 <span class="ok">기본 발판이 대부분</span>
@@ -168,7 +184,7 @@ distance = min(기본간격 + 증가폭 * degree, 상한)
           종류·개수·간격·적을 동시에 움직입니다. 한 값만 고쳐도 곡선 전체가 따라옵니다.</p>
         </figure>
         <figure>
-          <img src="../assets/images/dmong/kkumdol-play-mars.webp" alt="꿈돌이 플레이 화면. 붉은 화성 배경에 회색·파란색·주황색 발판이 섞여 있고 블랙홀과 별 아이템이 함께 배치돼 있다">
+          <img class="phone" src="../assets/images/dmong/kkumdol-play-mars.webp" alt="꿈돌이 플레이 화면. 붉은 화성 배경에 회색·파란색·주황색 발판이 섞여 있고 블랙홀과 별 아이템이 함께 배치돼 있다">
           <figcaption><b>발판 종류가 섞이는 구간</b>색이 다른 발판이 곧 다른 종류입니다.
           위의 사다리가 실제 화면에서는 <b>색이 늘어나는 것</b>으로 보입니다.</figcaption>
         </figure>
@@ -361,23 +377,38 @@ AddProduct(광고제거, NonConsumable, {
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <img src="../assets/images/dmong/kkumdol-guild.webp" alt="꿈돌이 길드 화면. 상단에 길드 엠블럼과 종합 점수, 인원 50/50 표기가 있고 아래에 길드원 목록이 최고 점수순으로 나열돼 있다">
+          <img class="phone" src="../assets/images/dmong/kkumdol-guild.webp" alt="꿈돌이 길드 화면. 상단에 길드 엠블럼과 종합 점수, 인원 50/50 표기가 있고 아래에 길드원 목록이 최고 점수순으로 나열돼 있다">
           <figcaption><b>길드 화면</b>엠블럼 · 가입 정책(승인 가입) · 인원 · 소개글이 상단에 있고,
           아래는 <b>길드원을 최고 점수순으로</b> 세운 목록입니다. 길드장과 길드원이 구분됩니다.</figcaption>
         </figure>
         <figure>
           <pre class="logbox"><span class="c">// 가입 수락 — 읽고 쓰는 사이를 열어두지 않는다</span>
+
+[사전 확인]
+    신청자가 <span class="hi">이미 다른 길드에 속해 있는가</span>
+        → 그렇다면 신청만 지우고 여기서 끝낸다
+
 <span class="ok">RunTransaction</span>(길드):
-    if 길드가 없다 <span class="hi">or</span> <span class="bad">해체 중이다</span>:   return Abort
-    if 신청 목록에 이 사람이 없다:      return Abort
+    if 길드가 없다 <span class="hi">or</span> <span class="bad">해체 중이다</span>:
+        return <span class="bad">Abort</span>
+    if 신청 목록에 이 사람이 없다:
+        return <span class="bad">Abort</span>
+
     길드원 목록에 추가
     신청 목록에서 제거
-    return Success
+    return <span class="ok">Success</span>
 
-트랜잭션 성공 <span class="hi">이후에만</span> 유저 쪽에 길드명을 적는다
-<span class="c">// 순서를 뒤집으면 소속은 생겼는데 길드엔 없는 유령이 남는다</span></pre>
-          <p class="logcap"><b>가입 처리 흐름</b>길드장이 수락을 누르는 동시에
-          같은 사람이 다른 길드에 가입할 수 있습니다. <b>두 곳 다 소속되는 상태</b>를 막는 것이 요점입니다.</p>
+[성공한 뒤에만]
+    유저 쪽에 길드명을 적는다
+
+<span class="c">// 순서를 뒤집으면</span>
+<span class="c">//   소속은 생겼는데 명단엔 없는 유령이 남는다</span>
+
+<span class="c">// 해체도 같은 원칙이다</span>
+<span class="c">//   해체 표시 → 길드원 소속 해제 → 길드 삭제</span></pre>
+          <p class="logcap"><b>가입 처리 흐름</b>길드장이 수락을 누르는 그 사이에
+          같은 사람이 <b>다른 길드에 먼저 가입해 버릴 수 있습니다.</b>
+          한 사람이 두 곳에 소속되는 상태를 막는 것이 요점입니다.</p>
         </figure>
       </div>
     </div>
@@ -427,22 +458,33 @@ AddProduct(광고제거, NonConsumable, {
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <img src="../assets/images/dmong/kkumdol-ranking.webp" alt="꿈돌이 랭킹 화면. 1위부터 11위까지 닉네임과 점수가 나열돼 있고 7위 자리에 캐릭터 아이콘이 표시돼 있다">
+          <img class="phone" src="../assets/images/dmong/kkumdol-ranking.webp" alt="꿈돌이 랭킹 화면. 1위부터 11위까지 닉네임과 점수가 나열돼 있고 7위 자리에 캐릭터 아이콘이 표시돼 있다">
           <figcaption><b>랭킹 화면</b>플레이 화면 위에 얹혀 뜹니다.
           <b>내 순위 자리에 캐릭터가 서 있어</b>, 목록을 훑지 않아도 내가 어디 있는지 바로 보입니다.</figcaption>
         </figure>
         <figure>
           <pre class="logbox"><span class="c">// 동점자를 같은 등수로 — 점수를 키로 쓴다</span>
+
 기록 = { 점수 → [닉네임, 닉네임, ...] }
 
 정렬 = 기록.점수 <span class="hi">내림차순</span>
 표시 = 정렬.상위 100
 
-<span class="c">// 590 → [겸헨]</span>
-<span class="c">// 553 → [DaintyTRex92]</span>
-<span class="c">// 436 → [chhb0123, 유튜버구독]   ← 같은 등수로 나란히</span></pre>
-          <p class="logcap"><b>순위 구성</b>점수를 키로 두면 동점 처리가 자료구조에서 저절로 풀립니다.
-          닉네임을 키로 뒀다면 <b>동점을 따로 판별하는 코드</b>가 필요했습니다.</p>
+<span class="c">//  590 → 1명</span>
+<span class="c">//  553 → 1명</span>
+<span class="c">//  436 → 2명   ← 같은 등수로 나란히 들어간다</span>
+
+<span class="c">// 닉네임을 키로 뒀다면</span>
+<span class="c">//   동점을 따로 판별하는 코드가 필요했다</span>
+
+<span class="c">// 기록은 두 곳에 나눠 쌓인다</span>
+<span class="ok">스테이지별 기록</span>  →  랭킹 화면이 읽는다
+<span class="hi">전체 통합 기록</span>  →  길드 화면이 읽는다
+
+<span class="c">// 한 값으로 합치면</span>
+<span class="c">//   "어느 판의 기록인가"가 사라진다</span></pre>
+          <p class="logcap"><b>순위 구성</b>점수를 키로 두면
+          <b>동점 처리가 자료구조에서 저절로 풀립니다.</b> 정렬만 하면 끝입니다.</p>
         </figure>
       </div>
     </div>
@@ -491,7 +533,7 @@ AddProduct(광고제거, NonConsumable, {
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <img src="../assets/images/dmong/kkumdol-title.webp" alt="꿈돌이 타이틀 화면. BOUNCE HERO 꿈돌이 로고 아래 불러오기 중 5/24 진행 표시가 있다">
+          <img class="phone" src="../assets/images/dmong/kkumdol-title.webp" alt="꿈돌이 타이틀 화면. BOUNCE HERO 꿈돌이 로고 아래 불러오기 중 5/24 진행 표시가 있다">
           <figcaption><b>타이틀 · 로딩</b>&lsquo;불러오기 중 (5/24)&rsquo; 표기가
           버전 확인과 리소스 로딩이 <b>진행 중임을 사용자에게 보이게</b> 한 부분입니다.</figcaption>
         </figure>

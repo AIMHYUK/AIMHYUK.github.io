@@ -97,11 +97,11 @@
         <b>사수와 둘이 0부터 만들어</b> 양대 마켓에 출시하고 라이브 운영까지 했습니다.</p>
         <dl class="mini">
           <dt>담당</dt>
-          <dd>클라이언트 개발 전반. 성능 개선(오브젝트 풀링),
-          <code>Firebase</code>·<code>IAP</code>·<code>AdMob</code> 연동, 축제 현장 피드백 반영</dd>
+          <dd>발판 무한 생성기, <b>점수 기반 난이도 곡선</b>, 타입별 오브젝트 풀,
+          인앱 결제(<code>IAP</code>), <code>Firebase</code>·<code>AdMob</code> 연동. <b>커밋 155 / 302</b></dd>
           <dt class="t">어려움</dt>
-          <dd>풀에서 꺼낸 오브젝트가 이전 상태를 들고 나옴 →
-          <b>재사용 시점을 명시적 초기화 지점으로</b> 두고 위치·애니메이션·타이머를 함께 되돌림</dd>
+          <dd>풀링은 <code>Destroy</code>가 아니라 껐다 켜는 것이라 이벤트 구독과 색이 남음 →
+          <b>수명 기준을 <code>Start</code>에서 <code>OnEnable</code>/<code>OnDisable</code>로</b> 옮김</dd>
         </dl>
         <div class="marks">
           <span>Google Play · App Store 출시</span>

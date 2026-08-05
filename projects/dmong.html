@@ -377,11 +377,6 @@ AddProduct(광고제거, NonConsumable, {
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <img class="phone" src="../assets/images/dmong/kkumdol-guild.webp" alt="꿈돌이 길드 화면. 상단에 길드 엠블럼과 종합 점수, 인원 50/50 표기가 있고 아래에 길드원 목록이 최고 점수순으로 나열돼 있다">
-          <figcaption><b>길드 화면</b>엠블럼 · 가입 정책(승인 가입) · 인원 · 소개글이 상단에 있고,
-          아래는 <b>길드원을 최고 점수순으로</b> 세운 목록입니다. 길드장과 길드원이 구분됩니다.</figcaption>
-        </figure>
-        <figure>
           <pre class="logbox"><span class="c">// 가입 수락 — 읽고 쓰는 사이를 열어두지 않는다</span>
 
 [사전 확인]
@@ -409,6 +404,11 @@ AddProduct(광고제거, NonConsumable, {
           <p class="logcap"><b>가입 처리 흐름</b>길드장이 수락을 누르는 그 사이에
           같은 사람이 <b>다른 길드에 먼저 가입해 버릴 수 있습니다.</b>
           한 사람이 두 곳에 소속되는 상태를 막는 것이 요점입니다.</p>
+        </figure>
+        <figure>
+          <img class="phone" src="../assets/images/dmong/kkumdol-guild.webp" alt="꿈돌이 길드 화면. 상단에 길드 엠블럼과 종합 점수, 인원 50/50 표기가 있고 아래에 길드원 목록이 최고 점수순으로 나열돼 있다">
+          <figcaption><b>길드 화면</b>엠블럼 · 가입 정책(승인 가입) · 인원 · 소개글이 상단에 있고,
+          아래는 <b>길드원을 최고 점수순으로</b> 세운 목록입니다. 길드장과 길드원이 구분됩니다.</figcaption>
         </figure>
       </div>
     </div>
@@ -458,11 +458,6 @@ AddProduct(광고제거, NonConsumable, {
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <img class="phone" src="../assets/images/dmong/kkumdol-ranking.webp" alt="꿈돌이 랭킹 화면. 1위부터 11위까지 닉네임과 점수가 나열돼 있고 7위 자리에 캐릭터 아이콘이 표시돼 있다">
-          <figcaption><b>랭킹 화면</b>플레이 화면 위에 얹혀 뜹니다.
-          <b>내 순위 자리에 캐릭터가 서 있어</b>, 목록을 훑지 않아도 내가 어디 있는지 바로 보입니다.</figcaption>
-        </figure>
-        <figure>
           <pre class="logbox"><span class="c">// 동점자를 같은 등수로 — 점수를 키로 쓴다</span>
 
 기록 = { 점수 → [닉네임, 닉네임, ...] }
@@ -485,6 +480,11 @@ AddProduct(광고제거, NonConsumable, {
 <span class="c">//   "어느 판의 기록인가"가 사라진다</span></pre>
           <p class="logcap"><b>순위 구성</b>점수를 키로 두면
           <b>동점 처리가 자료구조에서 저절로 풀립니다.</b> 정렬만 하면 끝입니다.</p>
+        </figure>
+        <figure>
+          <img class="phone" src="../assets/images/dmong/kkumdol-ranking.webp" alt="꿈돌이 랭킹 화면. 1위부터 11위까지 닉네임과 점수가 나열돼 있고 7위 자리에 캐릭터 아이콘이 표시돼 있다">
+          <figcaption><b>랭킹 화면</b>플레이 화면 위에 얹혀 뜹니다.
+          <b>내 순위 자리에 캐릭터가 서 있어</b>, 목록을 훑지 않아도 내가 어디 있는지 바로 보입니다.</figcaption>
         </figure>
       </div>
     </div>

@@ -189,6 +189,14 @@
   font-family: var(--mono); font-size: 11px; color: var(--ink-3); text-align: center; padding: 10px;
 }
 
+/* 바로 위 프로젝트에서 갈라져 나온 후속 작업.
+   목록에서 둘이 이어져 있다는 걸 들여쓰기와 가지 기호로 보인다. */
+.pcard.sub { position: relative; padding-left: 44px; }
+.pcard.sub::before {
+  content: "└"; position: absolute; left: 10px; top: 20px;
+  font-family: var(--mono); font-size: 22px; line-height: 1; color: var(--ink-3);
+}
+
 .pcard-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .pcard-head h3 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
 .pcard-head .meta { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
@@ -217,6 +225,8 @@
   .keys div { border-left: 0; border-top: 1px solid var(--line); }
   .keys div:first-child { border-top: 0; }
   .pcard { grid-template-columns: 1fr; gap: 14px; }
+  .pcard.sub { padding-left: 26px; }
+  .pcard.sub::before { left: 0; top: 18px; font-size: 18px; }
   .marks a, .marks .soon { margin-left: 0; }
   .sec-lbl span { margin-left: 0; }
 }

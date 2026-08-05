@@ -83,6 +83,34 @@
       </div>
     </li>
 
+    <!-- MiniOscReceiver — Stage On에서 갈라져 나온 후속 검증 -->
+    <li class="pcard sub">
+      <div class="pcard-media">
+        <div class="blank">게임이 아니라 측정 도구<br>화면 대신 <b>실제 로그</b>로 정리</div>
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>MiniOscReceiver</h3>
+          <span class="meta">UE 5.6 · 개인 · 2026.07 · <b>Stage On 후속</b></span>
+        </div>
+        <p class="what">위 <b>Stage On에서 내린 구조 선택이 옳았는지</b> 2년 뒤 직접 재구현해
+        재측정한 실험입니다. 플러그인이 감추던 소켓·수신 스레드·바이트 파서를 직접 만들었습니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>전부(개인). <code>UDP</code> 소켓, 1ms 폴링 수신 스레드,
+          OSC 바이트 파싱(4바이트 정렬·빅엔디안·비트 재해석), SPSC 락프리 큐 마샬링</dd>
+          <dt class="t">어려움</dt>
+          <dd>저부하에서는 세 방식이 똑같아 보임 →
+          <b>부하를 실제 모션캡처 수준으로 올린 뒤에야</b> 차이가 드러남. 잴 지표를 세 번 고쳐 잡음</dd>
+        </dl>
+        <div class="marks">
+          <span>OSC 전달률 100% · 유실 0</span>
+          <span class="n">Unreliable RPC 0.66% · Reliable은 연결 종료</span>
+          <a href="projects/miniosc.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
     <!-- 꿈돌이 -->
     <li class="pcard">
       <div class="pcard-media">
@@ -192,34 +220,6 @@
           <span>일반 8 frame · 위험 1 frame</span>
           <span class="n">같은 입력 · 같은 코드 경로로 두 난이도</span>
           <a href="projects/isekiro.html">상세 보기</a>
-        </div>
-      </div>
-    </li>
-
-    <!-- MiniOscReceiver -->
-    <li class="pcard">
-      <div class="pcard-media">
-        <div class="blank">게임이 아니라 측정 도구<br>화면 대신 <b>실제 로그</b>로 정리</div>
-      </div>
-      <div>
-        <div class="pcard-head">
-          <h3>MiniOscReceiver</h3>
-          <span class="meta">UE 5.6 · 개인 · 2026.07</span>
-        </div>
-        <p class="what">Stage On에서 내린 구조 선택이 옳았는지 <b>2년 뒤 직접 재구현해 재측정</b>한 실험입니다.
-        플러그인이 감추던 소켓·수신 스레드·바이트 파서를 직접 만들었습니다.</p>
-        <dl class="mini">
-          <dt>담당</dt>
-          <dd>전부(개인). <code>UDP</code> 소켓, 1ms 폴링 수신 스레드,
-          OSC 바이트 파싱(4바이트 정렬·빅엔디안·비트 재해석), SPSC 락프리 큐 마샬링</dd>
-          <dt class="t">어려움</dt>
-          <dd>저부하에서는 세 방식이 똑같아 보임 →
-          <b>부하를 실제 모션캡처 수준으로 올린 뒤에야</b> 차이가 드러남. 잴 지표를 세 번 고쳐 잡음</dd>
-        </dl>
-        <div class="marks">
-          <span>OSC 전달률 100% · 유실 0</span>
-          <span class="n">Unreliable RPC 0.66% · Reliable은 연결 종료</span>
-          <a href="projects/miniosc.html">상세 보기</a>
         </div>
       </div>
     </li>

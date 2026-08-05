@@ -48,8 +48,8 @@
       </div>
       <figure>
         <img src="../assets/images/dmong/kkumdol-menu.webp" alt="꿈돌이 메뉴 화면. 눈 덮인 스테이지 배경에 여러 종류의 발판이 놓여 있고, 하단에 캐릭터 셋과 레벨 진행도가 보인다">
-        <figcaption>메뉴 화면. 스테이지 테마 · 캐릭터 · 레벨 진행도가 한 화면에 있고,
-        배경의 발판이 그대로 해당 스테이지의 발판 리소스입니다.</figcaption>
+        <figcaption>메뉴 화면. 스테이지를 고르면 배경과 캐릭터가 함께 바뀌고,
+        하단에 레벨 진행도와 모은 별이 표시됩니다.</figcaption>
       </figure>
     </div>
   </header>
@@ -66,11 +66,11 @@
       <h3>구현</h3>
       <ul>
         <li>카메라 <code>orthographicSize</code>와 <code>aspect</code>로 <b>화면 폭을 런타임에 계산</b>해,
-        기기 해상도가 달라도 발판이 화면 밖에 놓이지 않게 했습니다.</li>
-        <li>카메라가 <b>임계선을 넘을 때마다 발판 20개를 한 뭉치</b>로 생성하고,
-        임계선을 반 화면만큼 올립니다. 생성 지점이 카메라보다 너무 앞서가면 건너뜁니다.</li>
+        기기 해상도가 달라도 같은 밀도로 깔리게 했습니다.</li>
+        <li>카메라가 <b>임계선을 넘을 때마다 발판 30개를 한 뭉치</b>로 생성하고,
+        임계선을 반 화면만큼 올립니다. 생성 지점이 카메라에서 한 화면 넘게 앞서가 있으면 건너뜁니다.</li>
         <li>회수는 스포너가 아니라 <b>발판 자신이 판단</b>합니다.
-        카메라보다 아래이고 한 화면 이상 멀어진 순간 풀로 돌아갑니다.
+        카메라보다 아래이고 반 화면 이상 멀어진 순간 풀로 돌아갑니다.
         위쪽에 있는 발판은 아무리 멀어도 건드리지 않습니다.</li>
         <li>발판을 놓은 자리에 아이템과 적을 이어서 얹되,
         <code>Physics2D.OverlapCircleAll</code>로 <b>겹침을 먼저 확인</b>하고
@@ -85,7 +85,7 @@
           <pre class="logbox"><span class="c">// PlatformSpawner — 언제 더 깔지  (의사코드)</span>
 매 프레임:
     if 카메라가 다음 임계선을 넘었다
-       <span class="hi">and</span> 마지막 생성 지점이 카메라에서 두 화면 안이다:
+       <span class="hi">and</span> 마지막 생성 지점이 카메라에서 한 화면 안이다:
         SpawnPlatforms()          <span class="c">// 한 뭉치를 위에 깐다</span>
         임계선 += 반 화면          <span class="c">// 다음 임계선을 올린다</span>
 
@@ -103,7 +103,7 @@
 <span class="c">// Platform.RemovePlatform() — 언제 사라질지</span>
 if 내가 카메라보다 <span class="ok">위에</span> 있다:
     return                        <span class="c">// 위쪽은 건드리지 않는다</span>
-if 카메라와의 거리 &gt;= 한 화면:
+if 카메라와의 거리 &gt;= 반 화면:
     ObjectPool.ReturnPlatform(나 자신)</pre>
           <p class="logcap"><b>생성과 회수 조건</b>둘을 한 곳에 두지 않은 것이 요점입니다.
           스포너는 <b>언제 더 깔지</b>만 알고, <b>언제 사라질지</b>는 발판이 스스로 압니다.</p>
@@ -128,7 +128,7 @@ if 카메라와의 거리 &gt;= 한 화면:
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>발판 7종 · 뭉치당 20개 스트리밍</span>
+        <span>발판 7종 · 뭉치당 30개 스트리밍</span>
         <span class="n">해상도별 화면 폭 런타임 계산</span>
         <span class="n">생성 · 회수 책임 분리</span>
       </div>
@@ -147,8 +147,8 @@ if 카메라와의 거리 &gt;= 한 화면:
       <h3>구현</h3>
       <ul>
         <li>현재 점수를 <b>일정 단위로 잘라 티어</b>로 만들고, 티어마다 <b>발판 종류의 등장 확률표</b>를 따로 뒀습니다.
-        초반에는 기본 발판만, 후반에는 7종이 전부 나옵니다.</li>
-        <li>같은 티어 값으로 <b>한 뭉치의 발판 개수를 줄이고</b>, <b>세로 간격을 세 배 이상 벌립니다</b>.
+        초반에는 기본 발판 위주로, 후반에는 7종이 전부 나옵니다.</li>
+        <li>같은 티어 값으로 <b>한 뭉치의 발판 개수를 줄이고</b>, <b>세로 간격을 네 배까지 벌립니다</b>.
         실제 배치는 그 값의 ±20%로 흔들어 규칙성을 지웠습니다.</li>
         <li>적은 <b>중반 티어에 진입해야</b>, 그것도 뭉치 몇 회에 한 마리만 나옵니다.
         아이템이 놓인 발판에는 적을 얹지 않아 <b>보상과 위협이 겹치지 않게</b> 했습니다.</li>
@@ -194,7 +194,7 @@ distance = min(기본간격 + 증가폭 * degree, 상한)
     <div class="part p-trouble">
       <h3>어려움</h3>
       <dl class="tbl">
-        <div><dt>문제</dt><dd>처음에는 발판 종류를 <b>고정 확률로 균등하게</b> 뽑았습니다. 기본 발판이 20%밖에 나오지 않아, <b>시작하자마자 부서지는 발판과 일회용 발판이 쏟아졌습니다.</b> 테스트하는 사람마다 첫 30초를 못 넘겼습니다.</dd></div>
+        <div><dt>문제</dt><dd>처음에는 발판 종류를 <b>고정 확률로 균등하게</b> 뽑았습니다. 기본 발판이 20%밖에 나오지 않아, <b>시작하자마자 부서지는 발판과 일회용 발판이 쏟아졌습니다.</b></dd></div>
         <div><dt>원인</dt><dd>발판 7종을 <b>&ldquo;구현된 기능&rdquo;으로 보고 똑같이 등장시킨 것</b>이 원인입니다. 플레이어는 조작을 익히는 중인데 게임은 처음부터 모든 패를 다 꺼내고 있었습니다. 종류가 늘어난 것과 난이도가 오르는 것을 같은 일로 취급했습니다.</dd></div>
         <div><dt>해결</dt><dd>확률을 <b>점수 티어에 종속</b>시켜, 발판 종류가 <b>하나씩 순차적으로 해금</b>되도록 바꿨습니다. 이후 &ldquo;스폰 개수 증가&rdquo;, &ldquo;줄어드는 정도 감소&rdquo; 같은 튜닝 커밋으로 곡선을 여러 번 완만하게 다시 잡았습니다.</dd></div>
       </dl>
@@ -222,9 +222,9 @@ distance = min(기본간격 + 증가폭 * degree, 상한)
       <h3>구현</h3>
       <ul>
         <li>발판 7종 · 아이템 · 적을 <b>타입별 배열 풀</b>로 나누고, 종류마다 초기 크기를 따로 잡았습니다.
-        <code>Instantiate</code>/<code>Destroy</code>는 초기화 때만 돌고 <b>플레이 중에는 켜고 끄기만</b> 합니다.</li>
-        <li>풀이 비면 그만큼만 새로 만들어 풀에 넣습니다. 초기 크기를 잘못 잡아도
-        <b>게임이 멈추지 않고 그 지점이 로그로 드러나게</b> 했습니다.</li>
+        각 종류를 <b>미리 만들어 꺼두었다가 켜고 끄는</b> 방식으로 바꿨습니다.</li>
+        <li>풀이 비면 그만큼만 새로 만들어 풀에 넣습니다. 초기 크기를 낮게 잡아도
+        <b>게임이 멈추지 않고 그만큼 늘어납니다.</b></li>
         <li>스테이지 테마별로 <b>같은 프리팹에 다른 스프라이트</b>를 물려,
         발판 종류 × 테마 수만큼 프리팹을 만들지 않게 했습니다.</li>
         <li>재사용 시점을 <b>명시적 초기화 지점</b>으로 두고 색 · 이동 상태 · 자식 오브젝트를
@@ -270,7 +270,7 @@ MovePlatform()   : 이동중 아님 <span class="hi">and</span> 활성 상태일
       <h3>성과</h3>
       <div class="res">
         <span>저사양 안드로이드 60 fps 유지</span>
-        <span class="n">플레이 중 런타임 생성 제거</span>
+        <span class="n">반복 생성·파괴를 풀 재사용으로 대체</span>
         <span class="n">프리팹 수를 테마 배수로 늘리지 않음</span>
       </div>
     </div>
@@ -293,7 +293,7 @@ MovePlatform()   : 이동중 아님 <span class="hi">and</span> 활성 상태일
         <b>코드 한 벌이 두 마켓을 처리</b>하게 했습니다.
         플랫폼 분기가 결제 흐름 전체로 번지지 않고 <b>상품 등록 한 곳에만 남습니다.</b></li>
         <li>구매 성공 시 광고 제거 플래그를 세우고 <b>즉시 Firebase에 저장</b>합니다.
-        게임을 지웠다 다시 깔거나 기기를 바꿔도 구매가 유지됩니다.</li>
+        기기가 아니라 계정에 붙는 값이라, <b>같은 계정으로 다시 들어오면</b> 구매가 남아 있습니다.</li>
         <li>애플 정책상 필수인 <b>구매 복원 버튼</b>을
         <code>IAppleExtensions.RestoreTransactions</code>로 붙였습니다.</li>
       </ul>
@@ -344,7 +344,7 @@ AddProduct(광고제거, NonConsumable, {
       <h3>성과</h3>
       <div class="res">
         <span>양대 마켓 결제 · 심사 통과</span>
-        <span class="n">재설치 · 기기 변경 후에도 구매 유지</span>
+        <span class="n">계정 기준으로 구매 상태 유지</span>
         <span class="n">iOS · Android 결제 코드 단일화</span>
       </div>
     </div>
@@ -366,7 +366,7 @@ AddProduct(광고제거, NonConsumable, {
         <li>가입 정책을 <b>승인 가입 · 자유 가입 · 가입 불가</b> 세 종류로 두고,
         자유 가입은 신청과 수락을 <b>한 흐름에서 이어 처리</b>합니다.</li>
         <li>가입 신청과 수락은 <b><code>RunTransaction</code>으로 처리</b>합니다.
-        읽고 나서 쓰는 사이에 다른 사람이 끼어들어도 <b>정원과 신청 목록이 깨지지 않습니다.</b></li>
+        읽고 나서 쓰는 사이에 다른 사람이 끼어들어도 <b>길드원 목록과 신청 목록이 어긋나지 않습니다.</b></li>
         <li>해체는 <b><code>isDisbanding</code> 플래그를 먼저 세우고</b> 길드원의 소속을 지운 뒤
         마지막에 길드를 지웁니다. 해체 중에 들어온 가입 신청은 트랜잭션에서 중단됩니다.</li>
         <li>길드명은 <b>Firebase 키 규칙(<code>. # $ [ ]</code> 불가)을 먼저 검사</b>하고 넘깁니다.</li>
@@ -445,7 +445,8 @@ AddProduct(광고제거, NonConsumable, {
       <ul>
         <li>기록을 <b>스테이지 단위로 저장</b>하고, 랭킹도 스테이지별로 따로 세웁니다.
         행성 8스테이지가 각각 자기 순위표를 가집니다.</li>
-        <li>점수 내림차순으로 정렬해 <b>상위 100명</b>까지 표시합니다.</li>
+        <li>점수 내림차순으로 정렬해 <b>상위 100개 점수</b>까지 표시합니다.
+        동점자가 묶이므로 실제로 보이는 사람은 그보다 많을 수 있습니다.</li>
         <li><b>동점자를 같은 등수로 묶습니다.</b> 점수를 키로 두고 닉네임을 리스트로 매달아,
         같은 점수면 같은 순위 아래에 나란히 들어갑니다.</li>
         <li>기록을 <b>두 종류로 나눠 저장</b>합니다. 랭킹이 쓰는 <b>스테이지별 기록</b>과,
@@ -463,7 +464,7 @@ AddProduct(광고제거, NonConsumable, {
 기록 = { 점수 → [닉네임, 닉네임, ...] }
 
 정렬 = 기록.점수 <span class="hi">내림차순</span>
-표시 = 정렬.상위 100
+표시 = 정렬.상위 100  <span class="c">// 인원이 아니라 점수 100개</span>
 
 <span class="c">//  590 → 1명</span>
 <span class="c">//  553 → 1명</span>
@@ -483,8 +484,9 @@ AddProduct(광고제거, NonConsumable, {
         </figure>
         <figure>
           <img class="phone" src="../assets/images/dmong/kkumdol-ranking.webp" alt="꿈돌이 랭킹 화면. 1위부터 11위까지 닉네임과 점수가 나열돼 있고 7위 자리에 캐릭터 아이콘이 표시돼 있다">
-          <figcaption><b>랭킹 화면</b>플레이 화면 위에 얹혀 뜹니다.
-          <b>내 순위 자리에 캐릭터가 서 있어</b>, 목록을 훑지 않아도 내가 어디 있는지 바로 보입니다.</figcaption>
+          <figcaption><b>랭킹 화면</b>메뉴 위에 패널로 얹혀 뜨고,
+          스테이지를 바꾸면 <b>그 스테이지의 순위표로 다시 채워집니다.</b>
+          떠다니는 캐릭터는 사수가 넣은 연출입니다.</figcaption>
         </figure>
       </div>
     </div>
@@ -520,7 +522,7 @@ AddProduct(광고제거, NonConsumable, {
       <h3>구현</h3>
       <ul>
         <li><code>Firebase Auth</code>와 <code>Realtime Database</code>로 계정 · 최고 기록 · 해금 상태를 처리했습니다.</li>
-        <li><code>AdMob</code> 보상형 · 전면 광고를 붙이고, <b>전면 광고에 30~40초 쿨타임</b>을 걸어
+        <li><code>AdMob</code> 보상형 · 전면 광고를 붙이고, <b>전면 광고에 쿨타임</b>을 걸어
         연속 노출로 플레이가 끊기지 않게 했습니다.</li>
         <li><code>Google Play Games</code>와 <code>Game Center</code> 로그인을 연동하고,
         <b>연동이 안 된 기기에서도 게임이 진행되도록</b> 예외 처리를 따로 넣었습니다.</li>
@@ -534,8 +536,8 @@ AddProduct(광고제거, NonConsumable, {
       <div class="shots two">
         <figure>
           <img class="phone" src="../assets/images/dmong/kkumdol-title.webp" alt="꿈돌이 타이틀 화면. BOUNCE HERO 꿈돌이 로고 아래 불러오기 중 5/24 진행 표시가 있다">
-          <figcaption><b>타이틀 · 로딩</b>&lsquo;불러오기 중 (5/24)&rsquo; 표기가
-          버전 확인과 리소스 로딩이 <b>진행 중임을 사용자에게 보이게</b> 한 부분입니다.</figcaption>
+          <figcaption><b>타이틀 · 로딩</b>&lsquo;불러오기 중 (5/24)&rsquo;처럼
+          <b>몇 개 중 몇 개를 받았는지</b> 보이게 해, 멈춘 것과 받는 중인 것을 구분할 수 있게 했습니다.</figcaption>
         </figure>
         <figure>
           <img src="../assets/images/dmong/kkumdol-appstore.png" alt="App Store의 Bounce Hero 꿈돌이 리스팅">
@@ -549,7 +551,7 @@ AddProduct(광고제거, NonConsumable, {
       <dl class="tbl">
         <div><dt>문제</dt><dd>Google Play Games · Game Center <b>로그인이 안 되는 기기</b>가 있었습니다. 그런데 로그인 실패가 곧 <b>게임 진입 실패</b>로 이어졌습니다. 순위를 못 보는 정도가 아니라 아예 플레이를 못 했습니다.</dd></div>
         <div><dt>원인</dt><dd>로그인 성공을 <b>이후 흐름의 전제로 깔아 둔 것</b>이 원인입니다. 계정 연동은 <b>있으면 좋은 기능</b>인데 코드에서는 <b>필수 경로</b>에 놓여 있었습니다.</dd></div>
-        <div><dt>해결</dt><dd>로그인 실패를 <b>정상적인 분기 중 하나</b>로 다시 정의하고, 실패해도 로컬 데이터로 게임이 진행되게 했습니다. 출시 직전 마지막 커밋 두 개가 이 예외 처리였습니다.</dd></div>
+        <div><dt>해결</dt><dd>로그인 실패를 <b>정상적인 분기 중 하나</b>로 다시 정의하고, 실패해도 로컬 데이터로 게임이 진행되게 했습니다. <b>저장소에 남은 마지막 커밋이 이 예외 처리</b>입니다.</dd></div>
       </dl>
     </div>
 

@@ -229,6 +229,8 @@ distance = min(기본간격 + 증가폭 * degree, 상한)
         발판 종류 × 테마 수만큼 프리팹을 만들지 않게 했습니다.</li>
         <li>재사용 시점을 <b>명시적 초기화 지점</b>으로 두고 색 · 이동 상태 · 자식 오브젝트를
         전부 그 자리에서 되돌립니다.</li>
+        <li>빌드 대상은 <b>Android 6.0(API 23) 이상</b>입니다. 오래된 기기까지 들어오는 캐주얼 게임이라,
+        <b>생성·파괴 비용을 줄이는 것이 곧 돌아가는 기기의 폭</b>이었습니다.</li>
       </ul>
     </div>
 
@@ -269,7 +271,7 @@ MovePlatform()   : 이동중 아님 <span class="hi">and</span> 활성 상태일
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>사무실 테스트 기기 60 fps 유지</span>
+        <span>Android 6.0 이상 지원 · 테스트 기기 60 fps</span>
         <span class="n">반복 생성·파괴를 풀 재사용으로 대체</span>
         <span class="n">프리팹 수를 테마 배수로 늘리지 않음</span>
       </div>

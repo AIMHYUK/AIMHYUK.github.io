@@ -25,3 +25,9 @@ DESIGN.md
 
 # 로컬 편집 도구. Pages는 저장소 전체를 서빙하므로 올리면 URL로 그냥 열린다
 tools/
+
+# 회사별 지원 산출물 생성 스크립트. 어디에 지원했는지가 드러난다
+projects/create_pearlabyss_ppt.py
+
+# 개편 전 초안. index.html + projects/ 체계로 대체됐다
+projects/portfolio-unreal-revised.html

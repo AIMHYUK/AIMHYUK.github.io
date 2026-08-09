@@ -77,7 +77,27 @@
   .p-impl   > h3 { background: var(--accent); }
   .p-shot   > h3 { background: var(--ink-2); }
   .p-trouble> h3 { background: var(--trouble); }
+  /* 트러블슈팅 안에서 성격이 다른 항목.
+     '어려움'은 막혀서 구조를 바꾼 것, '디테일'은 흔한 문제지만 그냥 넘기지 않은 것. */
+  .p-trouble.p-detail > h3 { background: var(--todo); }
   .p-result > h3 { background: var(--result); }
+
+  /* 이어서 — 그 기능에 딸린 페이지(시각화·후속 실험·스토어)를 기능 바로 아래에 둔다.
+     푸터로 내리면 어느 기능의 것인지가 사라진다. */
+  .p-next { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 11px; }
+  .p-next > h3 { margin: 0; background: var(--ink); }
+  .p-next a { display: inline-flex; align-items: center; gap: 8px;
+              font-family: var(--mono); font-size: 13px; font-weight: 700;
+              text-decoration: none; padding: 9px 15px;
+              background: var(--panel); color: var(--ink);
+              box-shadow: inset 0 0 0 1.5px var(--line);
+              transition: background .18s var(--ease), color .18s var(--ease),
+                          transform .18s var(--ease); }
+  .p-next a[target="_blank"] { background: var(--ink); color: #fff; box-shadow: none; }
+  .p-next a[target="_blank"]::after { content: "↗"; font-size: 11px; opacity: .7; }
+  .p-next a:hover { background: var(--accent); color: #fff;
+                    box-shadow: none; transform: translateY(-2px); }
+  .p-next .why { font-size: 13.5px; color: var(--ink-2); flex: 1 1 22ch; }
 
   /* 한 줄 길이 제한. ch는 라틴 기준이라 한글에서는 절반밖에 못 쓴다.
      100ch ≈ 한글 50자로, 읽기 편한 폭을 지키면서 여백을 줄인 값이다. */
@@ -135,10 +155,30 @@
               letter-spacing: .12em; color: var(--ink-3); font-weight: 400; }
   .close p { margin: 0; font-size: 14.5px; color: var(--ink-2); max-width: 100ch; }
 
-  .foot { margin-top: 30px; border-top: 1px solid var(--line); padding: 16px 0 46px;
-          font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
-          display: flex; gap: 10px 20px; flex-wrap: wrap; }
-  .foot a { color: var(--accent); text-decoration: none; }
+  /* ══ 푸터 ══
+     여기 링크(시연 영상 · 저장소 · 시각화 페이지)가 이 페이지의 마지막 행선지다.
+     본문과 같은 크기의 글씨로 두면 안 눌린다. 카드의 '상세 보기' 버튼과 같은
+     생김새를 키워서 쓴다. */
+  .foot { margin-top: 46px; border-top: 2px solid var(--ink); padding: 18px 0 56px;
+          display: flex; flex-wrap: wrap; align-items: center; gap: 12px 10px; }
+
+  /* 이름과 주석은 한 줄을 통째로 차지해, 링크 줄과 섞이지 않는다 */
+  .foot > span { flex: 0 0 100%; font-family: var(--mono); font-size: 11.5px;
+                 letter-spacing: .06em; color: var(--ink-3); }
+  .foot > span:first-child { color: var(--ink-2); font-weight: 700; }
+
+  .foot a { display: inline-flex; align-items: center; gap: 8px;
+            font-family: var(--mono); font-size: 13px; font-weight: 700;
+            text-decoration: none; padding: 11px 17px;
+            background: var(--ink); color: #fff;
+            transition: background .18s var(--ease), transform .18s var(--ease); }
+  /* 바깥으로 나가는 링크만 화살표를 단다 */
+  .foot a[target="_blank"]::after { content: "↗"; font-size: 11px; opacity: .7; }
+  /* 포폴 안의 다른 페이지는 속이 빈 버튼으로 구분 */
+  .foot a:not([target="_blank"]) { background: var(--panel); color: var(--ink);
+            box-shadow: inset 0 0 0 1.5px var(--line); }
+  .foot a:hover { background: var(--accent); color: #fff;
+                  box-shadow: none; transform: translateY(-2px); }
 
   @media (max-width: 860px) {
     .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }

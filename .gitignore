@@ -22,3 +22,6 @@ DESIGN.md
 
 # impeccable 도구 상태
 .impeccable/
+
+# 로컬 편집 도구. Pages는 저장소 전체를 서빙하므로 올리면 URL로 그냥 열린다
+tools/

@@ -403,13 +403,6 @@
       font-size: 14px;
     }
 
-    .svg-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: white;
-      padding: 8px;
-    }
 
     .tilt-sim {
       display: grid;
@@ -621,358 +614,49 @@
       .tilt-board { grid-template-columns: repeat(5, 46px); grid-template-rows: repeat(5, 46px); }
       .tilt-cell { width: 46px; height: 46px; }
     }
+
+    /* ══ 하단 — 포트폴리오 본문으로 돌아가는 길 ══ */
+    /* (원래 배치 시퀀스 SVG 안쪽에 갇혀 있던 규칙을 여기로 옮겼다) */
+    .pf-foot-in {
+      padding-top: 18px; border-top: 2px solid var(--ink);
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px 10px;
+    }
+    .pf-foot-in > span {
+      flex: 0 0 100%; font-size: 11.5px; font-weight: 700;
+      letter-spacing: .06em; color: var(--muted);
+    }
+    .pf-foot-in a {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700; text-decoration: none;
+      padding: 11px 17px; border-radius: 8px;
+      background: var(--ink); color: #fff;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .pf-foot-in a[target="_blank"]::after { content: "↗"; font-size: 11px; opacity: .7; }
+    .pf-foot-in a:not([target="_blank"]) {
+      background: var(--panel); color: var(--ink);
+      box-shadow: inset 0 0 0 1.5px var(--line);
+    }
+    .pf-foot-in a:hover {
+      background: var(--blue); color: #fff; box-shadow: none; transform: translateY(-2px);
+    }
+    .pf-foot { max-width: 1240px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 32px) 56px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>인벤토리 시스템 포트폴리오 설명</h1>
+    <h1>인벤토리 시스템 — 구조와 시뮬레이터</h1>
     <p>
-      그리드 기반 아이템 배치, 드래그 프리뷰, 유효 위치 하이라이트, 바깥 보관 영역, 무게 중심에 따른 Tilt 연출을 중심으로 정리한 시스템 설명입니다.
+      배달 가방에 물건을 테트리스처럼 채우는 시스템입니다. <strong>먼저 아래 시뮬레이터를 만져 보세요</strong> —
+      실제 <code>InventoryModel.RecalculateTorque()</code> 계산식을 그대로 옮긴 것이라, 무엇을 어디에 놓느냐가
+      가방을 어떻게 기울이는지 바로 확인할 수 있습니다. 구조 설명은 그 아래에 있습니다.
     </p>
   </header>
 
   <main>
     <section class="grid">
       <div class="panel span-12">
-        <h2>1. MVC 아키텍처</h2>
-        <div class="arch">
-          <div class="lane">
-            <h3><span class="dot violet"></span>Input</h3>
-            <div class="box input">
-              <strong>InventoryState</strong>
-              <small>사용자 입력을 집기, 놓기, 회전, 배출 같은 인벤토리 조작 명령으로 변환.</small>
-            </div>
-            <div class="box input">
-              <strong>EventSystem</strong>
-              <small>UI 선택 상태를 유지해 셀, 아이템, 바깥 보관 영역 간 포커스를 연결.</small>
-            </div>
-          </div>
-
-          <div class="lane">
-            <h3><span class="dot"></span>Controller</h3>
-            <div class="box">
-              <strong>InventoryController</strong>
-              <small>입력 명령을 받아 Model을 변경하고 View 갱신을 조율하는 중심 클래스.</small>
-            </div>
-            <div class="box warn">
-              <strong>드래그 상태 관리</strong>
-              <small><code>_isDragging</code>, <code>_draggedItem</code>, <code>_pickupOffset</code>, 원래 위치와 바깥 보관함 출처를 보관.</small>
-            </div>
-          </div>
-
-          <div class="lane">
-            <h3><span class="dot green"></span>Model</h3>
-            <div class="box model">
-              <strong>InventoryModel</strong>
-              <small>2D 배열 <code>InventoryItem[,]</code>로 점유 상태, 배치 가능성, 토크 값을 관리.</small>
-            </div>
-            <div class="box model">
-              <strong>InventoryItem</strong>
-              <small>아이템 정의, 현재 그리드 위치, 배치 여부, 회전 상태와 실제 크기(<code>EffectiveSize</code>)를 보관.</small>
-            </div>
-          </div>
-
-          <div class="lane">
-            <h3><span class="dot teal"></span>View</h3>
-            <div class="box view">
-              <strong>InventoryGridView / ItemView</strong>
-              <small>셀, 아이템 UI, 하이라이트를 표시하고 Model 이벤트에 맞춰 화면을 갱신.</small>
-            </div>
-            <div class="box view">
-              <strong>DragPreview / OutsideArea / TiltView</strong>
-              <small>드래그 프리뷰, 보관함 밖 아이템, 토크 기반 기울기 연출을 담당.</small>
-            </div>
-          </div>
-        </div>
-        <div class="legend">
-          <span class="pill"><span class="dot violet"></span>Input</span>
-          <span class="pill"><span class="dot"></span>Controller</span>
-          <span class="pill"><span class="dot green"></span>Model</span>
-          <span class="pill"><span class="dot teal"></span>View</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="panel span-8">
-        <h2>2. 아이템을 놓으면 일어나는 일</h2>
-        <div class="flow">
-          <div class="step">
-            <strong>포인터 좌표 주입</strong>
-            <span><code>InventoryState.Update()</code>가 매 프레임 <code>SetPointerScreenPosition()</code>을 호출해 현재 조작 위치를 컨트롤러와 동기화한다.</span>
-          </div>
-          <div class="step">
-            <strong>집기 시작</strong>
-            <span>마우스 좌클릭 started 또는 패드 A가 <code>BeginPickupAt(screenPos)</code>를 호출한다. 클릭한 셀에서 아이템을 찾고, 아이템 좌상단과 클릭 셀의 차이를 <code>_pickupOffset</code>에 저장한다.</span>
-          </div>
-          <div class="step">
-            <strong>모델에서 임시 제거</strong>
-            <span><code>InventoryModel.TryRemove(item)</code>가 그리드 배열을 비우고 <code>item.Unplace()</code> 처리한다. <code>OnItemRemoved</code> 이벤트로 기존 <code>InventoryItemView</code>가 삭제된다.</span>
-          </div>
-          <div class="step">
-            <strong>드래그 프리뷰 표시</strong>
-            <span><code>InventoryDragPreviewView.Show()</code>가 아이템의 <code>EffectiveSize</code>와 회전 상태에 맞춰 반투명 아이콘을 보여준다.</span>
-          </div>
-          <div class="step">
-            <strong>드래그 중 배치 가능성 표시</strong>
-            <span><code>UpdateDragging()</code>이 현재 셀에서 <code>_pickupOffset</code>을 뺀 anchor를 계산하고, <code>CanPlace()</code> 결과에 따라 ValidDrop 또는 InvalidDrop 하이라이트를 칠한다.</span>
-            <pre class="code-snippet"><code>Vector2Int? anchorPos = GetDropAnchorPosition(_pointerScreenPosition);
-bool canPlace = _model.CanPlace(_draggedItem, anchorPos.Value);
-
-var highlightState = canPlace
-    ? CellHighlightState.ValidDrop
-    : CellHighlightState.InvalidDrop;</code></pre>
-          </div>
-          <div class="step">
-            <strong>놓기 시도</strong>
-            <span>마우스 좌클릭 canceled 또는 패드 A가 <code>ReleaseAt(screenPos)</code>를 호출한다. anchor가 유효하고 <code>TryPlace()</code>가 성공하면 새 위치에 즉시 배치된다.</span>
-            <pre class="code-snippet"><code>Vector2Int? anchorPos = GetDropAnchorPosition(_pointerScreenPosition);
-
-if (anchorPos.HasValue && _model.TryPlace(_draggedItem, anchorPos.Value))
-{
-    FinishDrag();
-    return;
-}
-
-RestoreDraggedItem();
-FinishDrag();</code></pre>
-          </div>
-          <div class="step">
-            <strong>성공 또는 복구</strong>
-            <span>성공하면 <code>OnItemPlaced</code>로 새 <code>InventoryItemView</code>가 생성된다. 실패하면 그리드 출신은 원래 셀로, 바깥 영역 출신은 원래 Outside 영역으로 복구된다.</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel span-4">
-        <h2>핵심 규칙</h2>
-        <div class="callout">
-          <p><strong>배치 좌표는 아이템 좌상단 anchor입니다.</strong></p>
-          <p>커서가 아이템 내부 어느 칸을 잡았는지 유지하기 위해 <code>cursorCell - _pickupOffset</code>으로 실제 배치 좌상단을 계산합니다.</p>
-        </div>
-        <div class="note">
-          <p><strong>실패해도 아이템을 잃지 않습니다.</strong></p>
-          <p>배치할 수 없는 위치에 놓으면 <code>RestoreDraggedItem()</code> 경로로 원래 위치나 원래 보관 영역에 복구됩니다.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="panel span-12">
-        <h2>3. 배치 시퀀스</h2>
-        <div class="svg-wrap">
-          <svg width="1160" height="430" viewBox="0 0 1160 430" role="img" aria-label="아이템 배치 시퀀스 다이어그램">
-            <defs>
-              <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-                <path d="M0,0 L0,6 L9,3 z" fill="#667085"></path>
-              </marker>
-              <style>
-                .lifeline { stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 5 6; }
-                .msg { stroke: #667085; stroke-width: 2; marker-end: url(#arrow); }
-                .head { fill: #18212f; rx: 8; }
-                .head2 { fill: #0f766e; rx: 8; }
-                .head3 { fill: #15803d; rx: 8; }
-                .txt { fill: white; font-size: 15px; font-weight: 700; }
-                .label { fill: #18212f; font-size: 13px; }
-                .muted { fill: #667085; font-size: 12px; }
-              </style>
-            </defs>
-
-            <rect class="head" x="30" y="20" width="180" height="42"></rect>
-            <text class="txt" x="120" y="47" text-anchor="middle">InventoryState</text>
-            <rect class="head" x="265" y="20" width="200" height="42"></rect>
-            <text class="txt" x="365" y="47" text-anchor="middle">InventoryController</text>
-            <rect class="head3" x="520" y="20" width="180" height="42"></rect>
-            <text class="txt" x="610" y="47" text-anchor="middle">InventoryModel</text>
-            <rect class="head2" x="755" y="20" width="180" height="42"></rect>
-            <text class="txt" x="845" y="47" text-anchor="middle">GridView</text>
-            <rect class="head2" x="990" y="20" width="140" height="42"></rect>
-            <text class="txt" x="1060" y="47" text-anchor="middle">DragPreview</text>
-
-            <line class="lifeline" x1="120" y1="62" x2="120" y2="402"></line>
-            <line class="lifeline" x1="365" y1="62" x2="365" y2="402"></line>
-            <line class="lifeline" x1="610" y1="62" x2="610" y2="402"></line>
-            <line class="lifeline" x1="845" y1="62" x2="845" y2="402"></line>
-            <line class="lifeline" x1="1060" y1="62" x2="1060" y2="402"></line>
-
-            <line class="msg" x1="120" y1="90" x2="365" y2="90"></line>
-            <text class="label" x="242" y="82" text-anchor="middle">BeginPickupAt(screenPos)</text>
-
-            <line class="msg" x1="365" y1="130" x2="845" y2="130"></line>
-            <text class="label" x="605" y="122" text-anchor="middle">GetGridPositionFromScreen()</text>
-
-            <line class="msg" x1="365" y1="170" x2="610" y2="170"></line>
-            <text class="label" x="488" y="162" text-anchor="middle">GetItemAt(), TryRemove()</text>
-
-            <line class="msg" x1="610" y1="210" x2="845" y2="210"></line>
-            <text class="label" x="728" y="202" text-anchor="middle">OnItemRemoved</text>
-            <text class="muted" x="728" y="224" text-anchor="middle">기존 ItemView 삭제</text>
-
-            <line class="msg" x1="365" y1="255" x2="1060" y2="255"></line>
-            <text class="label" x="713" y="247" text-anchor="middle">Show(item, cellSize, spacing)</text>
-
-            <line class="msg" x1="365" y1="300" x2="610" y2="300"></line>
-            <text class="label" x="488" y="292" text-anchor="middle">ReleaseAt → TryPlace(anchor)</text>
-
-            <line class="msg" x1="610" y1="340" x2="845" y2="340"></line>
-            <text class="label" x="728" y="332" text-anchor="middle">OnItemPlaced</text>
-            <text class="muted" x="728" y="354" text-anchor="middle">새 ItemView 생성 + 셀 상태 갱신</text>
-
-            <line class="msg" x1="365" y1="382" x2="1060" y2="382"></line>
-            <text class="label" x="713" y="374" text-anchor="middle">FinishDrag → Hide(), ClearAllHighlights()</text>
-          </svg>
-        </div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="panel span-12">
-        <h2>4. 그리드 좌표와 하이라이트</h2>
-        <div class="inventory-demo">
-          <div class="outside">
-            <div class="outside-title">Left Outside</div>
-            <div class="mini-item">배출 아이템 A</div>
-            <div class="mini-item">배출 아이템 B</div>
-          </div>
-
-          <div class="board-wrap">
-            <div class="board" aria-label="5x5 inventory grid">
-              <div class="cell occupied">(0,0)<div class="overlay-item">2x2</div></div>
-              <div class="cell occupied">(1,0)</div>
-              <div class="cell hover">(2,0)</div>
-              <div class="cell">(3,0)</div>
-              <div class="cell">(4,0)</div>
-              <div class="cell occupied">(0,1)</div>
-              <div class="cell occupied">(1,1)</div>
-              <div class="cell">(2,1)</div>
-              <div class="cell">(3,1)</div>
-              <div class="cell">(4,1)</div>
-              <div class="cell">(0,2)</div>
-              <div class="cell valid">(1,2)</div>
-              <div class="cell valid">(2,2)</div>
-              <div class="cell">(3,2)</div>
-              <div class="cell">(4,2)</div>
-              <div class="cell">(0,3)</div>
-              <div class="cell valid">(1,3)</div>
-              <div class="cell valid">(2,3)</div>
-              <div class="cell invalid">(3,3)</div>
-              <div class="cell invalid">(4,3)</div>
-              <div class="cell">(0,4)</div>
-              <div class="cell">(1,4)</div>
-              <div class="cell">(2,4)</div>
-              <div class="cell invalid">(3,4)</div>
-              <div class="cell invalid">(4,4)</div>
-            </div>
-            <p><code>x</code>는 오른쪽으로 증가, <code>y</code>는 아래로 증가합니다. 셀 UI도 좌상단 pivot 기준으로 배치됩니다.</p>
-          </div>
-
-          <div class="outside">
-            <div class="outside-title">Right Outside</div>
-            <div class="mini-item">배출 아이템 C</div>
-          </div>
-        </div>
-        <div class="legend">
-          <span class="pill"><span class="dot" style="background:#eef2f7"></span>Normal</span>
-          <span class="pill"><span class="dot" style="background:#dbeafe"></span>Occupied</span>
-          <span class="pill"><span class="dot" style="background:#fef3c7"></span>Hover</span>
-          <span class="pill"><span class="dot" style="background:#dcfce7"></span>ValidDrop</span>
-          <span class="pill"><span class="dot" style="background:#fee2e2"></span>InvalidDrop</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="panel span-12">
-        <h2>5. 보관함 밖 아이템 처리</h2>
-        <div class="flow">
-          <div class="step">
-            <strong>드래그 중 우클릭/X</strong>
-            <span><code>TryContextActionAt()</code>가 복구 후 <code>FinishDrag()</code>. 즉 취소 동작이다.</span>
-          </div>
-          <div class="step">
-            <strong>바깥 아이템 위 우클릭/X</strong>
-            <span><code>GetOutsideItemAtScreen()</code>으로 찾은 뒤 <code>PickupOutsideItem()</code>. 원래 Outside 영역에서 제거하고 드래그 상태로 전환한다.</span>
-          </div>
-          <div class="step">
-            <strong>그리드 아이템 위 우클릭/X</strong>
-            <span><code>TryEjectHoveredItemAt()</code>. 모델에서 제거 후 왼쪽 Outside 우선, 가득 찼으면 오른쪽 Outside에 넣는다. 둘 다 가득 차면 원래 위치로 되돌린다.</span>
-          </div>
-        </div>
-      </div>
-
-    </section>
-
-    <section class="grid">
-      <div class="panel span-6">
-        <h2>6. 주요 클래스 책임</h2>
-        <table class="table">
-          <thead>
-            <tr><th>클래스</th><th>책임</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><code>InventoryItem</code></td><td>아이템 정의 참조, 배치 좌표, 회전 여부, 회전 반영 크기(<code>EffectiveSize</code>) 보관</td></tr>
-            <tr><td><code>InventoryModel</code></td><td>그리드 점유 배열, 배치 가능성 검사, 배치/삭제, 토크 재계산, 이벤트 발생</td></tr>
-            <tr><td><code>InventoryController</code></td><td>드래그 상태 관리, 배치 anchor 계산, Outside 입출고, 모델-뷰 호출 조율</td></tr>
-            <tr><td><code>InventoryGridView</code></td><td>셀 UI 생성, 화면 좌표를 그리드 좌표로 변환, 아이템 View 생성/삭제, 하이라이트</td></tr>
-            <tr><td><code>InventoryDragPreviewView</code></td><td>드래그 중 반투명 아이템 프리뷰 표시, 그리드 스냅/자유 이동</td></tr>
-            <tr><td><code>OutsideInventoryAreaView</code></td><td>그리드 밖 아이템 목록, OutsideItemView 생성/삭제, Outside 포커스 탐색</td></tr>
-            <tr><td><code>InventoryTiltView</code></td><td>모델 토크 변경 이벤트를 받아 인벤토리 UI를 좌우로 기울임</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="panel span-6">
-        <h2>7. 모델 이벤트 전파</h2>
-        <p class="formula">
-          초록색은 <code>InventoryModel</code>에서 처리되는 단계, 파란색은 <code>InventoryController</code>, 청록색은 View 계층을 의미합니다.
-        </p>
-        <div class="event-flow">
-          <div>
-            <p class="event-flow-title">아이템 UI 갱신</p>
-            <div class="arrow-row">
-              <div class="box model">
-                <strong>InventoryModel</strong>
-                <small><code>TryPlace</code> / <code>TryRemove</code><br>배열 갱신, Item 상태 변경</small>
-              </div>
-              <div class="arrow">→</div>
-              <div class="box model">
-                <strong>Model Event</strong>
-                <small><code>OnItemPlaced</code><br><code>OnItemRemoved</code></small>
-              </div>
-              <div class="arrow">→</div>
-              <div class="box view">
-                <strong>InventoryGridView</strong>
-                <small>ItemView 생성/삭제<br>셀 상태 재계산</small>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p class="event-flow-title">무게 중심 Tilt 갱신</p>
-            <div class="arrow-row">
-              <div class="box model">
-                <strong>InventoryModel</strong>
-                <small><code>RecalculateTorque</code><br>무게 중심 기반 토크 계산</small>
-              </div>
-              <div class="arrow">→</div>
-              <div class="box">
-                <strong>InventoryController</strong>
-                <small><code>OnTorqueChanged</code><br>View에 토크 값 전달</small>
-              </div>
-              <div class="arrow">→</div>
-              <div class="box view">
-                <strong>InventoryTiltView</strong>
-                <small>토크 값에 따라<br>인벤토리 UI 회전</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="grid">
-      <div class="panel span-12">
-        <h2>8. Tilt 시뮬레이션</h2>
+        <h2>1. 토크 시뮬레이터</h2>
         <p>
           실제 코드의 <code>InventoryModel.RecalculateTorque()</code> 토크 계산식을 기준으로 만든 간단한 시뮬레이터입니다.
           아이템을 선택한 뒤 그리드 셀을 누르면 배치되고, 토크에 따라 인벤토리 판이 기울어집니다.
@@ -1038,7 +722,281 @@ FinishDrag();</code></pre>
       </div>
     </section>
 
+    <section class="grid" id="structure">
+      <div class="panel span-12">
+        <h2>2. 구조와 책임</h2>
+        <div class="arch">
+          <div class="lane">
+            <h3><span class="dot violet"></span>Input</h3>
+            <div class="box input">
+              <strong>InventoryState</strong>
+              <small>사용자 입력을 집기, 놓기, 회전, 배출 같은 인벤토리 조작 명령으로 변환.</small>
+            </div>
+            <div class="box input">
+              <strong>EventSystem</strong>
+              <small>UI 선택 상태를 유지해 셀, 아이템, 바깥 보관 영역 간 포커스를 연결.</small>
+            </div>
+          </div>
+
+          <div class="lane">
+            <h3><span class="dot"></span>Controller</h3>
+            <div class="box">
+              <strong>InventoryController</strong>
+              <small>입력 명령을 받아 Model을 변경하고 View 갱신을 조율하는 중심 클래스.</small>
+            </div>
+            <div class="box warn">
+              <strong>드래그 상태 관리</strong>
+              <small><code>_isDragging</code>, <code>_draggedItem</code>, <code>_pickupOffset</code>, 원래 위치와 바깥 보관함 출처를 보관.</small>
+            </div>
+          </div>
+
+          <div class="lane">
+            <h3><span class="dot green"></span>Model</h3>
+            <div class="box model">
+              <strong>InventoryModel</strong>
+              <small>2D 배열 <code>InventoryItem[,]</code>로 점유 상태, 배치 가능성, 토크 값을 관리.</small>
+            </div>
+            <div class="box model">
+              <strong>InventoryItem</strong>
+              <small>아이템 정의, 현재 그리드 위치, 배치 여부, 회전 상태와 실제 크기(<code>EffectiveSize</code>)를 보관.</small>
+            </div>
+          </div>
+
+          <div class="lane">
+            <h3><span class="dot teal"></span>View</h3>
+            <div class="box view">
+              <strong>InventoryGridView / ItemView</strong>
+              <small>셀, 아이템 UI, 하이라이트를 표시하고 Model 이벤트에 맞춰 화면을 갱신.</small>
+            </div>
+            <div class="box view">
+              <strong>DragPreview / OutsideArea / TiltView</strong>
+              <small>드래그 프리뷰, 보관함 밖 아이템, 토크 기반 기울기 연출을 담당.</small>
+            </div>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="pill"><span class="dot violet"></span>Input</span>
+          <span class="pill"><span class="dot"></span>Controller</span>
+          <span class="pill"><span class="dot green"></span>Model</span>
+          <span class="pill"><span class="dot teal"></span>View</span>
+        </div>
+      </div>
+      <div class="panel span-6">
+        <h3>클래스별 책임</h3>
+        <table class="table">
+          <thead>
+            <tr><th>클래스</th><th>책임</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>InventoryItem</code></td><td>아이템 정의 참조, 배치 좌표, 회전 여부, 회전 반영 크기(<code>EffectiveSize</code>) 보관</td></tr>
+            <tr><td><code>InventoryModel</code></td><td>그리드 점유 배열, 배치 가능성 검사, 배치/삭제, 토크 재계산, 이벤트 발생</td></tr>
+            <tr><td><code>InventoryController</code></td><td>드래그 상태 관리, 배치 anchor 계산, Outside 입출고, 모델-뷰 호출 조율</td></tr>
+            <tr><td><code>InventoryGridView</code></td><td>셀 UI 생성, 화면 좌표를 그리드 좌표로 변환, 아이템 View 생성/삭제, 하이라이트</td></tr>
+            <tr><td><code>InventoryDragPreviewView</code></td><td>드래그 중 반투명 아이템 프리뷰 표시, 그리드 스냅/자유 이동</td></tr>
+            <tr><td><code>OutsideInventoryAreaView</code></td><td>그리드 밖 아이템 목록, OutsideItemView 생성/삭제, Outside 포커스 탐색</td></tr>
+            <tr><td><code>InventoryTiltView</code></td><td>모델 토크 변경 이벤트를 받아 인벤토리 UI를 좌우로 기울임</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel span-6">
+        <h3>모델 이벤트가 화면까지 가는 길</h3>
+        <p class="formula">
+          초록색은 <code>InventoryModel</code>에서 처리되는 단계, 파란색은 <code>InventoryController</code>, 청록색은 View 계층을 의미합니다.
+        </p>
+        <div class="event-flow">
+          <div>
+            <p class="event-flow-title">아이템 UI 갱신</p>
+            <div class="arrow-row">
+              <div class="box model">
+                <strong>InventoryModel</strong>
+                <small><code>TryPlace</code> / <code>TryRemove</code><br>배열 갱신, Item 상태 변경</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box model">
+                <strong>Model Event</strong>
+                <small><code>OnItemPlaced</code><br><code>OnItemRemoved</code></small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box view">
+                <strong>InventoryGridView</strong>
+                <small>ItemView 생성/삭제<br>셀 상태 재계산</small>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p class="event-flow-title">무게 중심 Tilt 갱신</p>
+            <div class="arrow-row">
+              <div class="box model">
+                <strong>InventoryModel</strong>
+                <small><code>RecalculateTorque</code><br>무게 중심 기반 토크 계산</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box">
+                <strong>InventoryController</strong>
+                <small><code>OnTorqueChanged</code><br>View에 토크 값 전달</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="box view">
+                <strong>InventoryTiltView</strong>
+                <small>토크 값에 따라<br>인벤토리 UI 회전</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-8">
+        <h2>3. 집기부터 놓기까지</h2>
+        <div class="flow">
+          <div class="step">
+            <strong>포인터 좌표 주입</strong>
+            <span><code>InventoryState.Update()</code>가 매 프레임 <code>SetPointerScreenPosition()</code>을 호출해 현재 조작 위치를 컨트롤러와 동기화한다.</span>
+          </div>
+          <div class="step">
+            <strong>집기 시작</strong>
+            <span>마우스 좌클릭 started 또는 패드 A가 <code>BeginPickupAt(screenPos)</code>를 호출한다. 클릭한 셀에서 아이템을 찾고, 아이템 좌상단과 클릭 셀의 차이를 <code>_pickupOffset</code>에 저장한다.</span>
+          </div>
+          <div class="step">
+            <strong>모델에서 임시 제거</strong>
+            <span><code>InventoryModel.TryRemove(item)</code>가 그리드 배열을 비우고 <code>item.Unplace()</code> 처리한다. <code>OnItemRemoved</code> 이벤트로 기존 <code>InventoryItemView</code>가 삭제된다.</span>
+          </div>
+          <div class="step">
+            <strong>드래그 프리뷰 표시</strong>
+            <span><code>InventoryDragPreviewView.Show()</code>가 아이템의 <code>EffectiveSize</code>와 회전 상태에 맞춰 반투명 아이콘을 보여준다.</span>
+          </div>
+          <div class="step">
+            <strong>드래그 중 배치 가능성 표시</strong>
+            <span><code>UpdateDragging()</code>이 현재 셀에서 <code>_pickupOffset</code>을 뺀 anchor를 계산하고, <code>CanPlace()</code> 결과에 따라 ValidDrop 또는 InvalidDrop 하이라이트를 칠한다.</span>
+            <pre class="code-snippet"><code>Vector2Int? anchorPos = GetDropAnchorPosition(_pointerScreenPosition);
+bool canPlace = _model.CanPlace(_draggedItem, anchorPos.Value);
+
+var highlightState = canPlace
+    ? CellHighlightState.ValidDrop
+    : CellHighlightState.InvalidDrop;</code></pre>
+          </div>
+          <div class="step">
+            <strong>놓기 시도</strong>
+            <span>마우스 좌클릭 canceled 또는 패드 A가 <code>ReleaseAt(screenPos)</code>를 호출한다. anchor가 유효하고 <code>TryPlace()</code>가 성공하면 새 위치에 즉시 배치된다.</span>
+            <pre class="code-snippet"><code>Vector2Int? anchorPos = GetDropAnchorPosition(_pointerScreenPosition);
+
+if (anchorPos.HasValue && _model.TryPlace(_draggedItem, anchorPos.Value))
+{
+    FinishDrag();
+    return;
+}
+
+RestoreDraggedItem();
+FinishDrag();</code></pre>
+          </div>
+          <div class="step">
+            <strong>성공 또는 복구</strong>
+            <span>성공하면 <code>OnItemPlaced</code>로 새 <code>InventoryItemView</code>가 생성된다. 실패하면 그리드 출신은 원래 셀로, 바깥 영역 출신은 원래 Outside 영역으로 복구된다.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel span-4">
+        <h3>핵심 규칙</h3>
+        <div class="callout">
+          <p><strong>배치 좌표는 아이템 좌상단 anchor입니다.</strong></p>
+          <p>커서가 아이템 내부 어느 칸을 잡았는지 유지하기 위해 <code>cursorCell - _pickupOffset</code>으로 실제 배치 좌상단을 계산합니다.</p>
+        </div>
+        <div class="note">
+          <p><strong>실패해도 아이템을 잃지 않습니다.</strong></p>
+          <p>배치할 수 없는 위치에 놓으면 <code>RestoreDraggedItem()</code> 경로로 원래 위치나 원래 보관 영역에 복구됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel span-12">
+        <h2>4. 좌표계와 예외 처리</h2>
+        <div class="inventory-demo">
+          <div class="outside">
+            <div class="outside-title">Left Outside</div>
+            <div class="mini-item">배출 아이템 A</div>
+            <div class="mini-item">배출 아이템 B</div>
+          </div>
+
+          <div class="board-wrap">
+            <div class="board" aria-label="5x5 inventory grid">
+              <div class="cell occupied">(0,0)<div class="overlay-item">2x2</div></div>
+              <div class="cell occupied">(1,0)</div>
+              <div class="cell hover">(2,0)</div>
+              <div class="cell">(3,0)</div>
+              <div class="cell">(4,0)</div>
+              <div class="cell occupied">(0,1)</div>
+              <div class="cell occupied">(1,1)</div>
+              <div class="cell">(2,1)</div>
+              <div class="cell">(3,1)</div>
+              <div class="cell">(4,1)</div>
+              <div class="cell">(0,2)</div>
+              <div class="cell valid">(1,2)</div>
+              <div class="cell valid">(2,2)</div>
+              <div class="cell">(3,2)</div>
+              <div class="cell">(4,2)</div>
+              <div class="cell">(0,3)</div>
+              <div class="cell valid">(1,3)</div>
+              <div class="cell valid">(2,3)</div>
+              <div class="cell invalid">(3,3)</div>
+              <div class="cell invalid">(4,3)</div>
+              <div class="cell">(0,4)</div>
+              <div class="cell">(1,4)</div>
+              <div class="cell">(2,4)</div>
+              <div class="cell invalid">(3,4)</div>
+              <div class="cell invalid">(4,4)</div>
+            </div>
+            <p><code>x</code>는 오른쪽으로 증가, <code>y</code>는 아래로 증가합니다. 셀 UI도 좌상단 pivot 기준으로 배치됩니다.</p>
+          </div>
+
+          <div class="outside">
+            <div class="outside-title">Right Outside</div>
+            <div class="mini-item">배출 아이템 C</div>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="pill"><span class="dot" style="background:#eef2f7"></span>Normal</span>
+          <span class="pill"><span class="dot" style="background:#dbeafe"></span>Occupied</span>
+          <span class="pill"><span class="dot" style="background:#fef3c7"></span>Hover</span>
+          <span class="pill"><span class="dot" style="background:#dcfce7"></span>ValidDrop</span>
+          <span class="pill"><span class="dot" style="background:#fee2e2"></span>InvalidDrop</span>
+        </div>
+      </div>
+      <div class="panel span-12">
+        <h3>보관함 밖 아이템 처리</h3>
+        <div class="flow">
+          <div class="step">
+            <strong>드래그 중 우클릭/X</strong>
+            <span><code>TryContextActionAt()</code>가 복구 후 <code>FinishDrag()</code>. 즉 취소 동작이다.</span>
+          </div>
+          <div class="step">
+            <strong>바깥 아이템 위 우클릭/X</strong>
+            <span><code>GetOutsideItemAtScreen()</code>으로 찾은 뒤 <code>PickupOutsideItem()</code>. 원래 Outside 영역에서 제거하고 드래그 상태로 전환한다.</span>
+          </div>
+          <div class="step">
+            <strong>그리드 아이템 위 우클릭/X</strong>
+            <span><code>TryEjectHoveredItemAt()</code>. 모델에서 제거 후 왼쪽 Outside 우선, 가득 찼으면 오른쪽 Outside에 넣는다. 둘 다 가득 차면 원래 위치로 되돌린다.</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
   </main>
+
+  <footer class="pf-foot">
+    <div class="pf-foot-in">
+      <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+      <a href="../mdcalling.html">← 배달왕 김족구 상세</a>
+      <a href="../../index.html">포트폴리오 홈</a>
+      <a href="https://github.com/AIMHYUK/MdCalling-Showcase" target="_blank" rel="noreferrer">본인 작성 코드</a>
+    </div>
+  </footer>
+
   <script>
     (() => {
       const columns = 5;

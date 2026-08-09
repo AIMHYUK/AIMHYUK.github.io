@@ -1,6 +1,5 @@
 <!doctype html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>조준혁 — Game Client Programmer</title>
@@ -25,24 +24,23 @@
   <header class="hero">
     <h1>조준혁</h1>
     <p class="role">GAME CLIENT PROGRAMMER · UNREAL ENGINE 5 / UNITY · C++ / C#</p>
-    <p class="pitch">문제의 원인을 <b>측정으로 확인하고</b>, 그에 맞는 구조를 고르는 클라이언트 프로그래머입니다.
-    아래 프로젝트마다 <b>무엇을 만들었는지 · 무엇이 막혔는지 · 어떻게 풀었는지</b>를 화면과 함께 적었습니다.</p>
+    <p class="pitch">게임 클라이언트 프로그래머입니다. 각 프로젝트마다 <b>구현 담당과 해당 프로젝트를 진행함에 있어서 어려웠던 항목</b>에 대해 적어 보았습니다.</p>
 
     <dl class="keys">
       <div>
         <dt>수상</dt>
         <dd>과학기술정보통신부 장관상 (대상)
         <span>2024.12 · 메타버스 아카데미 3기 · Stage On</span></dd>
-      </div>
-      <div>
+      </div><div>
         <dt>출시</dt>
         <dd>Google Play · App Store
-        <span>Bounce Hero : 꿈돌이 · 사수와 2인 개발</span></dd>
+        <span>Bounce Hero : 꿈돌이 · 사수와 2인 공동 개발</span></dd>
       </div>
+      
       <div>
         <dt>학력</dt>
         <dd>가천대학교 컴퓨터공학과
-        <span>2019.02–2026.02 · GPA 4.02 / 4.5</span></dd>
+        <span>2019.02 ~ 2026.02 · GPA 4.02 / 4.5</span></dd>
       </div>
     </dl>
   </header>
@@ -63,13 +61,13 @@
       <div>
         <div class="pcard-head">
           <h3>Stage On</h3>
-          <span class="meta">UE5 · 7인 팀 · 2024.09–11</span>
+          <span class="meta">UE5 · 7인 팀 · 2024.09 ~ 11</span>
         </div>
         <p class="what">버튜버가 <b>실시간 모션</b>으로 무대에 서고 관객이 티켓을 사서 입장하는
-        가상 콘서트 플랫폼. 무대를 직접 만들어 저장하고 그 무대에서 공연을 엽니다.</p>
+        가상 콘서트 플랫폼. 관객이 무대를 직접 만들어 저장하고 버튜버는 해당 무대에서 공연을 개최할 수 있습니다.</p>
         <dl class="mini">
           <dt>담당</dt>
-          <dd>무대 구성 시스템(하늘·테마·특효·지면 조합), <code>SceneCapture</code> 썸네일 생성과 업로드,
+          <dd>무대 구성 시스템(하늘·테마·특수효과·지면 조합) 액터화로 구조개편<br> <code>SceneCapture</code> 썸네일 생성과 업로드<br>
           <b>외부 모션캡처 데이터를 언리얼로 들여오는 수신 구조</b></dd>
           <dt class="t">어려움</dt>
           <dd>본 단위 <code>RPC</code> 전달이 본 개수만큼 호출이 늘어 실시간을 못 따라감 →
@@ -77,7 +75,7 @@
         </dl>
         <div class="marks">
           <span>과기정통부 장관상 (대상)</span>
-          <span class="n">2년 뒤 별도 데모로 직접 확인</span>
+          <span class="n">별도 데모로 OSC 확인</span>
           <a href="projects/stageon.html">상세 보기</a>
         </div>
       </div>
@@ -86,26 +84,25 @@
     <!-- MiniOscReceiver — Stage On에서 갈라져 나온 후속 검증 -->
     <li class="pcard sub">
       <div class="pcard-media">
-        <div class="blank">게임이 아니라 측정 도구<br>화면 대신 <b>실제 로그</b>로 정리</div>
+        <img src="assets/images/thumbs/miniosc.jpg" alt="MiniOscReceiver 실행 중 화면에 뜬 계측 오버레이. 수신 40244.7, 갱신 60.0, FPS 60.0, 버스트 670.75, 유실 0으로 표시돼 있다">
       </div>
       <div>
         <div class="pcard-head">
           <h3>MiniOscReceiver</h3>
           <span class="meta">UE 5.6 · 개인 · 2026.07 · <b>Stage On 후속</b></span>
         </div>
-        <p class="what">위 <b>Stage On에서 내린 구조 선택이 옳았는지</b> 2년 뒤 직접 재구현해
-        측정한 실험입니다. 플러그인이 감추던 소켓·수신 스레드·바이트 파서를 직접 만들었습니다.</p>
+        <p class="what">위 Stage On 당시엔 시간이 부족해 깊이 파지 못했던 구조를  <b>후에 재구현</b>해
+        측정한 실험입니다. 소켓·수신 스레드·바이트 파서를 만들어 RPC와 OSC의 차이를 살펴보았습니다.</p>
         <dl class="mini">
           <dt>담당</dt>
-          <dd>전부(개인). <code>UDP</code> 소켓, 1ms 폴링 수신 스레드,
-          OSC 바이트 파싱(4바이트 정렬·빅엔디안·비트 재해석), SPSC 락프리 큐 마샬링</dd>
+          <dd>전부(개인).<br> <code>UDP</code> 소켓<br> 1ms 폴링 수신 스레드,
+         <br> OSC 바이트 파싱(4바이트 정렬·빅엔디안·비트 재해석) <br>SPSC 락프리 큐</dd>
           <dt class="t">어려움</dt>
           <dd>저부하에서는 세 방식이 똑같아 보임 →
-          <b>부하를 실제 모션캡처 수준으로 올린 뒤에야</b> 차이가 드러남. 잴 지표를 세 번 고쳐 잡음</dd>
+          <b>부하를 실제 모션캡처 수준으로 올린 뒤에야</b> 차이가 드러남.</dd>
         </dl>
         <div class="marks">
-          <span>OSC 전달률 100% · 유실 0</span>
-          <span class="n">Unreliable RPC 0.66% · Reliable은 연결 종료</span>
+          <span>Unreliable, relibale RPC에 비해 OSC 전달률 100% · 유실 0 확인</span>
           <a href="projects/miniosc.html">상세 보기</a>
         </div>
       </div>
@@ -119,17 +116,17 @@
       <div>
         <div class="pcard-head">
           <h3>Bounce Hero : 꿈돌이</h3>
-          <span class="meta">Unity · 디몽 인턴 · 사수와 2인 · 2025.03–06</span>
+          <span class="meta">Unity · 디몽 인턴 · 사수와 2인 · 2025.03 ~ 06</span>
         </div>
-        <p class="what">대전관광공사 마스코트가 발판을 밟고 올라가는 모바일 점프 게임.
+        <p class="what">대전관광공사 마스코트 꿈돌이가 발판을 밟고 올라가는 모바일 점프 게임.
         <b>사수와 둘이 0부터 만들어</b> 양대 마켓에 출시하고 라이브 운영까지 했습니다.</p>
         <dl class="mini">
           <dt>담당</dt>
-          <dd>발판 무한 생성기, <b>점수 기반 난이도 곡선</b>, 타입별 오브젝트 풀,
-          인앱 결제(<code>IAP</code>), <b>길드</b>(<code>Firebase</code> 트랜잭션)와 스테이지별 랭킹,
-          <code>AdMob</code> 연동. <b>커밋 155 / 302</b></dd>
+          <dd>발판 무한 생성기<br> 점수 기반 난이도 곡선<br> 타입별 오브젝트 풀
+          <br>인앱 결제(<code>IAP</code>)<br> <b>길드</b>(<code>Firebase</code> 트랜잭션)와 스테이지별 랭킹
+          <br><code>AdMob</code> 연동.</dd>
           <dt class="t">어려움</dt>
-          <dd>풀링은 <code>Destroy</code>가 아니라 껐다 켜는 것이라 이벤트 구독과 색이 남음 →
+          <dd>처음으로 오브젝트 풀링을 시도했으나 풀링은 <code>Destroy</code>가 아니라 껐다 켜는 것이라 발판의 이벤트 구독과 발판 색 변화가 남았음 →
           <b>수명 기준을 <code>Start</code>에서 <code>OnEnable</code>/<code>OnDisable</code>로</b> 옮김</dd>
         </dl>
         <div class="marks">
@@ -148,21 +145,20 @@
       <div>
         <div class="pcard-head">
           <h3>배달왕 김족구</h3>
-          <span class="meta">Unity 6 · 3인 창업 팀 · 2026.01–06</span>
+          <span class="meta">Unity 6 · 3인 창업 팀 · 2026.01 ~ 06</span>
         </div>
-        <p class="what">주문을 받아 가방에 음식을 실어 배달하는 어드벤처.
-        가방이 <b>테트리스처럼 칸을 차지하는 격자</b>라, 공간을 어떻게 쓰느냐가 곧 플레이입니다.</p>
+        <p class="what">주문을 받아 가방에 음식을 실어 배달하는 게임.
+        가방이 <b>테트리스처럼 칸을 차지하는 격자</b>이자 <b>기울기</b>가 적용되어 적재에 재미를 주었습니다. </p>
         <dl class="mini">
           <dt>담당</dt>
-          <dd>그리드 인벤토리 설계·구현(이벤트 기반 MVC), Yarn Spinner 대화 연동과 선택지 UI,
-          배달 도메인 재설계. <b>퀘스트 프레임워크와 입력 체계는 팀원 설계분</b></dd>
+          <dd>그리드 인벤토리 설계·구현(이벤트 기반 MVC)<br>Yarn Spinner 대화 연동과 선택지 UI<br>
+          배달 퀘스트 구조 재설계(팀원이 설계한 <b>퀘스트 프레임워크를 용도에 맞게 재설계.</b>)</dd>
           <dt class="t">어려움</dt>
-          <dd>회전을 넣자 방향마다 판정 분기가 늘어남 →
-          <b><code>EffectiveSize</code> 파생 속성</b>으로 바꿔 판정 코드에서 분기 제거</dd>
+          <dd>팀의 퀘스트 구조를 해치지 않고 NPC에게 달려있던 퀘스트를 장소 중심으로 재구성</dd>
         </dl>
         <div class="marks">
-          <span>NPC 종속 조건 4종 제거</span>
-          <span class="n">팀 프레임워크 수정 0</span>
+          <span>퀘스트 NPC 종속 조건 제거</span>
+          <span class="n">팀 프레임워크 수정하지 않고 재구성</span>
           <a href="projects/mdcalling.html">상세 보기</a>
         </div>
       </div>
@@ -179,14 +175,15 @@
           <span class="meta">UE5 · 5인 팀 · OnlineSubsystem</span>
         </div>
         <p class="what">한옥 마을에서 여럿이 모여 노는 멀티플레이 미니게임 모음.
-        달리기 · 대전 · 대화 세 종류의 맵이 있습니다.</p>
+        달리기 대결 · 발음 대결 · OX 퀴즈 총 세 종류의 맵으로 구성되어 있습니다.</p>
         <dl class="mini">
           <dt>담당</dt>
-          <dd><b>로비에서 게임 맵까지 들어가는 길 전체</b> — 세션 생성·검색·참가,
-          <code>ServerTravel</code>/<code>ClientTravel</code> 분리, 로비 UI</dd>
+          <dd><b>세션 생성·검색·참가</b><br>
+       로비 UI.
+          달리기 + 초성 퀴즈 미니게임</dd>
           <dt class="t">어려움</dt>
           <dd>한글 방 이름이 Steam 세션에서 깨짐 → <b>Base64로 인코딩해 등록</b>하고 표시할 때 디코딩.
-          호스트 이탈 시 클라 고립은 <code>OnNetworkFailure</code>로 감지해 로비 복귀</dd>
+          <br>호스트 이탈 시 클라 고립은 <code>OnNetworkFailure</code>로 감지해 로비 복귀</dd>
         </dl>
         <div class="marks">
           <span>LAN · Steam 자동 판정</span>
@@ -206,56 +203,25 @@
           <h3>Isekiro</h3>
           <span class="meta">UE5 · 팀 프로젝트 · 전투 판정 프로토타입</span>
         </div>
-        <p class="what">적의 공격을 타이밍에 맞춰 튕겨내며 체간을 깎는 검격 액션.
-        세키로의 패링이 왜 손맛이 좋은지 궁금해서 <b>구조를 직접 만들어 확인</b>했습니다.</p>
+        <p class="what">적의 공격을 타이밍에 맞춰 튕겨내며 체간을 깎는 세키로 모작입니다.</p>
         <dl class="mini">
           <dt>담당</dt>
-          <dd>패링 판정, 내적 기반 락온과 <code>Line Trace</code> 시야 검증,
+          <dd>패링 판정 <br> 내적 기반 락온<br> <code>Line Trace</code> 시야 검증<br>
           <code>Curve</code> 보간 그래플링 훅</dd>
-          <dt class="t">어려움</dt>
-          <dd>판정 창을 좁히자 입력 자체가 막힘 →
-          <b>판정 가능 시간과 쿨다운을 별개 타이머로 분리</b>해 받아낼 창만 좁힘</dd>
         </dl>
         <div class="marks">
           <span>일반 8 frame · 위험 1 frame</span>
-          <span class="n">같은 입력 · 같은 코드 경로로 두 난이도</span>
           <a href="projects/isekiro.html">상세 보기</a>
         </div>
       </div>
     </li>
 
     <!-- MapleBattleRoyaleArena -->
-    <li class="pcard">
-      <div class="pcard-media">
-        <div class="blank">화면 준비 중<br>MapleStory Worlds</div>
-      </div>
-      <div>
-        <div class="pcard-head">
-          <h3>MapleBattleRoyaleArena</h3>
-          <span class="meta">MSW · mLua · 4인 팀 · 커밋 129/147 · 진행중</span>
-        </div>
-        <p class="what">플레이어가 조작하지 않고 자동으로 싸우는 배틀로얄.
-        직접 하는 것은 <b>직업 스킬 · 대시 · 방향 전환 셋뿐</b>입니다.
-        넥슨 글로벌 개발 콘테스트 출품 예정.</p>
-        <dl class="mini">
-          <dt>담당</dt>
-          <dd>플레이어 이동·전투·스킬 시스템, 데이터 레이어, 서버 권위 구조</dd>
-          <dt class="t">어려움</dt>
-          <dd>내가 넣은 타격 active 구간이 <b>105스윙 실측에서 기여도 3%</b>, 뒤쪽 73%는 미사용 →
-          기능을 철회하고 그 결론을 커밋에 남김</dd>
-        </dl>
-        <div class="marks">
-          <span>1511줄 컨트롤러를 셋으로 · 계약 먼저</span>
-          <span class="n">이동 드라이버 4단계 은퇴 → 서버 일원화</span>
-          <a href="projects/mlb.html">상세 보기</a>
-        </div>
-      </div>
-    </li>
 
     <!-- GASPractice -->
     <li class="pcard">
       <div class="pcard-media">
-        <div class="blank">화면 준비 중<br>Gameplay Ability System</div>
+        <img src="assets/images/thumbs/gas.jpg" alt="GASPractice 실행 중 showdebug abilitysystem 오버레이. 어트리뷰트 Health 100, Mana 30과 보유 태그 Cooldown.Q, TraceDamage 적중 로그가 함께 표시돼 있다">
       </div>
       <div>
         <div class="pcard-head">
@@ -266,7 +232,7 @@
         <dl class="mini">
           <dt>담당</dt>
           <dd>전부(개인). 발동(<code>GameplayAbility</code>)과
-          비용·쿨다운·피해(<code>GameplayEffect</code>) 분리. 본인 작성 범위 8개 파일을 README에 명시</dd>
+          비용·쿨다운·피해(<code>GameplayEffect</code>) 분리</dd>
           <dt class="t">어려움</dt>
           <dd>스킬이 늘 때마다 캐릭터 클래스에 조건 분기가 쌓임 →
           <b>쿨다운을 타이머가 아닌 태그의 존재 여부로</b> 표현</dd>
@@ -301,10 +267,12 @@
       <h3>학력 · 과정</h3>
       <dl>
         <dt>가천대학교 컴퓨터공학과</dt>
-        <dd><span class="d">2019.02–2026.02 · GPA 4.02 / 4.5</span>
-        자료구조, 객체지향 프로그래밍, 소프트웨어 설계.</dd>
+        <dd><span class="d">2019.02 ~ 2026.02</span>
+GPA 4.02 / 4.5 
+        <br>자료구조, 객체지향 프로그래밍, 소프트웨어 설계.</dd>
         <dt>메타버스 아카데미 3기</dt>
-        <dd><span class="d">2024.04–12 · Unreal Engine</span>
+        <dd><span class="d">2024.04 ~ 12 · Unreal Engine</span>
+<br>
         UE5 기반 팀 프로젝트로 실시간 콘텐츠 개발 과정을 수행했습니다.</dd>
       </dl>
     </div>
@@ -314,18 +282,27 @@
         <dt>과학기술정보통신부 장관상 (대상)</dt>
         <dd><span class="d">2024.12 · 메타버스 아카데미 3기 성과공유회</span>
         가상 콘서트 플랫폼 <b>Stage On</b>으로 수상했습니다.
-        무대 전환 시스템, 버튜버 모델·모션 연동, 통신 구조 개선을 담당했습니다.</dd>
+        무대 구성 시스템, 버튜버 모델·모션 연동, 통신 구조 개선을 담당했습니다.</dd>
       </dl>
     </div>
   </div>
 
   <div class="foot">
     <span>조준혁 · GAME CLIENT PROGRAMMER</span>
-    <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a>
-    <span>수치는 직접 측정한 것만 적었습니다</span>
-  </div>
+    <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a></div>
 
 </main>
 
-</body>
-</html>
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

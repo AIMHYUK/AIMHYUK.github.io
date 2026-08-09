@@ -1,6 +1,5 @@
 <!doctype html>
-<html lang="ko">
-<head>
+<html lang="ko"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GASPractice — 조준혁 포트폴리오</title>
@@ -39,8 +38,8 @@
         쿨다운·자원 소모·상태이상 같은 <b>공통 규칙이 스킬마다 중복</b>됩니다.
         GAS가 그걸 어떻게 나누는지 손으로 확인하는 것이 목표였습니다.</p>
         <p>핵심은 <b>어빌리티가 피해량을 직접 깎지 않는다</b>는 점입니다.
-        어빌리티는 <code>GameplayEffect</code>를 &ldquo;적용&rdquo;할 뿐이고 실제 수치 변경은
-        <code>AttributeSet</code>이 처리합니다. 덕분에 밸런스 수정이
+        어빌리티는 <code>GameplayEffect</code>를 <b>적용</b>할 뿐이고 실제 수치 변경은
+        <code>AttributeSet</code>이 처리합니다. 그래서 밸런스 수정이
         코드가 아니라 <b>데이터(GE 에셋) 쪽으로</b> 넘어갑니다.</p>
       </div>
       <div>
@@ -51,7 +50,7 @@
             <tbody>
               <tr class="me"><td>본인 작성</td><td><code>Source/GASPractice/</code> 8개 파일</td><td class="n">564</td></tr>
               <tr class="tpl"><td>언리얼 템플릿</td><td><code>Variant_Combat</code> 외</td><td class="n">4,616</td></tr>
-              <tr class="tpl"><td>언리얼 기본 에셋</td><td><code>Content/</code> (Mannequin 등)</td><td class="n">&mdash;</td></tr>
+              <tr class="tpl"><td>언리얼 기본 에셋</td><td><code>Content/</code> (Mannequin 등)</td><td class="n">—</td></tr>
             </tbody>
           </table>
         </div>
@@ -67,7 +66,7 @@
     <div class="feat-h">
       <span class="no">기능 01</span>
       <h2>어빌리티 · 이펙트 · 태그 세 축으로 분리</h2>
-      <p class="one">무엇을 하는가 / 무엇이 변하는가 / 지금 어떤 상태인가.</p>
+      <p class="one">무엇을 하는가 / 무엇이 변하는가 / 지금 어떤 상태인가</p>
     </div>
 
     <div class="part p-impl">
@@ -87,32 +86,16 @@
     <div class="part p-shot">
       <h3>화면</h3>
       <figure>
-        <pre class="logbox"><span class="c">// 읽어야 할 파일은 4쌍이 전부입니다</span>
+        <pre class="logbox"><span class="c">// 총 4쌍의 파일입니다.</span>
 Source/GASPractice/
 ├─ GASCharacter               <span class="hi">250줄</span>  ASC 소유, 어트리뷰트 초기화, QWER 입력 바인딩
 ├─ GASPlayerAttributeSet       <span class="hi">74줄</span>  Health/Mana 어트리뷰트, 변경 클램프
 ├─ GASTraceDamageAbility      <span class="hi">182줄</span>  트레이스 판정 후 GameplayEffect 적용
 └─ GASTestDamageAbility        <span class="hi">58줄</span>  GAS 흐름 검증용 자기 피해 스킬
                              <span class="ok">─────</span>
-                             <span class="ok">564줄</span>  본인 작성분 (헤더+구현 8개 파일)</pre>
-        <p class="logcap"><b>저장소 구조</b>템플릿 4,616줄과 본인 작성 564줄이 섞여 있어 범위를 명시했습니다.</p>
+                             </pre>
+        <p class="logcap"></p>
       </figure>
-      <div class="shots" style="margin-top:12px">
-        <div class="need">
-          <b>촬영 권장 — QWER 스킬 사용 화면</b>
-          <p>스킬을 쓰는 순간의 게임 화면과 HUD(체력·마나·쿨다운). 학습 프로젝트라도
-          <b>돌아가는 모습</b>이 한 장 있으면 설명이 붙습니다.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="part p-trouble">
-      <h3>어려움</h3>
-      <dl class="tbl">
-        <div><dt>문제</dt><dd>처음에는 스킬 로직을 캐릭터 클래스에 직접 넣었습니다. 스킬이 넷으로 늘자 <b>쿨다운·마나 검사·피해 계산이 스킬마다 똑같이 복제</b>됐습니다.</dd></div>
-        <div><dt>원인</dt><dd>&ldquo;무엇을 하는가&rdquo;와 &ldquo;무엇이 변하는가&rdquo;를 한 곳에서 처리했기 때문입니다. 공통 규칙이 있어도 붙일 자리가 없었습니다.</dd></div>
-        <div><dt>해결</dt><dd>어빌리티가 <b>수치를 직접 건드리지 않게</b> 하고 GE 적용만 하도록 바꿨습니다. 그러자 피해량·비용·쿨다운이 데이터가 되고, 밸런스 조정이 코드 수정에서 <b>에셋 수정으로</b> 내려갔습니다.</dd></div>
-      </dl>
     </div>
 
     <div class="part p-result">
@@ -129,7 +112,7 @@ Source/GASPractice/
     <div class="feat-h">
       <span class="no">기능 02</span>
       <h2>어트리뷰트 클램프 — 두 경로를 다 막다</h2>
-      <p class="one">하나만 막으면 다른 쪽으로 값이 새어 나갑니다.</p>
+      <p class="one"></p>
     </div>
 
     <div class="part p-impl">
@@ -138,10 +121,13 @@ Source/GASPractice/
         <li><code>Health</code> / <code>MaxHealth</code> / <code>Mana</code> / <code>MaxMana</code>
         네 개를 정의하고, <b>변경 지점 두 곳을 모두</b> 막았습니다.</li>
         <li><code>PreAttributeChange</code> — 값이 바뀌기 <b>직전 모든 경로</b>에서 호출됩니다.
-        <code>MaxHealth</code>가 줄었을 때 <code>Health</code>를 따라 줄이는 등
-        <b>값 자체의 유효성 보정</b>에 씁니다.</li>
+        들어오려는 값을 0~Max로 <b>잘라서 돌려보내</b>, <code>CurrentValue</code>가 범위를 벗어나지 않게 합니다.</li>
         <li><code>PostGameplayEffectExecute</code> — <b>Instant GE가 실행된 뒤</b> 호출됩니다.
-        실제 피해가 적용된 결과를 0~Max로 클램프하고 사망 판정 같은 후처리를 합니다.</li>
+        <b><code>BaseValue</code>를 클램프</b>하고, <code>MaxHealth</code>가 줄었으면
+        <code>Health</code>를 그 범위로 내립니다. 사망 판정 같은 후처리도 여기입니다.</li>
+        <li>두 훅이 막는 것은 경로가 아니라 <b>값</b>입니다.
+        <code>PreAttributeChange</code>만 쓰면 Instant GE가 밀어넣은 <code>BaseValue</code>가 음수로 남아,
+        <b>화면은 0인데 회복이 안 먹는 상태</b>가 됩니다.</li>
       </ul>
     </div>
 
@@ -157,17 +143,10 @@ Duration / Infinite GE ──▶ <span class="ok">PreAttributeChange</span>  ✔
 <span class="c">// 하나만 쓰면</span>
 PreAttributeChange 만        <span class="bad">→ GE 실행 결과를 놓친다</span>
 PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Setter 경로를 놓친다</span></pre>
-        <p class="logcap"><b>적용 경로</b>둘 다 필요한 이유가 여기 있습니다. 겹쳐서 막는 게 아니라 <b>서로 다른 경로</b>를 막습니다.</p>
+        <p class="logcap"><b>적용 경로</b>겹쳐서 막는 게 아닙니다.
+        <code>PreAttributeChange</code>는 <b><code>CurrentValue</code></b>를,
+        <code>PostGameplayEffectExecute</code>는 <b><code>BaseValue</code></b>를 맡습니다.</p>
       </figure>
-    </div>
-
-    <div class="part p-trouble">
-      <h3>어려움</h3>
-      <dl class="tbl">
-        <div><dt>문제</dt><dd>체력을 0~Max로 제한했는데도 <b>어떤 경로로는 범위를 벗어난 값이 들어왔습니다.</b> 막은 것 같은데 새고 있었습니다.</dd></div>
-        <div><dt>원인</dt><dd>GAS에서 어트리뷰트가 바뀌는 경로가 <b>하나가 아니기 때문</b>입니다. Instant GE는 즉시 실행되고, Duration/Infinite GE는 지속 중 계속 값을 밀며, 코드에서 직접 Setter를 호출할 수도 있습니다. 훅 하나로는 이 셋을 다 잡지 못합니다.</dd></div>
-        <div><dt>해결</dt><dd>두 훅을 <b>역할을 나눠</b> 함께 썼습니다. <code>PreAttributeChange</code>는 값의 유효성 보정, <code>PostGameplayEffectExecute</code>는 GE 실행 결과의 클램프와 사망 판정. <b>어디서 값이 바뀌는지를 먼저 세어본 것</b>이 해결의 절반이었습니다.</dd></div>
-      </dl>
     </div>
 
     <div class="part p-result">
@@ -198,13 +177,16 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
       </ul>
     </div>
 
-    <div class="part p-trouble">
-      <h3>어려움</h3>
-      <dl class="tbl">
-        <div><dt>문제</dt><dd>스킬을 하나 추가할 때마다 <b>캐릭터 클래스에 쿨다운 변수와 조건문이 하나씩 늘었습니다.</b> QWER 넷이면 넷, 여기에 기절·침묵 같은 상태가 붙으면 곱으로 늘어납니다.</dd></div>
-        <div><dt>원인</dt><dd>&ldquo;지금 쓸 수 있는가&rdquo;를 <b>캐릭터가 들고 있는 값들의 조합</b>으로 판단했기 때문입니다. 조건이 늘면 판단 코드도 같이 늘어납니다.</dd></div>
-        <div><dt>해결</dt><dd>상태를 <b>태그의 유무</b>로 바꿨습니다. 어빌리티마다 &ldquo;이 태그가 있으면 못 쓴다&rdquo;만 선언해두면, 쿨다운이든 기절이든 침묵이든 <b>같은 메커니즘</b>으로 처리됩니다. 캐릭터 클래스는 더 이상 개별 스킬의 사정을 모릅니다.</dd></div>
-      </dl>
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <figure>
+          <img src="../assets/images/gas/showdebug-tags.webp" alt="언리얼 showdebug abilitysystem 오버레이. 어트리뷰트 Health 100, MaxHealth 100, Mana 30, MaxMana 100이 나열되고 Owned Tags에 Cooldown.Q가 하나 표시돼 있으며 TraceDamage 적중 로그가 함께 보인다">
+          <figcaption><b>실행 중 태그 상태</b><code>showdebug abilitysystem</code>으로 띄운 화면입니다.
+          Q를 쓴 직후라 <b>Owned Tags에 <code>Cooldown.Q</code>가 붙어 있고</b>, 이 태그가 있는 동안 같은 어빌리티는 발동하지 않습니다.
+          마나도 100에서 30으로 줄어 있습니다 — <b>쿨다운 · 비용 · 피해를 각각 별도 GE로 나눈 결과</b>가 한 화면에 같이 보입니다.</figcaption>
+        </figure>
+      </div>
     </div>
 
     <div class="part p-result">
@@ -216,14 +198,44 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
     </div>
   </section>
 
-  <div class="close">
-    <h2>범위와 한계</h2>
-    <p><b>학습 프로젝트입니다.</b> Unreal Third Person 템플릿 위에 GAS를 얹은 구조라
-    저장소 4,616줄은 엔진 템플릿이고 <b>제가 쓴 것은 8개 파일 564줄</b>입니다.
-    같은 표를 저장소 README에도 넣어 두었습니다.</p>
-    <p style="margin-top:9px">멀티플레이 복제, 예측(Prediction), <code>GameplayCue</code>를 통한 연출 분리는 다루지 않았습니다.
-    실제 게임에 쓰려면 그쪽이 다음 과제입니다.</p>
-  </div>
+  <!-- ══════ 트러블슈팅 ══════ -->
+  <section class="feat" id="trouble">
+    <div class="feat-h">
+      <span class="no"></span>
+      <h2>트러블슈팅</h2>
+      <p class="one"></p>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <p><b>기능 01 — 어빌리티 · 이펙트 · 태그 세 축으로 분리</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>처음에는 스킬 로직을 캐릭터 클래스에 직접 넣었습니다. 스킬이 넷으로 늘자 <b>쿨다운·마나 검사·피해 계산이 스킬마다 똑같이 복제</b>됐습니다.</dd></div>
+        <div><dt>원인</dt><dd>&ldquo;무엇을 하는가&rdquo;와 &ldquo;무엇이 변하는가&rdquo;를 한 곳에서 처리했기 때문입니다. 공통 규칙이 있어도 붙일 자리가 없었습니다.</dd></div>
+        <div><dt>해결</dt><dd>어빌리티가 <b>수치를 직접 건드리지 않게</b> 하고 GE 적용만 하도록 바꿨습니다. 그러자 피해량·비용·쿨다운이 데이터가 되고, 밸런스 조정이 코드 수정에서 <b>에셋 수정으로</b> 내려갔습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <p><b>기능 02 — 어트리뷰트 클램프 — 두 경로를 다 막다</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>체력을 0~Max로 제한했는데도 <b>어떤 경로로는 범위를 벗어난 값이 들어왔습니다.</b> </dd></div>
+        <div><dt>원인</dt><dd>GAS에서 어트리뷰트가 바뀌는 경로가 <b>하나가 아니었습니다</b>. Instant GE는 즉시 실행되고, Duration/Infinite GE는 지속 중 계속 값을 밀며, 코드에서 직접 Setter를 호출할 수도 있었습니다. 훅 하나로는 이 셋을 다 잡지 못했습니다.</dd></div>
+        <div><dt>해결</dt><dd>두 훅을 <b>역할을 나눠</b> 함께 썼습니다. <code>PreAttributeChange</code>는 값의 유효성 보정, <code>PostGameplayEffectExecute</code>는 GE 실행 결과의 클램프와 사망 판정에 사용했습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble">
+      <h3>어려움</h3>
+      <p><b>기능 03 — 쿨다운을 타이머가 아니라 태그로</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>FSM의 경우 스킬을 하나 추가할 때마다 <b>캐릭터 클래스에 쿨다운 변수와 조건문이 하나씩 늘었습니다.</b> QWER 넷이면 넷, 여기에 기절·침묵 같은 상태가 붙으면 추가적으로 고려할 요소가 늘어납니다.</dd></div>
+        <div><dt>원인</dt><dd>&ldquo;지금 쓸 수 있는가&rdquo;를 <b>캐릭터가 들고 있는 값들의 조합</b>으로 판단했기 때문입니다. 조건이 늘면 판단 코드도 같이 늘어납니다.</dd></div>
+        <div><dt>해결</dt><dd>상태를 <b>태그의 유무</b>로 바꿨습니다. 어빌리티마다 &ldquo;이 태그가 있으면 못 쓴다&rdquo;만 선언해두면, 쿨다운이든 기절이든 침묵이든 <b>같은 메커니즘</b>으로 처리할 수 있습니다.</dd></div>
+      </dl>
+    </div>
+  </section>
 
   <div class="foot">
     <span>조준혁 · GAME CLIENT PROGRAMMER</span>
@@ -233,5 +245,10 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
 
 </main>
 
-</body>
-</html>
+
+
+
+
+
+
+</body></html>

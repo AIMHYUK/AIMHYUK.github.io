@@ -34,3 +34,7 @@ projects/portfolio-unreal-revised.html
 
 # 개편 전 제출본. 지금 포폴과 주장이 다를 수 있어 공개하지 않는다 (로컬 원본은 보존)
 projects/portfolio-unreal-submit.html
+
+# stageon.html의 개편 전 버전. 링크는 끊겼지만 Pages가 파일을 그대로 서빙하므로 제외한다.
+projects/virtualidol.html
+projects/portfolio-unreal-*.html

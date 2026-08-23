@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpriteBatchDemo — 조준혁 포트폴리오</title>
+<link rel="stylesheet" href="../assets/portfolio.css">
+</head>
+<body>
+
+<a class="skip" href="#main">본문으로</a>
+
+<div class="top">
+  <div class="wrap top-in">
+    <a href="../index.html">← 조준혁 포트폴리오</a>
+    <span class="r">DIRECT3D 11 · C++ ·
+      <a href="https://github.com/AIMHYUK/SpriteBatchDemo" target="_blank" rel="noreferrer">Repository</a></span>
+  </div>
+</div>
+
+<main class="wrap" id="main">
+
+  <header class="ph">
+    <h1>SpriteBatchDemo</h1>
+    <p class="sub">움직이는 스프라이트 2만 개에 <b>배칭 · 인스턴싱 · 컬링</b> 세 가지 최적화를 구현하고,
+    렌더 스레드 CPU 부하를 얼마나 줄이는지 <b>숫자로 실측</b>한 렌더러입니다.
+    (스프라이트 하나만 그리던 <a href="https://github.com/AIMHYUK/MiniD3D11Renderer" target="_blank" rel="noreferrer">MiniD3D11Renderer</a>에서 확장)</p>
+
+    <dl class="facts">
+      <div><dt>종류</dt><dd>검증용 개인 프로젝트</dd></div>
+      <div><dt>엔진 · 언어</dt><dd>Direct3D 11 · C++17 · Win32</dd></div>
+      <div><dt>규모 · 기간</dt><dd>개인 · 2026.08</dd></div>
+      <div><dt>담당</dt><dd>전부</dd></div>
+    </dl>
+
+    <div class="about">
+      <div>
+        <h2>왜 만들었나</h2>
+        <p><a href="https://github.com/AIMHYUK/MiniD3D11Renderer" target="_blank" rel="noreferrer" style="color:var(--accent)">MiniD3D11Renderer</a>에서
+        창·디바이스·스왑체인·셰이더·상수 버퍼까지 직접 만들고 <b>스프라이트 하나</b>를 그렸습니다.
+        남은 질문은 하나였습니다 — <b>&ldquo;드로우 콜을 묶으면 실제로 얼마나 빨라지나?&rdquo;</b></p>
+        <p>그래서 같은 장면을 <b>개별 드로우(Naive)와 배칭(Batched)으로 전환</b>하며 나란히 측정했습니다.</p>
+      </div>
+      <figure>
+        <pre class="logbox"><span class="c">// 스프라이트 20,000개(움직임)에 세 최적화를 적용</span>
+
+<span class="ok">배칭</span>      드로우 콜   20,000 → 1
+<span class="ok">인스턴싱</span>  올리는 양    정점 N×4 → 인스턴스 N   (~1/3)
+<span class="ok">컬링</span>      그리는 수    20,000 → 화면에 걸친 것만 (~1/9)
+
+<span class="c">// 셋 다 렌더 스레드 CPU를 비운다 — 게임 클라이언트의 병목</span></pre>
+        <p class="logcap"><b>핵심 — 3단 최적화</b> 환경 : AMD Radeon 780M(내장) · 1280×720 · VSync OFF · Release.
+        <strong>&ldquo;싸게 그리고(배칭) + 적게 올리고(인스턴싱) + 안 보이면 빼기(컬링)&rdquo;</strong> — 각 효과는 아래 기능에서.</p>
+      </figure>
+    </div>
+  </header>
+
+  <!-- ══════ 기능 01 ══════ -->
+  <section class="feat" id="f1">
+    <div class="feat-h">
+      <span class="no">기능 01</span>
+      <h2>위치를 정점으로 — 배칭이 가능한 구조</h2>
+      <p class="one">위치를 상수 버퍼가 아니라 <b>정점에 담아</b>, 스프라이트 수만 개를 한 버퍼에 모았습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>MiniD3D11Renderer는 <b>단위 사각형(0~1) 하나</b> + 상수 버퍼로 위치를 넘겼습니다.<br>
+        스프라이트 하나엔 깔끔하지만, <b>상수 버퍼 값은 드로우 한 번 안에서 바뀌지 않습니다.</b><br>
+        값을 바꾸려면 드로우를 끊는 수밖에 없어 <b>개수만큼 그리게 됩니다 = 배칭 불가.</b></li>
+        <li>그래서 각 스프라이트의 네 꼭짓점을 <b>픽셀 좌표로 CPU에서 직접 계산</b>해
+        정점 버퍼 하나에 담았습니다. <b>20,000 × 4 = 정점 80,000개.</b>
+        스프라이트가 매 프레임 움직이므로 정점 버퍼는 <code>DYNAMIC</code>이고, 매 프레임
+        <code>Map(WRITE_DISCARD)</code>로 다시 올립니다. 반면 인덱스는
+        <code>{0,1,2, 0,2,3}</code> 패턴의 반복이라 절대 안 바뀌어 <code>IMMUTABLE</code>입니다.</li>
+        <li>모든 정점이 화면 픽셀좌표라서 한 버퍼에 쌓아도 <b>각자 제 위치에 그려집니다.</b>
+        정점 셰이더는 픽셀 → NDC 변환만 합니다.</li>
+        <li>정점이 65,535개를 넘으므로 인덱스를 <code>uint16</code> → <code>uint32</code>로 올렸습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <p style="font-size:14px;margin-bottom:2px">스프라이트 A를 (100, 50), B를 (500, 300)에 32×32로 놓았을 때
+      각 방식이 정점에 <b>실제로 담는 값</b>입니다.</p>
+      <div class="tscroll" style="margin-top:12px">
+        <table class="scope">
+          <thead>
+            <tr><th>정점에 담는 값</th><th>범위</th><th>기준</th>
+                <th class="n">A의 좌상단</th><th class="n">B의 좌상단</th><th>한 버퍼에 쌓으면</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>단위 사각형</td><td>0~1</td><td><b>자기 자신</b></td>
+                <td class="n">(0, 0)</td><td class="n">(0, 0)</td><td><b>다 겹침</b></td></tr>
+            <tr class="me"><td>픽셀 좌표</td><td>0~1280</td><td>화면</td>
+                <td class="n">(100, 50)</td><td class="n">(500, 300)</td><td>제자리</td></tr>
+            <tr><td>NDC</td><td>−1~1</td><td>화면</td>
+                <td class="n">(−0.844, 0.861)</td><td class="n">(−0.219, 0.167)</td><td>제자리</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="logcap" style="font-size:12.5px"><b>갈리는 것은 범위가 아니라 &lsquo;무엇을 기준으로 쓴 값이냐&rsquo;</b>단위 사각형은
+      A와 B의 값이 <strong>완전히 같습니다.</strong> &ldquo;왼쪽 위 모서리&rdquo;라는 뜻일 뿐, 어느 스프라이트의 것인지가 값에 없습니다.
+      그 정보는 상수 버퍼에 있고 드로우 하나에 하나뿐이라, 한 버퍼에 쌓으면 전부 같은 자리로 갑니다.
+      <strong>화면을 기준으로 쓴 값(픽셀 · NDC)은 그 자체가 최종 위치</strong>라 한 버퍼에 쌓아도 제자리에 그려집니다.
+      <br> 픽셀 좌표를 사용한 이유 : NDC는 화면 크기로 이미 나눈 값이라, 정점 8만 개가 각자 "화면은 1280×720"을 안고 있게 됩니다. 픽셀로 담으면 나누는 일을 셰이더가 하므로 화면 크기를 아는 곳이 상수 버퍼 하나뿐입니다.</p>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>스프라이트 20,000개를 드로우 1번으로 그릴 수 있는 구조 확보</span>
+        <span class="n">정점 80,000 · 인덱스 120,000을 버퍼 하나로 (인덱스는 <code>uint32</code>)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 02 ══════ -->
+  <section class="feat" id="f2">
+    <div class="feat-h">
+      <span class="no">기능 02 · 최적화 ①</span>
+      <h2>배칭 — 드로우 콜을 하나로 묶기</h2>
+      <p class="one">같은 장면을 <b>개별 드로우(Naive)와 배칭으로 전환</b>하며, 드로우 콜이 CPU에 얹는 비용을 실측했습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li><b>Naive</b> — 스프라이트마다 정점 4개를 동적 버퍼에 <code>Map(WRITE_DISCARD)</code>로 올리고 →
+        <code>DrawIndexed(6)</code>. <b>20,000번 반복.</b> </li>
+        <li><b>Batched</b> — 80,000 정점을 <code>Map</code> <b>한 번</b>으로 통째로 올리고
+        <code>DrawIndexed(N*6)</code> <b>한 번</b>. 업로드도 드로우도 프레임당 1회입니다.</li>
+        <li>두 모드는 동일한 픽셀을 그리니 
+  시간 차이는 <b>업로드·드로우 콜 비용</b>에서 발생합니다.</li>
+        <li>큰 버퍼를 한 번 바인딩하고 오프셋만 바꿔
+        <code>DrawIndexed(6, i*6, 0)</code>를 N번 부르는 방식은 격차가 <b>1.35배</b>뿐이었습니다.
+        드로우 콜 횟수 자체보다 <b>업로드를 N번으로 나누는 것</b>이 더 큰 비용을 차지했습니다.
+        (<a class="flink" href="#trouble">트러블슈팅</a>).</li>
+        <li>드로우를 <b>제출하는 데 든 CPU 시간</b>을 <code>QueryPerformanceCounter</code>로 따로 쟀습니다.
+       총 프레임 시간에는 GPU가 픽셀을 칠하는 시간이 섞여 있고 그건 두 모드가 같으므로, 배칭이 실제로 줄인 몫이 가려지기 때문입니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+
+      <figure class="shot-wide">
+        <video src="../assets/video/spritebatch/naive-to-batched.mp4"
+               poster="../assets/video/spritebatch/naive-to-batched-poster.webp"
+               controls loop muted playsinline preload="none"
+               aria-label="같은 장면에서 Space 키로 Naive와 Batched를 전환하는 11초 녹화. 제목 표시줄의 드로우콜이 20000에서 1로, CPU제출이 약 1.6ms에서 약 0.4ms로 바뀌지만 화면에 그려지는 스프라이트 2만 개는 그대로다"></video>
+        <figcaption><b>Space 키로 Naive ↔ Batched 전환 (11초)</b>Naive 정지 → Naive 이동 → <code>Space</code> → Batched 이동 → Batched 정지 순서입니다.
+        제목 표시줄에서 <strong>드로우콜 20,000 → 1</strong>, <strong>CPU 제출 1.583ms → 0.480ms</strong>로 바뀌는데
+        <strong>화면에 그려지는 것은 달라지지 않습니다</strong> — 같은 결과를 내면서 CPU만 비우는 것이 배칭입니다.
+        (녹화 오버헤드가 얹혀 절대 수치는 아래 스크린샷과 다릅니다. 두 모드의 비율만 보시면 됩니다.)</figcaption>
+      </figure>
+
+      <div class="shots two" style="margin-top:14px">
+        <figure>
+          <img src="../assets/images/spritebatch/naive.webp" alt="Naive 모드 실행 화면. 제목 표시줄에 드로우콜 20000, CPU제출 1.812ms, 309 FPS. 알록달록한 도형 2만 개가 움직이며 화면을 채우고 있다">
+          <figcaption><b>Naive · 드로우콜 20,000</b>스프라이트마다 정점을 올리고 그린다(2만 번).
+          CPU 제출 <strong>1.812ms</strong> · 309 FPS.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/spritebatch/batched.webp" alt="Batched 모드 실행 화면. 제목 표시줄에 드로우콜 1, CPU제출 0.357ms, 434 FPS. Naive와 픽셀 단위로 동일한 장면">
+          <figcaption><b>Batched · 드로우콜 1</b>한 번의 큰 업로드로 모아 한 번에 그린다.
+          CPU 제출 <strong>0.357ms</strong> · 434 FPS. <strong>화면은 Naive와 완전히 동일.</strong></figcaption>
+        </figure>
+      </div>
+
+      <div class="tscroll" style="margin-top:14px">
+        <table class="scope">
+          <thead>
+            <tr><th>지표</th><th class="n">Naive</th><th class="n">Batched</th><th>차이</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>드로우 콜</td><td class="n">20,000</td><td class="n">1</td><td>20,000 → 1</td></tr>
+            <tr class="me"><td>CPU 제출 시간 <b>(동적·현재)</b></td><td class="n">1.812 ms</td><td class="n">0.357 ms</td><td>약 5배 감소</td></tr>
+            <tr><td>CPU 제출 시간 <b>(정적·상한)</b></td><td class="n">2.883 ms</td><td class="n">0.001 ms</td><td>약 2,900배 감소</td></tr>
+            <tr><td>총 프레임 시간(동적)</td><td class="n">3.236 ms</td><td class="n">2.305 ms</td><td>1.4배</td></tr>
+            <tr><td>FPS(동적)</td><td class="n">309</td><td class="n">434</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="logcap" style="font-size:12.5px"><b>두 단계로 나눠 측정</b>위치가 <strong>고정</strong>인 씬에선 정점도 안 바뀌니 Batched가 업로드조차 없어
+      CPU 제출이 <strong>약 2,900배</strong>(상한) 갈립니다. 스프라이트가 <strong>매 프레임 움직이는</strong> 실전 조건에선
+      Batched도 큰 업로드 한 번을 내지만, N번 나눠 업로드하는 Naive보다 여전히 <strong>약 5배</strong> 빠릅니다.
+      총 프레임 시간은 GPU가 픽셀을 칠하는 시간을 제외하고 1.4~1.6배.</p>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>CPU 제출 시간 — 동적(실전) 약 5배 · 정적(상한) 약 2,900배 감소</span>
+        <span>드로우 콜 20,000 → 1</span>
+        <span class="n">&ldquo;어디가&rdquo; 빨라지는지(GPU가 그리는 시간 vs CPU가 제출하는 시간)를 구분해 측정</span>
+      </div>
+    </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">VSync를 껐는데도 두 모드가 똑같이 60FPS로 나왔다</a><br>
+      <a href="#t2">처음 만든 Naive는 너무 싸서 격차가 안 났다</a><br>
+      <a href="#t3">정지가 이동보다 CPU 제출이 더 나왔다 — 추측 대신 쪼개서 확인</a>
+    </div>
+
+  </section>
+
+  <!-- ══════ 기능 03 ══════ -->
+  <section class="feat" id="f3">
+    <div class="feat-h">
+      <span class="no">기능 03</span>
+      <h2>텍스처 아틀라스 — 텍스처 전환 제거</h2>
+      <p class="one">도형 4종을 <b>한 텍스처에 담아</b>, 스프라이트마다 텍스처를 갈아끼우지 않고 한 번에 그립니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>그림이 스프라이트마다 다르면 <b>텍스처를 갈아끼워야 하고(state change)</b>, 그 순간 배칭이 끊깁니다.
+        위치를 상수 버퍼에 두면 하나씩밖에 못 그립니다.</li>
+        <li>도형 4종(원·링·다이아몬드·+)을 <b>256×256 아틀라스 한 장에 코드로 생성</b>했습니다.</li>
+        <li>스프라이트마다 <b>UV로 4칸 중 하나를 가리킵니다.</b> 그림 자체는 정점이 아니라 텍스처에 있고,
+        정점에는 UV라는 &lsquo;주소&rsquo;만 있습니다. 텍스처가 하나라 <b>한 번의 바인딩으로 배칭 가능.</b></li>
+        <li>알파 블렌딩(<code>SrcAlpha / InvSrcAlpha</code>)으로 도형 가장자리를 배경과 섞어 파티클처럼 보이게 했습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <figure>
+        <pre class="logbox"><span class="c">// 도형 4종을 한 장(256×256)에 — 스프라이트는 UV로 한 칸을 가리킨다</span>
+
+  ┌─────────┬─────────┐
+  │   원    │   링    │   원  : U 0~0.5, V 0~0.5
+  ├─────────┼─────────┤   링  : U 0.5~1, V 0~0.5
+  │ 다이아  │    +    │   다이아: U 0~0.5, V 0.5~1
+  └─────────┴─────────┘   +   : U 0.5~1, V 0.5~1
+
+  텍스처 <span class="ok">1장</span> → 바인딩 <span class="ok">1번</span> → 4가지 모양이 섞인 2만 개를 <span class="ok">배칭 드로우 1번</span></pre>
+        <p class="logcap"><b>아틀라스</b>정점이 &lsquo;위치&rsquo;를 한 버퍼에 모은 것이라면, 아틀라스는 &lsquo;그림&rsquo;을 한 텍스처에 모은 것입니다.
+        <strong>둘 다 드로우를 끊어야만 바꿀 수 있던 것을, 정점만 바꾸면 되는 자리로 옮긴 것</strong>입니다.</p>
+      </figure>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>텍스처 전환 0 — 여러 모양을 한 번의 배칭 드로우로</span>
+        <span class="n">아틀라스를 코드로 생성해 외부 의존성 0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 04 ══════ -->
+  <section class="feat" id="f4">
+    <div class="feat-h">
+      <span class="no">기능 04 · 최적화 ②</span>
+      <h2>인스턴싱 — 올리는 데이터를 1/3로</h2>
+      <p class="one">단위 사각형 1개 + <b>스프라이트별 데이터를 따로</b> 올려 <b>DrawIndexedInstanced 한 번</b>. 업로드 대역폭을 줄입니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>Batched는 스프라이트마다 정점 4개(위치·UV·색)를 다 만들어 올렸습니다(정점 N×4).
+        인스턴싱은 <b>단위 사각형 1개</b>만 두고, 스프라이트별 데이터는 <b>인스턴스 N개</b>로 따로 올립니다.</li>
+        <li>정점 셰이더가 <code>단위코너 × 인스턴스크기 + 인스턴스위치</code>로 실제 위치를 만듭니다.
+        입력 레이아웃을 <b>슬롯0(정점마다 읽는 단위 사각형) + 슬롯1(<code>PER_INSTANCE_DATA</code> — 스프라이트마다 읽는 데이터)</b>로 나눴습니다.</li>
+        <li>올리는 데이터가 <b>정점 N×4 → 인스턴스 N (약 1/3)</b>으로 줄어, CPU 제출이 Batched보다 또 절반 이하가 됩니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/spritebatch/inst_batched.webp" alt="Batched 모드 실행 화면. 제목 표시줄에 드로우콜 1, CPU제출 0.377ms, 프레임 2.840ms, 352 FPS">
+          <figcaption><b>Batched · 정점 N×4를 업로드</b>드로우콜 1.
+          CPU 제출 <strong>0.377ms</strong> · 352 FPS.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/spritebatch/instanced.webp" alt="Instanced 모드 실행 화면. 제목 표시줄에 드로우콜 1, CPU제출 0.141ms, 프레임 2.159ms, 463 FPS. Batched와 동일한 장면">
+          <figcaption><b>Instanced · 인스턴스 N개만 업로드</b>드로우콜은 똑같이 1인데
+          CPU 제출 <strong>0.141ms</strong> · 463 FPS. <strong>줄어든 것은 드로우 횟수가 아니라 올리는 양.</strong></figcaption>
+        </figure>
+      </div>
+      <p class="logcap" style="font-size:12.5px"><b>같은 세션에서 연속 측정</b>두 화면 모두 드로우콜은 1입니다.
+      배칭이 이미 드로우를 하나로 묶었으니 인스턴싱이 더 줄일 수 있는 것은 <strong>업로드 대역폭뿐</strong>이고,
+      그것만으로 CPU 제출이 <strong>0.377 → 0.141ms</strong>가 됐습니다.</p>
+
+      <p style="font-size:14px;margin:16px 0 2px">같은 두 스프라이트를 놓았을 때
+      <b>버퍼에 실제로 들어가는 값</b>입니다.</p>
+      <figure>
+        <pre class="logbox"><span class="c">// A: (100, 50)에 32×32, 빨강, 아틀라스 '원'    B: (500, 300)에 32×32, 초록, '링'</span>
+
+<span class="bad">[Batched]</span>  정점 버퍼 — 스프라이트당 <span class="bad">4줄</span>
+
+    x     y      u     v      r    g    b    a
+  ─────────────────────────────────────────────
+  100    50    0.0   0.0    1.0  0.0  0.0  1.0     A 좌상
+  132    50    0.5   0.0    1.0  0.0  0.0  1.0     A 우상
+  132    82    0.5   0.5    1.0  0.0  0.0  1.0     A 우하
+  100    82    0.0   0.5    1.0  0.0  0.0  1.0     A 좌하
+                            └──── <span class="bad">같은 색 4번</span> ────┘
+  500   300    0.5   0.0    0.0  1.0  0.0  1.0     B 좌상
+   :     :      :     :      :    :    :    :
+                                      <span class="bad">32B × 4 = 128B / 스프라이트</span>
+
+<span class="ok">[Instanced]</span> 슬롯0 — 단위 사각형. <span class="ok">전부 공유. 총 32B</span>
+
+  0.0 0.0  │  1.0 0.0  │  1.0 1.0  │  0.0 1.0
+
+           슬롯1 — 인스턴스 버퍼. 스프라이트당 <span class="ok">1줄</span>
+
+    x     y     w    h     u0   v0   u1   v1     r    g    b
+  ──────────────────────────────────────────────────────────
+  100    50    32   32    0.0  0.0  0.5  0.5    1.0  0.0  0.0   A
+  500   300    32   32    0.5  0.0  1.0  0.5    0.0  1.0  0.0   B
+                                                <span class="ok">44B / 스프라이트</span></pre>
+        <p class="logcap"><b>꼭짓점을 누가 만드나</b>Batched는 <strong>CPU가 네 꼭짓점을 다 계산해서</strong> 올립니다 —
+        좌표 네 쌍, UV 네 쌍, 색은 네 번 반복.
+        인스턴싱은 <strong>원점과 크기만 올리고, 꼭짓점은 정점 셰이더가 만듭니다.</strong>
+        <code>iPos + corner × iSize</code>로 좌표를, <code>lerp(u0v0, u1v1, corner)</code>로 UV를 계산합니다.
+        <strong>CPU가 네 번 쓰던 것을 GPU가 네 번 계산하는 것으로 바꾼 것</strong>이고,
+        곱셈 두 번이 128바이트 전송보다 싸서 이득입니다.</p>
+      </figure>
+
+      <div class="tscroll" style="margin-top:14px">
+        <table class="scope">
+          <thead>
+            <tr><th>담는 것</th><th>Batched</th><th>Instanced</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>위치</td><td>네 꼭짓점을 다 계산해서</td><td>원점 + 크기</td></tr>
+            <tr><td>UV</td><td>네 쌍</td><td>사각형 하나 (u0,v0,u1,v1)</td></tr>
+            <tr><td>색</td><td>4번 반복</td><td>1번</td></tr>
+            <tr class="me"><td>스프라이트당</td><td class="n">128 B</td><td class="n">44 B</td></tr>
+            <tr><td>20,000개 총합</td><td class="n">2.56 MB</td><td class="n">0.88 MB</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>CPU 제출 Batched 대비 약 2배 ↓ · Naive 대비 약 13배 ↓ (동적)</span>
+        <span class="n">드로우 콜 1 유지, 업로드 대역폭 ~1/3</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 05 ══════ -->
+  <section class="feat" id="f5">
+    <div class="feat-h">
+      <span class="no">기능 05 · 최적화 ③</span>
+      <h2>컬링 — 안 보이는 건 그리지 않는다</h2>
+      <p class="one">스프라이트를 <b>화면의 3배 월드</b>에 뿌리고 카메라로 일부만 봅니다. 화면 밖은 CPU에서 걸러 <b>아예 안 그립니다</b>.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>월드를 화면의 3×3 크기로 넓히고, 카메라(WASD)가 그 일부를 봅니다.
+        월드→화면 변환(<code>월드좌표 − 카메라</code>)은 <b>CPU에서 처리해 셰이더는 그대로</b> 뒀습니다.</li>
+        <li>컬링 ON이면 각 스프라이트의 화면 사각형이 뷰포트와 겹치는지 검사(AABB)해,
+        <b>안 겹치면 그리기 목록에서 뺍니다.</b> 보이는 것만 버퍼 앞에서부터 채우고 그 개수만 draw/upload.</li>
+        <li>세 모드(Naive/Batched/Instanced) 모두에 적용됩니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/spritebatch/cull_off.webp" alt="컬링 OFF. 제목에 그림 20000/20000, 드로우콜 20000, CPU제출 1.586ms, 423 FPS">
+          <figcaption><b>컬링 OFF · Naive</b>화면 밖 1만 7천 개까지 다 처리(GPU가 나중에 잘라냄).
+          드로우콜 <strong>20,000</strong> · CPU제출 1.586ms · 423 FPS.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/spritebatch/cull_on.webp" alt="컬링 ON. 제목에 그림 2347/20000, 드로우콜 2347, CPU제출 0.123ms, 1410 FPS">
+          <figcaption><b>컬링 ON · Naive</b>화면에 걸친 것만. 드로우콜 <strong>2,347</strong> · CPU제출 <strong>0.123ms</strong> · 1410 FPS.
+          <strong>화면은 왼쪽과 거의 똑같다 — 처리량만 다르다.</strong></figcaption>
+        </figure>
+      </div>
+      <p class="logcap" style="font-size:12.5px"><b>핵심</b>두 화면은 <strong>거의 똑같아 보입니다</strong>(둘 다 화면엔 ~2,300개). 다른 것은 <i>처리량</i>입니다 —
+      OFF는 안 보이는 것까지 다 처리, ON은 보이는 것만. <strong>&ldquo;안 보이면 처리하지 않는다&rdquo;</strong>가 컬링의 본질입니다.</p>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>Naive+컬링: 드로우 콜 20,000 → 2,347, CPU 제출 약 13배 ↓, FPS 3.3배</span>
+        <span class="n">Instanced+컬링: CPU 제출 0.046 → 0.014ms, 1253 → 1973 FPS</span>
+        <span class="n">배칭(싸게)·인스턴싱(적게)·컬링(안 그리기) 세 최적화를 합쳤음</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 트러블슈팅 ══════ -->
+  <section class="feat" id="trouble">
+    <div class="feat-h">
+      <span class="no"></span>
+      <h2>트러블슈팅</h2>
+      <p class="one">측정을 믿을 수 있게 만들기까지 막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다.</p>
+    </div>
+
+    <div class="part p-trouble" id="t1">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f2">기능 02</a> — VSync를 껐는데도 두 모드가 똑같이 60FPS로 나왔다</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>성능차를 보려고 VSync를 껐는데(<code>Present(0, 0)</code>), Naive와 Batched가
+        <b>똑같이 16.677ms(정확히 60FPS)</b>로 측정됐습니다. 분명히 껐는데 프레임 상한이 안 풀렸습니다.</dd></div>
+        <div><dt>원인</dt><dd><b>창모드 + 플립 모델 스왑체인</b>의 특성입니다. <code>SyncInterval</code>을 0으로 줘도
+        <b>DWM(데스크톱 합성기)이 화면을 60Hz로 합성</b>하며 프레임을 다시 제한합니다.
+        내 앱이 화면을 직접 소유하지 않는 창모드에서는 <code>Present(0,0)</code>만으로 DWM의 합성을 벗어나지 못합니다.
+<pre class="logbox" style="margin-top:10px"><span class="c">// VSync가 켜진 것처럼 기다림이 프레임 시간에 섞인다</span>
+Naive   실제 6ms 일하고 → 10ms 기다림 → <span class="bad">16.677ms</span>
+Batched 실제 2ms 일하고 → 14ms 기다림 → <span class="bad">16.677ms</span>
+        <span class="c">→ 진짜 차이가 '기다림' 속에 숨는다</span></pre></dd></div>
+        <div><dt>해결</dt><dd><b>ALLOW_TEARING을 명시</b>했습니다. DWM 합성을 건너뛰고 내 백버퍼를 바로 내보내도 된다고 허락받는 겁니다.
+        ① <code>IDXGIFactory5</code>로 지원 확인 → ② 스왑체인/<code>ResizeBuffers</code>에
+        <code>DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING</code> → ③ <code>Present(0, DXGI_PRESENT_ALLOW_TEARING)</code>.
+        이걸 적용한 뒤에야 프레임 상한이 풀려 두 모드의 진짜 시간이 갈라졌습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble" id="t2">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f2">기능 02</a> 드로우 콜 개수만 줄이니 격차가 크지 않았다. </b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>처음엔 Naive를 큰 버퍼를 한 번 바인딩하고 <b>오프셋만 바꿔</b> <code>DrawIndexed(6, i*6, 0)</code>를
+        N번 부르게 만들었습니다. 그런데 배칭과 격차가 <b>1.35배뿐</b>이었습니다.</dd></div>
+        <div><dt>원인</dt><dd>이 Naive는 드로우 콜당 비용이 <b>~16ns</b>라, GPU가 실제로 그리는 비용(양쪽 공통)에
+        묻혔습니다. 드로우 콜 개수만 바꿔 확인하려 했으나 , 정작 그 비용이 너무 작았습니다.</dd></div>
+        <div><dt>해결</dt><dd>스프라이트마다 정점을 <code>Map</code>으로 올리고 그리는 방식으로 바꿨습니다. 이 업로드·제출 비용이 배칭이 실제로 없애는 비용이라,
+        그제서야 <b>CPU 제출 약 2,900배</b>라는 의미 있는 차이가 드러났습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble" id="t3">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f2">기능 02</a> — 정지가 이동보다 CPU 제출이 더 나왔다</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>Batched에서 <b>정지</b>가 <b>이동</b>보다 CPU 제출이 높게 나왔습니다(0.354 vs 0.334ms). 정지가 더 느릴 이유가 없어 보였습니다.</dd></div>
+        <div><dt>원인</dt><dd>제출을 <code>Map()</code>과 <code>memcpy</code>로 쪼개 쟀습니다.
+        <b><code>Map()</code>은 이동·정지 모두 0.001ms — 안 기다립니다.</b> <code>WRITE_DISCARD</code>가
+        VidMM의 rename(버퍼를 다른 물리 메모리로 교체)으로 GPU 대기를 없앴기 때문입니다.
+        제출의 거의 전부는 <b>memcpy(CPU 복사)</b>였고, 정지 땐 캐시가 식고 클럭이 내려가 그 복사가 느려진 것이었습니다.</dd></div>
+        <div><dt>해결</dt><dd>이 지표가 드라이버/GPU가 아니라 <b>CPU 복사 비용</b>임을 데이터로 확인했습니다.
+        총 프레임 시간이 동일해 실제 성능 저하는 아니었습니다.</dd></div>
+      </dl>
+
+      <div class="shots two" style="margin-top:14px">
+        <figure>
+          <img src="../assets/images/spritebatch/split_moving.webp" alt="Batched 이동 중 화면. 제목 표시줄에 CPU제출 0.334 ms, 괄호 안에 Map 0.001 / copy 0.331, 프레임 2.378 ms, 421 FPS">
+          <figcaption><b>이동</b>CPU 제출 <strong>0.334ms</strong> = Map 0.001 + copy 0.331.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/spritebatch/split_paused.webp" alt="Batched 정지 상태 화면. 제목에 Batched [정지], CPU제출 0.354 ms, 괄호 안에 Map 0.001 / copy 0.349, 프레임 2.436 ms, 411 FPS">
+          <figcaption><b>정지</b>CPU 제출 <strong>0.354ms</strong> = Map 0.001 + copy 0.349. <strong>정지가 더 높다.</strong></figcaption>
+        </figure>
+      </div>
+      <p class="logcap" style="font-size:12.5px"><b>쪼개니 범인이 드러났다</b>제목 표시줄에 <code>Map</code>과 <code>copy</code>를 나눠 찍게 한 화면입니다.
+      <strong><code>Map</code>은 양쪽 다 0.001ms</strong>로 똑같고, 차이는 전부 <code>copy</code>에서 납니다(0.331 → 0.349).
+      드라이버나 GPU 대기를 의심했지만 <strong>범인은 CPU 복사</strong>였습니다.
+      총 프레임 시간(2.378 / 2.436ms)이 사실상 같아 실제 성능 저하도 아니었습니다.</p>
+    </div>
+  </section>
+
+  <div class="close">
+    <h2>세 최적화를 관통하는 한 문장</h2>
+    <p><b>&ldquo;드로우 콜 하나 안에서 바뀌는 값은 하나뿐이다.&rdquo;</b>
+    상수 버퍼는 드로우 콜 단위로 고정되므로, 스프라이트마다 달라야 하는 값을 거기 두면
+    <b>값을 바꿀 때마다 드로우가 쪼개집니다.</b> 세 최적화는 전부 이 하나에서 나왔습니다.</p>
+
+    <div class="tscroll" style="margin-top:14px">
+      <table class="scope">
+        <thead>
+          <tr><th>드로우를 끊어야 바꿀 수 있던 것</th><th>어디로 옮겼나</th><th>결과</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>위치 (상수 버퍼)</td><td>정점의 좌표로 <span class="n">정점마다 다름</span></td><td>드로우 20,000 → 1</td></tr>
+          <tr><td>그림 (바인딩된 텍스처)</td><td>정점의 UV로 <span class="n">정점마다 다름</span></td><td>텍스처 전환 0</td></tr>
+          <tr class="me"><td>위치·크기·색·UV</td><td>인스턴스 버퍼로 <span class="n">스프라이트마다 다름</span></td><td>업로드 ~1/3</td></tr>
+          <tr><td>— (그릴지 말지)</td><td>CPU에서 미리 제외</td><td>처리량 ~1/9</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="logcap" style="font-size:12.5px"><b>핵심은 드로우를 끊어야 바꿀 수 있는 것을 옮기는 것</b>정점이 &lsquo;위치&rsquo;를,
+    아틀라스가 &lsquo;그림&rsquo;을 드로우 단위에서 끌어내린 것입니다.
+    <strong>드로우를 끊을 필요 없으면 드로우는 1번이 됩니다.</strong>
+    컬링만 층위가 다릅니다 — 앞의 둘이 &ldquo;같은 결과를 더 싸게&rdquo;라면, 컬링은 <strong>&ldquo;결과에 영향 없는 것을 아예 빼는&rdquo;</strong> 쪽입니다.</p>
+
+    <p style="margin-top:16px"><b>그래서 무엇을 쟀나</b> — 이 셋이 줄이는 것은 GPU가 픽셀을 칠하는 시간이 아니라
+    <b>CPU가 명령을 제출하는 시간</b>입니다. 그래서 총 프레임 시간과 CPU 제출 시간을
+    <code>QueryPerformanceCounter</code>로 <b>나눠 쟀습니다.</b> 하나만 쟀다면
+    &ldquo;1.4배&rdquo;라는 총 프레임 시간에 묻혀 <b>5배 차이가 안 보였을 것</b>입니다.</p>
+  </div>
+
+  <div class="foot">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <a href="https://github.com/AIMHYUK/SpriteBatchDemo" target="_blank" rel="noreferrer">Repository</a>
+  </div>
+
+</main>
+
+</body></html>

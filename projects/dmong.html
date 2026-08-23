@@ -35,13 +35,13 @@
     <div class="about">
       <div>
         <h2>어떤 게임인가</h2>
-        <p>대전관광공사의 마스코트 <b>꿈돌이</b>가 몬스터를 피해 발판을 밟고 위로 올라가는 캐주얼 점프 게임입니다.
+        <p>대전의 마스코트 <b>꿈돌이</b>가 몬스터를 피해 발판을 밟고 위로 올라가는 캐주얼 점프 게임입니다.
         수성부터 해왕성까지 <b>행성 8스테이지</b>와 히든 맵이 있고, 스테이지마다 발판 리소스가 다릅니다.
         대전관광공사와 협업한 프로젝트라 오프라인 축제 현장에서도 시연하며 현장 피드백을 받을 수 있었습니다.</p>
         <p>사수와 <b>함께 처음부터 만든 게임</b>입니다. 발판 생성기 · 난이도 곡선 · 오브젝트 풀 · 인앱 결제 ·
         길드 · 랭킹은 제가 만들고 실제 라이브 운영을 하며 피드백을 받아 고쳤습니다.</p>
         <p>기획이 정해진 상태에서 코드를 얹은 것이 아니라 애자일하게 만들면서 문제를 발견하고
-        구조를 바꿔가며 완성했습니다. <b>실제 이용자에게 나간 제품을 처음부터 끝까지</b> 겪은 경험입니다.</p>
+        구조를 바꿔가며 완성했습니다.</p>
       </div>
       <figure>
         <img src="../assets/images/dmong/kkumdol-menu.webp" alt="꿈돌이 메뉴 화면. 눈 덮인 스테이지 배경에 여러 종류의 발판이 놓여 있고, 하단에 캐릭터 셋과 레벨 진행도가 보인다">
@@ -54,23 +54,57 @@
   <section class="feat" id="f1">
     <div class="feat-h">
       <span class="no">기능 01</span>
-      <h2>끝없이 이어지는 발판 생성</h2>
-      <p class="one"></p>
+      <h2>오브젝트 풀링을 이용한 무한 발판 생성</h2>
+      <p class="one">발판을 매번 만들지 않고 <b>꺼뒀다 다시 켭니다.</b> 만드는 비용은 사라지지만 <b>끄기 전 상태가 그대로 남습니다.</b></p>
     </div>
 
+    <!-- ── 바닥 ── -->
     <div class="part p-impl">
-      <h3>구현</h3>
+      <h3>1 · 오브젝트 풀링</h3>
       <ul>
-        <li>카메라 <code>orthographicSize</code>와 <code>aspect</code>로 <b>화면 폭을 런타임에 계산</b>해,
-        기기 해상도가 달라도 같은 밀도로 깔리게 했습니다.</li>
-        <li>카메라가 <b>임계선을 넘을 때마다 발판들을</b> 생성하고,
-        임계선을 반 화면만큼 올립니다. 생성 지점이 카메라에서 한 화면 넘게 앞서가 있으면 건너뜁니다.</li>
-        <li>회수는 스포너가 아니라 <b>발판 자신이 판단</b>합니다.
-        카메라보다 아래이고 반 화면 이상 멀어진 순간 풀로 돌아갑니다.</li>
-        <li>아이템과 적은 발판 위에 생성되고  <code>Physics2D.OverlapCircleAll</code>로 <b>겹침을 먼저 확인해</b> 아이템/적이 겹치면 적을 풀로 되돌립니다. </li>
+        <li>발판 7종 · 아이템 · 적을 <b>타입별 배열 풀</b>로 나누고, 종류마다 초기 크기를 따로 잡았습니다.
+        각 종류를 <b>미리 만들어 꺼두었다가 켜고 끄는</b> 방식입니다.</li>
+        <li>풀이 비면 그때 1개씩 새로 만들어 풀에 넣습니다. 덕분에 풀이 바닥나도 발판이 안 나오거나 스포너가 실패하지 않지만, 그 순간에는 생성 비용이 그대로 듭니다. 그래서 초기 크기를 발판 종류당 100개로 넉넉히 잡아 실사용에서는 이 경로를 탈 일이 거의 없게끔 구현했습니다.</li>
+        <li>풀로 돌아갈 때 <b>초기화 로직을 적용</b>하여 
+        색 · 이동 상태 · 붙어 있던 자식 오브젝트를 전부 초기화시킵니다(발판 초기화).</li>
+        <li>빌드 대상은 <b>Android 6.0(API 23) 이상</b>입니다.    <b>생성·파괴 비용을 줄여 최적화</b>했습니다.</li>
       </ul>
     </div>
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <figure>
+          <pre class="logbox"><span class="c">// 고치기 전 — 구독 수명이 오브젝트 수명과 어긋난다</span>
+<span class="bad">Start()</span>            : 전체이동 이벤트를 <span class="bad">한 번만</span> 구독
+ReturnPlatform()   : 비활성화만 한다   <span class="bad">→ 구독은 그대로 남음</span>
+                     씬 재로드 <span class="bad">→ 죽은 발판이 계속 신호를 받음</span>
 
+<span class="c">// 고친 뒤 — 풀의 생명주기에 구독을 맞춘다</span>
+<span class="ok">OnEnable()</span>       : 풀에서 꺼낼 때 구독 + 붙어 있던 자식 정리
+<span class="ok">OnDisable()</span>      : 풀로 돌아갈 때 <span class="ok">구독 해제</span> + 이동 상태 복구
+ReturnPlatform() : 색 복구 → 비활성화
+MovePlatform()   : 이동중 아님 <span class="hi">and</span> 활성 상태일 때만 동작</pre>
+          <p class="logcap"><code>Destroy</code>는 구독한 이벤트를 없애지만
+          <code>OnDisable</code>은 없애지 않습니다. 그래서 풀의 생명주기에 구독을 맞추어서 <code>Start</code>에서 <code>OnEnable</code>/<code>OnDisable</code>로 옮겼습니다.</p>
+        </figure>
+      </div>
+    </div>
+
+    <!-- ── 그 위 ① ── -->
+    <div class="part p-impl">
+      <h3>2 · 발판 무한 생성 - 카메라 위에 발판을 생성</h3>
+      <ul>
+        <li>화면 폭을 숫자로 박지 않고, 카메라가 담는 세로 크기(<code>orthographicSize</code>)와
+        가로세로 비율(<code>aspect</code>)로 <b>실행 중에 계산</b>합니다.
+        그래서 기기 해상도가 달라도 발판이 같은 밀도로 깔립니다.</li>
+        <li>카메라가 <b>다음에 깔 높이</b>(임계선)를 넘을 때마다 발판을 한 뭉치 만들고,
+        그 높이를 반 화면만큼 올립니다. </li>
+        <li>발판이 카메라보다 아래이고 반 화면 이상 멀어진 순간 풀로 되돌립니다.</li>
+        <li>아이템과 적은 발판 위에 얹는데, <code>Physics2D.OverlapCircleAll</code>
+        로 먼저 확인해
+        <b>둘이 겹칠 자리면 적을 도로 풀에 넣습니다.</b></li>
+      </ul>
+    </div>
     <div class="part p-shot">
       <h3>화면</h3>
       <div class="shots two">
@@ -98,46 +132,31 @@ if 내가 카메라보다 <span class="ok">위에</span> 있다:
     return                        <span class="c">// 위쪽은 건드리지 않는다</span>
 if 카메라와의 거리 &gt;= 반 화면:
     ObjectPool.ReturnPlatform(나 자신)</pre>
-          <p class="logcap"></p>
+          <p class="logcap"><b>읽는 법</b>
+          스포너가 발판을 <code>OnEnable</code>하고 발판이 스스로 <code>OnDisable</code>합니다.</p>
         </figure>
         <figure>
-          <img class="phone" src="../assets/images/dmong/kkumdol-play-mars.webp" alt="꿈돌이 플레이 화면. 동굴 배경에 발판이 위쪽으로 길게 이어지고 몬스터와 블랙홀이 발판 사이에 배치돼 있다">
+          <img class="phone" src="../assets/images/dmong/kkumdol-play-mars.webp" alt="꿈돌이 플레이 화면. 붉은 화성 지형 배경에 주황색 발판이 위쪽으로 길게 이어지고, 보라색 블랙홀과 별·닭 아이템이 발판 사이에 놓여 있다">
           <figcaption><b>플레이 화면</b>유저가 올라감에 따라 런타임으로 발판이 랜덤하게 생성되며 이미 카메라 아래로 지나간 발판은 풀로 돌아갑니다.
          </figcaption>
         </figure>
       </div>
     </div>
 
-    <div class="part p-result">
-      <h3>성과</h3>
-      <div class="res">
-        <span class="n">해상도별 화면 폭 런타임 계산</span>
-        <span class="n">생성 · 회수 책임 분리</span></div>
-    </div>
-  </section>
-
-  <!-- ══════ 기능 02 ══════ -->
-  <section class="feat" id="f2">
-    <div class="feat-h">
-      <span class="no">기능 02</span>
-      <h2>점수에 따라 올라가는 난이도 곡선</h2>
-      <p class="one"></p>
-    </div>
-
+    <!-- ── 그 위 ② ── -->
     <div class="part p-impl">
-      <h3>구현</h3>
+      <h3>3 · 난이도 조절</h3>
       <ul>
-        <li>현재 점수를 <b>일정 단위로 잘라 티어</b>로 만들고, 티어마다 <b>발판 종류의 등장 확률표</b>를 따로 뒀습니다.
+        <li>현재 점수를 <b>일정 단위로 잘라 등급</b>(티어)으로 만들고, 등급마다
+        <b>어떤 발판이 얼마나 자주 나올지</b>를 적은 확률표를 따로 뒀습니다.
         초반에는 기본 발판 위주로, 후반에는 7종이 전부 나옵니다.</li>
         <li>같은 티어 값으로 <b>한번에 등장하는 발판 개수를 줄이고</b>, <b>세로 간격을 네 배까지 벌립니다</b>.
-        실제 배치는 그 값의 ±20%로 흔들어 규칙성을 지웠습니다.</li>
-        <li>적은 <b>중반 티어에 진입해야</b> 나옵니다.
-        아이템이 놓인 발판에는 적을 얹지 않아 <b>보상과 위협이 겹치지 않게</b> 했습니다.</li>
+        실제 배치는 그 값의 ±20%로 규칙성을 지웠습니다.</li>
+        <li>아이템이 놓인 발판에는 적을 얹지 않아 <b>보상과 위협이 겹치지 않게</b> 했습니다.</li>
         <li>난이도를 결정하는 값(티어 단위 · 간격 증가폭 · 간격 상한 · 적 등장 주기)은
         <b>전부 인스펙터에 노출</b>해, 기획자가 밸런스를 고칠 때 코드를 건드리지 않게 했습니다.</li>
       </ul>
     </div>
-
     <div class="part p-shot">
       <h3>화면</h3>
       <div class="shots two">
@@ -161,11 +180,11 @@ degree   = min(tier, 상한)                 <span class="hi">// 뭉치 개수�
 distance = min(기본간격 + 증가폭 * degree, 상한)
 배치     = distance * Random(0.8, 1.2)     <span class="c">// 규칙성 지우기</span>
 적 등장  = degree가 중반 이상 &amp;&amp; 뭉치 n회마다 1마리</pre>
-          <p class="logcap"> <b>티어 하나에 모아</b>
-          종류·개수·간격·적을 동시에 움직입니다. 한 값만 고쳐도 곡선 전체가 따라옵니다.</p>
+          <p class="logcap"> <b>티어를 기준으로</b>
+          종류·개수·간격·적을 조정합니다. </p>
         </figure>
         <figure>
-          <img class="phone" src="../assets/images/dmong/kkumdol-play-cave.webp" alt="꿈돌이 플레이 화면. 붉은 화성 배경에 회색·파란색·주황색 발판이 섞여 있고 블랙홀과 별 아이템이 함께 배치돼 있다">
+          <img class="phone" src="../assets/images/dmong/kkumdol-play-cave.webp" alt="꿈돌이 플레이 화면. 회색 동굴 배경에 회색·파란색 발판이 섞여 있고 초록 몬스터와 보라색 블랙홀이 함께 배치돼 있으며 조작 안내 문구가 떠 있다">
           <figcaption><b>발판 종류가 섞이는 구간</b>각 티어별 발판이 점수에 따라 랜덤하게 등장합니다.
    </figcaption>
         </figure>
@@ -175,70 +194,27 @@ distance = min(기본간격 + 증가폭 * degree, 상한)
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
+        <span>Android 6.0 이상 지원 · 테스트 기기 60 fps</span>
         <span>발판 7종 점수에 따라 등장</span>
+        <span class="n">반복 생성·파괴를 풀 재사용으로 대체</span>
+        <span class="n">프리팹 수를 테마 배수로 늘리지 않음</span>
+        <span class="n">해상도별 화면 폭 런타임 계산</span>
+        <span class="n">생성 · 회수 책임 분리</span>
         <span class="n">난이도 파라미터 4종 인스펙터 노출</span>
         <span class="n">코드 수정 없이 기획 수치 변경 가능</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">타입별 오브젝트 풀과 재사용 상태 초기화</a>
+    </div>
+
   </section>
 
-  <!-- ══════ 기능 03 ══════ -->
-  <section class="feat" id="f3">
+  <!-- ══════ 기능 02 ══════ -->
+  <section class="feat" id="f2">
     <div class="feat-h">
-      <span class="no">기능 03</span>
-      <h2>타입별 오브젝트 풀과 재사용 상태 초기화</h2>
-      <p class="one">무한 스크롤 게임이라 생성·파괴가 끝없이 반복됩니다. 그렇기에 오브젝트 풀링을 사용하기로 마음먹었습니다.</p>
-    </div>
-
-    <div class="part p-impl">
-      <h3>구현</h3>
-      <ul>
-        <li>발판 7종 · 아이템 · 적을 <b>타입별 배열 풀</b>로 나누고, 종류마다 초기 크기를 따로 잡았습니다.
-        각 종류를 <b>미리 만들어 꺼두었다가 켜고 끄는</b> 방식으로 바꿨습니다.</li>
-        <li>풀이 비면 그때 1개씩 새로 만들어 풀에 넣습니다. 덕분에 풀이 바닥나도 발판이 안 나오거나 스포너가 실패하지 않지만, 그 순간에는 생성 비용이 그대로 듭니다. 그래서 초기 크기를 발판 종류당 100개로 넉넉히 잡아 실사용에서는 이 경로를 탈 일이 거의 없게끔 구현했습니다.</li>
-        <li>스테이지 테마별로 <b>같은 프리팹에 다른 스프라이트</b>를 물려,
-        발판 종류 × 테마 수만큼 프리팹을 만들지 않게 했습니다.</li>
-        <li>재사용 시점을 <b>명시적 초기화 지점</b>으로 두고 색 · 이동 상태 · 자식 오브젝트를
-        전부 그 자리에서 되돌립니다.</li>
-        <li>빌드 대상은 <b>Android 6.0(API 23) 이상</b>입니다. 오래된 기기까지 들어오는 캐주얼 게임이라,
-        <b>생성·파괴 비용을 줄이는 것이 최적화</b>였습니다.</li>
-      </ul>
-    </div>
-
-    <div class="part p-shot">
-      <h3>화면</h3>
-      <div class="shots two">
-        <figure>
-          <pre class="logbox"><span class="c">// 고치기 전 — 구독 수명이 오브젝트 수명과 어긋난다</span>
-<span class="bad">Start()</span>            : 전체이동 이벤트를 <span class="bad">한 번만</span> 구독
-ReturnPlatform()   : 비활성화만 한다   <span class="bad">→ 구독은 그대로 남음</span>
-                     씬 재로드 <span class="bad">→ 죽은 발판이 계속 신호를 받음</span>
-
-<span class="c">// 고친 뒤 — 풀의 생명주기에 구독을 맞춘다</span>
-<span class="ok">OnEnable()</span>       : 풀에서 꺼낼 때 구독 + 붙어 있던 자식 정리
-<span class="ok">OnDisable()</span>      : 풀로 돌아갈 때 <span class="ok">구독 해제</span> + 이동 상태 복구
-ReturnPlatform() : 색 복구 → 비활성화
-MovePlatform()   : 이동중 아님 <span class="hi">and</span> 활성 상태일 때만 동작</pre>
-          <p class="logcap"><b>구독 수명 교정</b><code>Destroy</code>는 구독한 이벤트를 없애지만
-          <code>OnDisable</code>은 없애지 않습니다. 그래서 풀의 생명주기에 구독을 맞추어서 <code>Start</code>에서 <code>OnEnable</code>/<code>OnDisable</code>로 옮겼습니다.</p>
-        </figure>
-      </div>
-    </div>
-
-    <div class="part p-result">
-      <h3>성과</h3>
-      <div class="res">
-        <span>Android 6.0 이상 지원 · 테스트 기기 60 fps</span>
-        <span class="n">반복 생성·파괴를 풀 재사용으로 대체</span>
-        <span class="n">프리팹 수를 테마 배수로 늘리지 않음</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════ 기능 04 ══════ -->
-  <section class="feat" id="f4">
-    <div class="feat-h">
-      <span class="no">기능 04</span>
+      <span class="no">기능 02</span>
       <h2>인앱 결제 — 광고 제거 상품</h2>
       <p class="one">두 스토어의 상품을 한 스크립트로 다루고, 구매 상태가 기기를 옮겨도 남게 만들었습니다.</p>
     </div>
@@ -251,8 +227,7 @@ MovePlatform()   : 이동중 아님 <span class="hi">and</span> 활성 상태일
         <li>하나의 상품 정의에 <b>스토어별 상품 ID를 매핑</b>해,
         <b>코드 하나로 두 마켓을 처리</b>하게 했습니다.
         플랫폼 분기가 결제 흐름 전체로 번지지 않고 <b>상품 등록 한 곳에만 남습니다.</b></li>
-        <li>구매 성공 시 광고 제거 플래그를 세우고 <b>즉시 Firebase에 저장</b>합니다.
-        기기가 아니라 계정에 붙는 값이라, <b>같은 계정으로 다시 들어오면</b> 구매가 남아 있습니다.</li>
+        <li>구매 성공 시 광고 제거 플래그를 세우고 <b> 계정 id기준으로 Firebase에 저장</b>합니다.</li>
         <li>애플 정책상 필수인 <b>구매 복원 버튼</b>을
         <code>IAppleExtensions.RestoreTransactions</code>로 붙였습니다.</li>
       </ul>
@@ -279,7 +254,7 @@ AddProduct(광고제거, NonConsumable, {
     { &lt;Google Play 상품 ID&gt;, GooglePlay },
     { &lt;App Store 상품 ID&gt;,   AppleAppStore },
 })</pre>
-          <p class="logcap"><b>결제 처리 흐름</b> 결제는 중요한 부분인 만큼 저장 시점 , 비동기 처리 , 영수증 확인 등 모든 과정을 확실하게 확인해야 했습니다.</p>
+          <p class="logcap"><b>결제 처리 흐름</b>돈이 오가는 흐름이라 저장 시점과 비동기 실패 처리를 특히 조심해야 했습니다. 스토어에는 결과를 즉시 돌려주되, 저장은 실패해도 흔적이 남는 경로로 분리했습니다.</p>
         </figure>
         <figure>
           <img src="../assets/images/dmong/kkumdol-googleplay.png" alt="Google Play 스토어의 Bounce Hero 꿈돌이 리스팅. 주식회사 디몽, 광고 포함 인앱 구매 표기">
@@ -297,25 +272,30 @@ AddProduct(광고제거, NonConsumable, {
         <span class="n">iOS · Android 결제 코드 단일화</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">인앱 결제 — 광고 제거 상품</a>
+    </div>
+
   </section>
 
-  <!-- ══════ 기능 05 ══════ -->
-  <section class="feat" id="f5">
+  <!-- ══════ 기능 03 ══════ -->
+  <section class="feat" id="f3">
     <div class="feat-h">
-      <span class="no">기능 05</span>
+      <span class="no">기능 03</span>
       <h2>길드 시스템</h2>
-      <p class="one">여러 사람이 동시에 같은 길드를 건드릴 수 있기에 <b>동시성 처리</b>가 어려운 기능이었습니다.</p>
+      <p class="one">다른 길드장 두 명이 같은 사람의 신청을 동시에 받을 수 없게 하기 위해  <b>트랜잭션을 이용한 동시성 처리</b>를 했습니다.</p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li>길드 생성 · 검색 · 가입 신청 · 수락/거절 · 강퇴 · 해체까지
-        <b>수명 주기 전체</b>를 <code>Firebase Realtime Database</code> 위에 올렸습니다.</li>
+        <li> 길드 생성 · 검색 · 가입 신청 · 수락/거절 · 강퇴 · 해체를 클라이언트가 Firebase Realtime Database를 직접 읽고 쓰는 구조로 만들었습니다. 클라이언트끼리의 순서를 정하기 위해 DB 트랜잭션을 사용했습니다.</li>
         <li>가입 정책을 <b>승인 가입 · 자유 가입 · 가입 불가</b> 세 종류로 두고,
-        자유 가입은 신청과 수락을 <b>한 흐름에서 이어 처리</b>합니다.</li>
-        <li>가입 신청과 수락은 <b><code>RunTransaction</code>으로 처리</b>합니다.
-        읽고 나서 쓰는 사이에 다른 사람이 끼어들어도 <b>길드원 목록과 신청 목록이 어긋나지 않습니다.</b></li>
+        자유 가입은 신청을 <b>자동 수락</b>합니다.</li>
+        <li>가입 신청과 수락은 <b><code>RunTransaction</code></b>
+        (<b>읽기·검사·쓰기를 하나로 묶고, 도중에 남이 끼어들면 통째로 취소</b>)으로 처리합니다.
+        그래서 읽고 쓰는 사이에 다른 요청이 들어와도 <b>길드원 목록과 신청 목록이 어긋나지 않습니다.</b></li>
         <li>해체는 <b><code>isDisbanding</code> 플래그를 먼저 세우고</b> 길드원의 소속을 지운 뒤
         마지막에 길드를 지웁니다. 해체 중에 들어온 가입 신청은 트랜잭션에서 중단됩니다.</li>
         <li>길드명은 <b>Firebase 키 규칙(<code>. # $ [ ]</code> 불가)을 먼저 검사</b>하고 넘깁니다.</li>
@@ -346,21 +326,21 @@ AddProduct(광고제거, NonConsumable, {
     유저 쪽에 길드명을 적는다
 
 <span class="c">// 순서를 뒤집으면</span>
-<span class="c">//   소속은 생겼는데 명단엔 없는 유령이 남는다</span>
+<span class="c">// 소속은 생겼는데 길드 명단엔 없는 유저가 생긴다</span>
 
-<span class="c">// 해체도 같은 원칙이다</span>
+<span class="c">// 해체도 같은 방식으로 </span>
 <span class="c">//   해체 표시 → 길드원 소속 해제 → 길드 삭제</span></pre>
-          <p class="logcap"><b>가입 처리 흐름</b>확인과 반영 사이가 벌어지면 그 틈에 다른 요청이 끼어듭니다.
-          <b>길드장 둘이 같은 신청을 동시에 수락</b>하면 각자 &ldquo;신청 목록에 있다&rdquo;를 읽고 둘 다 추가해버리고,
-          <b>수락 도중 길드가 해체</b>되면 사라진 길드에 사람이 들어갑니다.
-          확인부터 반영까지를 <b>트랜잭션 하나로 묶어</b> 먼저 도달한 요청만 성공하고 나머지는 Abort되게 했습니다.
-          한 사람이 두 곳에 소속되는 것은 <b>사전 확인</b>으로 걸러내고,
-          길드 명단에 들어간 <b>뒤에만</b> 유저 쪽에 길드명을 적어 순서를 고정했습니다.</p>
+          <p class="logcap"><b>가입 처리 흐름</b>
+         기존에는 <strong>다른 길드장 둘이 동일인물의 길드 가입 신청을 동시에 수락</strong>할 수 있었고 
+          <strong>수락 도중 길드가 해체</strong>되면 이미 없어진 길드에 유저가 묶입니다. <br>
+          확인부터 반영까지를 <strong>트랜잭션 하나로 묶어</strong> 먼저 도달한 요청만 성공하고 나머지는 Abort되게 했습니다.<br>
+         <strong>유저 사전 확인으로 유저 1명 = 길드 1개</strong>를 보장했고 
+           <strong>길드 명단에 들어간 뒤에만</strong> 유저 쪽에 길드명을 적어 유저에게만 길드명이 있고 길드 명단에는 유저가 없는 상황 방지</p>
         </figure>
         <figure>
           <img class="phone" src="../assets/images/dmong/kkumdol-guild.webp" alt="꿈돌이 길드 화면. 상단에 길드 엠블럼과 종합 점수, 인원 50/50 표기가 있고 아래에 길드원 목록이 최고 점수순으로 나열돼 있다">
           <figcaption><b>길드 화면</b>엠블럼 · 가입 정책(승인 가입) · 인원 · 소개글이 상단에 있고,
-          아래는 <b>길드원을 최고 점수순으로</b> 세운 목록입니다. 길드장과 길드원이 구분됩니다.</figcaption>
+          아래는 <strong>길드원 점수 랭킹</strong>입니다. 길드장과 길드원이 구분됩니다.</figcaption>
         </figure>
       </div>
     </div>
@@ -372,80 +352,20 @@ AddProduct(광고제거, NonConsumable, {
         <span class="n">트랜잭션으로 동시 가입 경합 차단</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t3">길드 시스템 · 동시 수락 경합</a><br>
+      <a href="#t4">길드 시스템 · 두 테이블의 정합성</a>
+    </div>
+
   </section>
 
-  <!-- ══════ 기능 06 ══════ -->
-  <section class="feat" id="f6">
+  <!-- ══════ 기능 04 ══════ -->
+  <section class="feat" id="f4">
     <div class="feat-h">
-      <span class="no">기능 06</span>
-      <h2>스테이지별 랭킹</h2>
-      <p class="one"></p>
-    </div>
-
-    <div class="part p-impl">
-      <h3>구현</h3>
-      <ul>
-        <li>기록을 <b>스테이지 단위로 저장</b>하고, 랭킹도 스테이지별로 따로 세웁니다.
-        행성 8스테이지가 각각 자기 순위표를 가집니다.</li>
-        <li>점수 내림차순으로 정렬해 <b>상위 100개 점수</b>까지 표시합니다.
-        동점자가 묶이므로 실제로 보이는 사람은 그보다 많을 수 있습니다.</li>
-        <li><b>동점자를 같은 등수로 묶습니다.</b> 점수를 키로 두고 닉네임을 리스트로 매달아,
-        같은 점수면 같은 순위 아래에 나란히 들어갑니다.</li>
-        <li>랭킹이 쓰는 <b>스테이지별 기록</b>과,
-        길드 화면이 쓰는 <b>길드원 통합 점수 기록</b>으로 구분하였습니다. </li>
-      </ul>
-    </div>
-
-    <div class="part p-shot">
-      <h3>화면</h3>
-      <div class="shots two">
-        <figure>
-          <pre class="logbox"><span class="c">// 동점자를 같은 등수로 — 점수를 키로 쓴다</span>
-
-기록 = { 점수 → [닉네임, 닉네임, ...] }
-
-정렬 = 기록.점수 <span class="hi">내림차순</span>
-표시 = 정렬.상위 100  <span class="c">// 인원이 아니라 점수 100개</span>
-
-<span class="c">//  590 → 1명</span>
-<span class="c">//  553 → 1명</span>
-<span class="c">//  436 → 2명   ← 같은 등수로 나란히 들어간다</span>
-
-<span class="c">// 닉네임을 키로 뒀다면</span>
-<span class="c">//   동점을 따로 판별하는 코드가 필요했다</span>
-
-<span class="c">// 기록은 두 곳에 나눠 쌓인다</span>
-<span class="ok">스테이지별 기록</span>  →  랭킹 화면이 읽는다
-<span class="hi">전체 통합 기록</span>  →  길드 화면이 읽는다
-
-<span class="c">// 한 값으로 합치면</span>
-<span class="c">//   "어느 판의 기록인가"가 사라진다</span></pre>
-          <p class="logcap"><b>순위 구성</b>점수를 키로 두어 동점 처리가 자동으로 되게끔 구현하였습니다.</p>
-        </figure>
-        <figure>
-          <img class="phone" src="../assets/images/dmong/kkumdol-ranking.webp" alt="꿈돌이 랭킹 화면. 1위부터 11위까지 닉네임과 점수가 나열돼 있고 7위 자리에 캐릭터 아이콘이 표시돼 있다">
-          <figcaption><b>랭킹 화면</b>메뉴 위에 패널로 얹혀 뜨고,
-          스테이지를 바꾸면 <b>그 스테이지의 순위표로 다시 채워집니다.</b></figcaption>
-        </figure>
-      </div>
-    </div>
-
-    <div class="part p-result">
-      <h3>성과</h3>
-      <div class="res">
-        <span>스테이지 8종 각각의 순위표</span>
-        <span class="n">동점자 동일 등수 처리</span>
-        <span class="n">스테이지별 · 전체 통합 기록 분리 저장</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════ 기능 07 ══════ -->
-  <section class="feat" id="f7">
-    <div class="feat-h">
-      <span class="no">기능 07</span>
+      <span class="no">기능 04</span>
       <h2>플랫폼 SDK 연동과 라이브 운영</h2>
-      <p class="one">인증 · 광고 · 버전 관리를 붙이고, 축제 현장에서 받은 피드백을 패치로 넣었습니다.</p>
+      <p class="one">인증 · 광고 · 버전 관리를 붙이고, <b>축제 현장에서 실제 사용자 피드백을 받아</b> 고쳤습니다.</p>
     </div>
 
     <div class="part p-impl">
@@ -467,7 +387,7 @@ AddProduct(광고제거, NonConsumable, {
         <figure>
           <img class="phone" src="../assets/images/dmong/kkumdol-title.webp" alt="꿈돌이 타이틀 화면. BOUNCE HERO 꿈돌이 로고 아래 불러오기 중 5/24 진행 표시가 있다">
           <figcaption><b>타이틀 · 로딩</b>&lsquo;불러오기 중 (5/24)&rsquo;처럼
-          <b>몇 개 중 몇 개를 받았는지</b> 보이게 해, 멈춘 것과 받는 중인 것을 구분할 수 있게 했습니다.</figcaption>
+          <strong>몇 개 중 몇 개를 받았는지</strong> 보이게 해, 멈춘 것과 받는 중인 것을 구분할 수 있게 했습니다.</figcaption>
         </figure>
         <figure>
           <img src="../assets/images/dmong/kkumdol-appstore.png" alt="App Store의 Bounce Hero 꿈돌이 리스팅">
@@ -491,7 +411,7 @@ AddProduct(광고제거, NonConsumable, {
     <div class="feat-h">
       <span class="no">함께</span>
       <h2>ZOMVIRUS — 기존 출시작 참여</h2>
-      <p class="one">무기 인벤토리 추가 &amp; 스팀 도전과제 구현</p>
+      <p class="one">이미 출시된 게임에 <b>무기 인벤토리와 스팀 도전과제</b>를 붙였습니다.</p>
     </div>
 
     <div class="part p-impl">
@@ -526,6 +446,11 @@ AddProduct(광고제거, NonConsumable, {
       <a href="https://store.steampowered.com/app/3222270/ZOMVIRUS/" target="_blank" rel="noreferrer">ZOMVIRUS (Steam)</a>
       <span class="why">이 절에서 참여한 부분이 들어간 출시작입니다.</span>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t5">기존 출시작 참여</a>
+    </div>
+
   </section>
 
   <!-- ══════ 트러블슈팅 ══════ -->
@@ -533,22 +458,22 @@ AddProduct(광고제거, NonConsumable, {
     <div class="feat-h">
       <span class="no"></span>
       <h2>트러블슈팅</h2>
-      <p class="one"></p>
+      <p class="one">막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다.</p>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t1">
       <h3>어려움</h3>
-      <p><b>기능 03 — 타입별 오브젝트 풀과 재사용 상태 초기화</b></p>
+      <p><b><a class="flink" href="#f1">기능 01</a> — 타입별 오브젝트 풀과 재사용 상태 초기화</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>&lsquo;밟으면 모든 발판이 함께 움직이는&rsquo; 발판이 <b>씬을 다시 로드하면 고장났습니다.</b> 검은 발판은 한 번 밟혀 색이 바뀌면 <b>다음에 꺼냈을 때도 검은 채로</b> 나왔습니다.</dd></div>
-        <div><dt>원인</dt><dd>발판끼리는 <code>static</code> 이벤트로 신호를 주고받는데, 구독을 <code>Start</code>에서 한 번만 했습니다. 풀링은 오브젝트를 <b>지우는 게 아니라 꺼두는 것</b>이라 <b>구독도 색도 그대로 남습니다.</b> 이전 씬의 죽은 발판이 계속 이벤트를 받고 있었습니다.</dd></div>
-        <div><dt>해결</dt><dd>구독과 해제를 <b>풀에서 꺼내고 넣는 순간</b>(<code>OnEnable</code>/<code>OnDisable</code>)에 맞추고, 반환 시 색과 이동 상태를 되돌렸습니다. 꺼낼 때 <b>붙어 있던 아이템·적을 먼저 떼는</b> 처리도 같은 자리에 넣었습니다. <b>&ldquo;지워지는 것에 기대던 처리&rdquo;를 전부 재사용 지점으로 옮긴 것</b>이 이 작업의 요지입니다.</dd></div>
+        <div><dt>원인</dt><dd>발판끼리는 <code>static</code> 이벤트로 신호를 주고받는데, 구독을 <code>Start</code>에서 한 번만 했습니다. 풀링은 오브젝트를 <b>지우는 게 아니라 꺼두는 것</b>이라 <b>구독도 바뀐 색도 그대로 남습니다.</b> 그래서 다음 발판이 스폰될 때 이상한 발판이 나올 수 있었습니다. </dd></div>
+        <div><dt>해결</dt><dd>구독과 해제를 <b>풀에서 꺼내고 넣는 순간</b>(<code>OnEnable</code>/<code>OnDisable</code>)에 맞추고, 반환 시 색과 이동 상태를 되돌렸습니다. 꺼낼 때 <b>붙어 있던 아이템·적을 먼저 떼는</b> 처리도 같은 자리에 넣었습니다.</dd></div>
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t2">
       <h3>어려움</h3>
-      <p><b>기능 04 — 인앱 결제 — 광고 제거 상품</b></p>
+      <p><b><a class="flink" href="#f2">기능 02</a> — 인앱 결제 — 광고 제거 상품</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>구매 완료를 처리하는 함수 안에서 <b>Firebase 저장을 기다릴 수 없었습니다.</b> 저장을 <code>async void</code>로 두자, 저장이 실패해도 <b>아무도 모르게 넘어갔습니다.</b> 돈을 낸 유저의 광고 제거가 사라질 수 있었습니다.</dd></div>
         <div><dt>원인</dt><dd><code>ProcessPurchase</code>는 스토어에 <b>처리 결과를 즉시 돌려줘야 하는 함수</b>라 <code>await</code>를 걸 수 없습니다. 그렇다고 <code>async void</code>로 만들면 예외가 호출자에게 전달되지 않아 <b>실패가 조용히 삼켜집니다.</b></dd></div>
@@ -556,9 +481,9 @@ AddProduct(광고제거, NonConsumable, {
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t3">
       <h3>어려움</h3>
-      <p><b>기능 05 — 길드 시스템 · 동시 수락 경합</b></p>
+      <p><b><a class="flink" href="#f3">기능 03</a> — 길드 시스템 · 동시 수락 경합</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>길드장 두 명이 <b>같은 신청을 동시에 수락</b>하면 한 사람이 길드원 목록에 두 번 들어갔습니다. <b>해체 중인 길드에 가입이 성사</b>되기도 했습니다.</dd></div>
         <div><dt>원인</dt><dd>여러 클라이언트가 같은 테이블을 동시에 건드릴 수 있어서, 각자 &ldquo;신청 목록&rdquo;을 읽은 뒤 둘 다 쓰면 <b>나중 쓰기가 앞을 덮어썼습니다.</b></dd></div>
@@ -566,19 +491,19 @@ AddProduct(광고제거, NonConsumable, {
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t4">
       <h3>어려움</h3>
-      <p><b>기능 05 — 길드 시스템 · 두 테이블의 정합성</b></p>
+      <p><b><a class="flink" href="#f3">기능 03</a> — 길드 시스템 · 두 테이블의 정합성</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>길드원 목록에는 없는데 유저 쪽에는 길드명이 남는 <b>유령 소속</b>이 생겼습니다. 이 유저는 <b>다른 길드에 가입할 수도 없습니다.</b> 이미 소속이 있다고 판정되기 때문입니다.</dd></div>
         <div><dt>원인</dt><dd><b>DB 구조상 길드 테이블에서 유저를 저장</b>하고 <b>유저 테이블에서 또 길드를 갖기 때문에</b> 한쪽만 성공하면 문제가 생깁니다. 트랜잭션은 한쪽 테이블만 보호하므로 쓰기가 두 번으로 나뉩니다.</dd></div>
-        <div><dt>해결</dt><dd>쓰기 <b>순서를 고정</b>했습니다. 길드 명단에 들어간 <b>뒤에만</b> 유저 쪽에 길드명을 적습니다. 이러면 중간에 실패해도 유저는 &lsquo;소속 없음&rsquo;으로 남아 <b>다시 가입할 길이 열려 있습니다.</b> 뒤집으면 어디에도 못 가는 상태로 갇힙니다. <b>해체도 같은 원칙</b>으로, 플래그를 먼저 세우고 지우는 일은 마지막에 했습니다.</dd></div>
+        <div><dt>해결</dt><dd>쓰기 <b>순서를 고정</b>했습니다. 길드 명단에 들어간 <b>뒤에만</b> 유저 쪽에 길드명을 적습니다. 이러면 중간에 실패해도 유저는 &lsquo;소속 없음&rsquo;으로 남아 <b>다시 가입할 길이 열려 있습니다.</b></dd></div>
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t5">
       <h3>어려움</h3>
-      <p><b>함께 — ZOMVIRUS — 기존 출시작 참여</b></p>
+      <p><b>함께 — <a class="flink" href="#f8">ZOMVIRUS</a> — 기존 출시작 참여</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>무기 장착과 인벤토리가 <b>이미 서비스 중인 코드</b>였습니다. 무기 전용 슬롯을 하나 늘리는 일인데 어디를 건드려야 안전한지 알 수 없었습니다.</dd></div>
         <div><dt>원인</dt><dd>제가 쓴 코드가 아니었고, 출시된 게임이라 <b>기존 프레임워크를 고칠 수 없었습니다.</b> 구조를 모른 채 고치면 기존 기능을 망가뜨릴 수 있었습니다.</dd></div>
@@ -596,6 +521,7 @@ AddProduct(광고제거, NonConsumable, {
   </div>
 
 </main>
+
 
 
 

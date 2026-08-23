@@ -47,10 +47,10 @@
       <div>
         <h2>어떤 게임인가</h2>
         <p>플레이어가 적의 공격 타이밍에 맞춰 튕겨내며 체간을 깎아 처치하는 전투를 만들었습니다.
-        일반 공격과 <b>위험 공격</b>(붉은 표식)이 있고, 둘은 같은 패링 입력을 쓰지만
-        받아낼 수 있는 시간이 다릅니다.</p>
-        <p>소울류를 오래 해왔는데 특히 손맛이 좋다고 느꼈던 세키로를 모작보고 싶었습니다.
-프로젝트를 진행하며 통칭 <b>손맛</b>이라고 하는 것이 단순히 패링뿐만이 아닌 카메라 쉐이크 , 슬로우 모션 등 여러 요소들의 합작품임을 알게 되었습니다. </p>
+        일반 공격과 <b>위험 공격</b>(붉은 표식)이 있고, 위험공격은 패링 가능 시간이 더 짧습니다. </p>
+        <p>소울류를 게임을 좋아하는데 그중 손맛이 가장 좋다고 느낀 세키로를 모작해 보고 싶었습니다.
+        만들면서 알게 된 것은 통칭 <b>손맛</b>이라 불리는 것이 패링 판정 하나가 아니라
+        <b>카메라 흔들림 · 순간 슬로우 · 사운드 등이 함께 만들어 내는 것</b>이라는 점이었습니다.</p>
         <p>전투 외에 <b>락온 타게팅</b>과 <b>그래플링 훅 이동</b>을 구현했습니다.</p>
       </div>
       <figure>
@@ -67,30 +67,31 @@
     <div class="feat-h">
       <span class="no">기능 01</span>
       <h2>락온 타게팅</h2>
-      <p class="one">화면 중앙에 가까운 적을 자동으로 잠그고, 카메라와 이동을 그 대상에 묶습니다.</p>
+      <p class="one">화면 중앙에 가까운 적을 락 온 하고 카메라가 그 적에 고정됩니다. </p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li>카메라 전방 벡터와 적 방향 벡터의 <code>Dot Product</code>로 후보 우선순위를 매겨,
-        각도상 화면 중앙에 가장 가까운 적을 선택합니다.</li>
-        <li><code>Line Trace</code>로 대상까지 시야가 통하는지 한 번 더 검증합니다.</li>
-        <li><code>RInterp To</code>로 카메라 회전을 부드럽게 보간하고,
-        락온 상태에서는 이동을 자동으로 Strafing으로 전환합니다.</li>
-      <li>내용을 적으세요.</li><li>내용을 적으세요.</li></ul>
+        <li>카메라가 보는 방향과 적이 있는 방향을 <code>Dot Product</code>(<b>내적을 이용한 계산</b>)로
+        비교해, <b>화면 정면에 가장 가까운 적</b>을 고릅니다.</li>
+        <li><code>Line Trace</code>로 벽 뒤에 있는 적이 아닌지 다시 확인합니다.</li>
+        <li><code>RInterp To</code>로 카메라를 <b>툭 끊기지 않고 돌아가게</b> 하고,
+        락온 중에는 이동을 <b>적을 바라본 채 옆으로 돕니다.</b> </li>
+      </ul>
     </div>
 
     <div class="part p-shot">
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <img src="../assets/images/isekiro/dotProduct.png" alt="내적으로 락온 대상 우선순위를 계산하는 로직">
-          <figcaption><b>사진 1 — 대상 선정</b>카메라 전방 기준 내적값으로 후보를 정렬합니다.</figcaption>
+          <img src="../assets/images/isekiro/dotProduct.png" alt="블루프린트 그래프. CheckHowCloseTargetIsToCenter 함수가 카메라 전방 벡터와 대상 방향 벡터를 dot 노드로 내적해 반환한다. 주석에 '내적한 값이 1에 가까울수록 중심에 가까움'이라고 적혀 있다">
+          <figcaption><b>사진 1 — 대상 선정</b>카메라가 보는 방향 기준으로 내적값을 매겨 후보를 정렬합니다.
+          <strong>이 보조 판정 함수는 블루프린트</strong>로 만들었습니다.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/isekiro/checkVisible.png" alt="라인 트레이스로 시야를 검증하는 로직">
-          <figcaption><b>사진 2 — 시야 검증</b>가려진 대상을 후보에서 제외합니다.</figcaption>
+          <img src="../assets/images/isekiro/checkVisible.png" alt="블루프린트 그래프. Trace Channel을 Visibility로 둔 Line Trace By Channel 노드이고, 위에 'visibility trace로 벽 뒤에 있는지 확인'이라는 주석이 붙어 있다">
+          <figcaption><b>사진 2 — 시야 검증</b><code>Visibility</code> 채널로 선을 쏴 벽에 가린 대상을 후보에서 뺍니다. 사진 1과 같은 블루프린트 함수 안입니다.</figcaption>
         </figure>
       </div>
       <div class="shots" style="margin-top:12px">
@@ -104,10 +105,15 @@
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>벽 뒤 오탐 제거</span>
+        <span>벽 뒤의 적을 잠그던 오작동 제거</span>
         <span class="n">대상 전환이 플레이어 시선과 일치</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">락온 타게팅</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 02 ══════ -->
@@ -121,10 +127,11 @@
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li>발사 전에 도착 지점의 지형을 먼저 검증하고,
-        <code>Timeline</code>과 <code>Curve</code>로 이동 궤적을 보간합니다.</li>
-        <li><code>Cable Component</code>로 발사체와 캐릭터 손 소켓을 물리적으로 연결하고 환경 충돌을 처리합니다.</li>
-        <li><code>Anim Notify</code>로 이동 시작·종료 시점과 <code>Flying</code> / <code>Falling</code> 상태를 동기화합니다.</li>
+        <li>쏘기 전에 <b>도착할 자리가 설 수 있는 땅인지</b> 먼저 확인하고,
+        <code>Timeline</code>·<code>Curve</code>(<b>미리 그려 둔 곡선</b>)를 따라 이동시킵니다.</li>
+        <li><code>Cable Component</code> 캐릭터 손을 실제로 이어 붙여, 케이블이 지형에 걸리는 것까지 처리합니다.</li>
+        <li><code>Anim Notify</code>로
+        이동 시작·종료 이벤트를 보내고 <code>Flying</code> / <code>Falling</code> 상태를 맞춥니다.</li>
       </ul>
     </div>
 
@@ -141,11 +148,16 @@
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>도착 지점 결정론적</span>
-        <span>지형 충돌로 인한 이동 실패 제거</span>
-        <span class="n">연출과 이동이 같은 타임라인에서 동기</span>
+        <span>도착 지점이 <b>쏘는 순간 확정</b> — 매번 같은 자리에 내림</span>
+        <span>지형에 걸려 이동이 실패하던 문제 제거</span>
+        <span class="n">연출과 이동이 같은 타임라인에서 맞물림</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">그래플링 훅 이동</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 03 ══════ -->
@@ -153,18 +165,18 @@
     <div class="feat-h">
       <span class="no">기능 03</span>
       <h2>패링 판정</h2>
-      <p class="one">이 프로젝트를 만든 이유입니다. 같은 입력으로 두 가지 난이도를 만들었습니다.</p>
+      <p class="one"></p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li>ParryBox를 무기 소켓에 붙이는 식으로  <b>컴포넌트화</b> 하여 기능적으로 분리하였습니다.
-후에 이 컴포넌트를 액터에 붙이기만 한다면 패링의 기능을 사용할 수 있습니다.</li><li><b>판정 가능 시간</b>과 <b>쿨다운</b>을 별도의 타이머로 분리했습니다.</li>
-        <li>판정 성공 시 충돌 채널을 전환해 피격을 무효화하고, <code>TimeDilation</code>으로 타격감을 연출합니다.</li>
-        <li>일반 공격은 판정 창 <b>8프레임</b>, 위험 공격은 <b>1프레임</b>으로 값만 다르게 주었습니다.
-        입력 처리와 코드 경로는 완전히 같습니다.</li>
-        
+        <li>패링 기능을 <code>ParryBox</code> <b>컴포넌트화</b>하여 플레이어에 붙였습니다.
+ 다른 <b>액터에 이 컴포넌트를 붙이기만 하면</b> 그 액터도 패링을 쓸 수 있습니다.</li>
+        <li><b>받아낼 수 있는 시간</b>과 <b>다시 쓸 수 있을 때까지의 시간</b>(쿨다운)을 각각 다른 타이머로 구분했습니다.</li>
+        <li>받아내는 데 성공하면 <b>충돌 채널을 바꿔</b> 그 순간의 공격이 몸에 닿지 않게 하고,
+        <code>TimeDilation</code>(<b>순간 슬로우</b>)으로 타격감을 만듭니다.</li>
+        <li>일반 공격은 받아낼 수 있는 시간이 <b>0.133초</b>, 위험 공격은 <b>0.017초</b>입니다 (60fps 기준 8프레임 / 1프레임).</li>
       </ul>
     </div>
 
@@ -176,8 +188,8 @@
           <figcaption><b>사진 1 — 패링 성공</b>판정 창 안에서 받아내면 섬광이 터지고 적의 체간(하단 노란 게이지)이 깎입니다.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/isekiro/parry-danger.png" alt="적 머리 위에 붉은 위험 표식이 뜬 화면">
-          <figcaption><b>사진 2 — 위험 공격 예고</b>붉은 危가 뜨면 같은 입력인데 판정 창이 8프레임에서 1프레임으로 좁혀집니다.</figcaption>
+          <img src="../assets/images/isekiro/parry-danger.png" alt="적과 플레이어 사이에 붉은 危 위험 표식이 크게 떠 있는 화면. 위쪽 적이 창을 든 자세로 공격을 준비하고 있다">
+          <figcaption><b>사진 2 — 위험 공격 예고</b>붉은 危가 뜨면 같은 입력인데 판정 창이 0.133초에서 0.017초로, 8분의 1로 좁혀집니다.</figcaption>
         </figure>
       </div>
       <div class="shots" style="margin-top:12px">
@@ -191,7 +203,7 @@
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>일반 8 frame · 위험 1 frame</span>
+        <span>패링 허용 시간 — 일반 8 frame · 위험 1 frame</span>
         <span>같은 입력 · 같은 코드 경로로 두 난이도</span>
         <span class="n">난이도를 올려도 입력이 막히지 않음</span>
       </div>
@@ -206,33 +218,32 @@
       <p class="one"> <b>어려움</b>은 막혀서 구조를 바꾼 것, <b>디테일</b>은 흔한 문제지만 그냥 넘기지 않고 처리한 것입니다.</p>
     </div>
 
-    <div class="part p-trouble p-detail">
+    <div class="part p-trouble p-detail" id="t2">
       <h3>디테일</h3>
-      <p><b>기능 01 — 락온 타게팅</b></p>
+      <p><b><a class="flink" href="#f1">기능 01</a> — 락온 타게팅</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd><b>벽 뒤의 적이 있을 경우</b> 플레이어가 보고 있지도 않은 대상으로 카메라가 돌아가 조작이 끊겼습니다.</dd></div>
-        <div><dt>원인</dt><dd>각도만으로 우선순위를 정했기 때문입니다. 내적값은 &ldquo;화면 중앙에 가까운가&rdquo;만 말해줄 뿐, 그 사이에 무엇이 있는지는 모릅니다.</dd></div>
-        <div><dt>해결</dt><dd>각도로 후보를 추린 뒤 <code>Line Trace</code>로 시야를 한 번 더 검증해, 가려진 대상을 후보에서 제외했습니다. <b>후보 선정과 유효성 검사를 두 단계로 나눈 것</b>이 핵심입니다.</dd></div>
+        <div><dt>원인</dt><dd>각도만으로 우선순위를 정했기 때문입니다. 내적값은 &ldquo;화면 중앙에 가까운가&rdquo;만 말해줄 뿐, 대상이 벽에 막혔는지 저 멀리 있는지 구분할 수 없습니다.</dd></div>
+        <div><dt>해결</dt><dd>각도로 후보를 추린 뒤 <code>Line Trace</code>로 시야를 한 번 더 검증해, 가려진 대상을 후보에서 제외했습니다. </dd></div>
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t1">
       <h3>어려움</h3>
-      <p><b>기능 02 — 그래플링 훅 이동</b></p>
+      <p><b><a class="flink" href="#f2">기능 02</a> — 그래플링 훅 이동</b></p>
       <dl class="tbl">
-        <div><dt>문제</dt><dd>물리 힘을 계속 더해 끌어당기니 <b>도착 지점이 매번 달라지고</b>, 지형에 걸려 이동이 실패하거나 연출 타이밍이 어긋났습니다.</dd></div>
-        <div><dt>원인</dt><dd>누적된 힘의 결과는 프레임 수와 충돌 상황에 따라 달라집니다. 궤적을 예측할 수 없으니 애니메이션 시점도 맞출 수 없었습니다.</dd></div>
-        <div><dt>해결</dt><dd>힘을 누적하는 대신 <b>사전 지형 검증 후 <code>Curve</code> 기반 보간으로 이동을 직접 제어</b>했습니다. 도착 지점과 소요 시간이 발사 순간에 확정되므로, 그 값에 맞춰 <code>Anim Notify</code>로 연출을 붙였습니다.</dd></div>
+        <div><dt>문제</dt><dd>매 틱 목표방향으로 <code>AddForce</code>하니 <b>도착 지점이 매번 달라지고</b>, 지형에 걸려 이동이 실패하거나 연출 타이밍이 어긋났습니다.</dd></div>
+        <div><dt>원인</dt><dd>힘을 매 틱 더하니 프레임 수에 따라 달라지고 지형에 따라 충돌 상황이 달라졌습니다. 그로 인해 착지 애니메이션 시점도 맞출 수 없었습니다. </dd></div>
+        <div><dt>해결</dt><dd>억지로 목표 지형으로 끌어당기는 대신 <b>사전 지형 검증 후 <code>Curve</code> 기반 보간으로 이동을 직접 제어</b>했습니다. 도착 지점과 소요 시간이 발사 순간에 확정되므로, 그 값에 맞춰 <code>Anim Notify</code>로 연출을 붙였습니다.</dd></div>
       </dl>
     </div>
   </section>
 
   <!-- ══════ 마무리 ══════ -->
   <div class="close">
-    <h2></h2>
-    <p>전투 판정은 <b>프로토타입 범위에서 검증</b>했고 네트워크 복제는 다루지 않았습니다.
-<br>
- 패링 판정 값(8프레임 / 1프레임)은 60fps 기준입니다.</p>
+    <h2>범위와 한계</h2>
+    <p>전투 판정은 <b>프로토타입 범위에서만 확인</b>했고, 여러 명이 함께 하는 네트워크 동기화는 다루지 않았습니다.
+    <br>패링 창은 <b>초 단위 타이머</b>라 프레임레이트가 달라져도 길이가 변하지 않습니다. 다만 타이머는 <b>틱 경계에서만 끝나므로</b>, 한 프레임이 창보다 긴 저프레임 환경에서는 위험 패링 창이 한 프레임 길이까지 늘어나 의도보다 관대해집니다.</p>
   </div>
 
   <div class="foot">

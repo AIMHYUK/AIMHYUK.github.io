@@ -23,7 +23,7 @@
   <header class="ph">
     <h1>프로젝트 세종대왕</h1>
     <p class="sub">한옥 마을에서 여럿이 모여 노는 <b>멀티플레이 미니게임 모음</b>입니다.
- <br>  <b>세션 검색/참가 기능 및 달리기 멀티게임</b>을 맡았습니다.</p>
+    <br><b>방을 만들고 찾아 들어가는 세션 기능</b>과 <b>달리기 미니게임</b>을 맡았습니다.</p>
 
     <dl class="facts">
       <div><dt>장르</dt><dd>멀티플레이 미니게임</dd></div>
@@ -35,10 +35,11 @@
     <div class="about">
       <div>
         <h2>어떤 게임인가</h2>
-        <p>플레이어가 방을 만들거나 찾아 들어가면 <b>달리기 · 대전 · 대화</b> 세 종류의
-        맵 중 하나로 함께 이동합니다. 달리기 경주에서는 결승선을 먼저 통과한 순서가 집계됩니다.</p>
-        <p>제가 만든 것은 <b>퀴즈를 출제하고 달리기 대결을 통해 퀴즈를 맞추는 간단한 미니게임</b>과  <b>멀티플레이를 위한 세션</b>입니다 (세션 생성, 검색, 참가)</p>
-        <p><b>세션 구조는 하나</b>로 통합하여 각 플레이어가 서로 다른 세션을 타지 않도록 구성하였습니다.</p>
+        <p>플레이어가 로비에 접속한 후  <b>달리기 초성 퀴즈 · 발음 대전 · OX퀴즈</b> 세 종류의
+        맵 중 하나를 골라 멀티 플레이를 즐길 수 있습니다.</p>
+        <p>제 담당은 <b>키를 연타하여 달리고 완주 순서대로 초성 퀴즈를 맞히는 미니게임</b>과
+      <b>세션 기능</b>(방 만들기 · 찾기 · 들어가기)입니다.</p>
+        <p></p>
       </div>
       <figure>
         <img src="../assets/images/kingsejong/running.png" alt="한옥 배경 맵에서 캐릭터가 달리는 게임 화면">
@@ -52,19 +53,21 @@
     <div class="feat-h">
       <span class="no">기능 01</span>
       <h2>세션 생성 · 검색 · 참가</h2>
-      <p class="one">개발 중에는 LAN으로, Steam 환경에서는 Steam 세션으로 같은 코드가 동작합니다.</p>
+      <p class="one">개발 중에는 LAN으로, Steam 환경에서는 Steam 세션으로 동작합니다.</p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li><code>IOnlineSessionInterface</code>를 <code>UJJH_GameInstance</code>에 보관하고,
-        생성 · 검색 · 참가 · 파괴 <b>완료 델리게이트</b>를 등록했습니다.</li>
+        <li>세션을 다루는 창구(<code>IOnlineSessionInterface</code>)를 <code>UJJH_GameInstance</code>에 들고,
+        생성 · 검색 · 참가 · 파괴가 <b>끝났을 때 불릴 함수</b>(완료 델리게이트)를 미리 걸어 뒀습니다.
+        온라인 요청은 결과가 나중에 오므로 <b>기다리는 대신 콜백으로 받습니다.</b></li>
         <li><code>Category</code>, <code>Room_Name</code>, <code>Host_Name</code>, 최대 인원을
-        <b>세션 광고 설정값</b>으로 등록하고, 검색 결과에서 읽어 로비 표시용 <code>roomInfo</code> 구조체로 변환합니다.</li>
-        <li>LAN 여부는 활성 Subsystem 이름으로 판정합니다 —
+        <b>세션 설정값</b>(<b>방 목록에 같이 실려 나가는 값</b>)으로 등록하고,
+        검색 결과에서 읽어 로비에 뿌릴 <code>roomInfo</code> 구조체로 옮겨 담습니다.</li>
+        <li>LAN이냐 Steam이냐는 <b>지금 켜져 있는 온라인 서브시스템의 이름</b>으로 판정합니다 -
         <code>bIsLANMatch = GetSubsystemName() == "NULL"</code>.
-        같은 코드가 개발 단계에서는 LAN, Steam 환경에서는 Steam 세션으로 플레이할 수 있게 해줍니다.</li>
+        덕분에 <b>같은 코드가</b> 개발 중에는 LAN, Steam 빌드에서는 Steam 세션으로 돕니다.</li>
       </ul>
     </div>
 
@@ -73,11 +76,11 @@
       <div class="shots two">
         <figure>
           <img src="../assets/images/kingsejong/session-empty.png" alt="달리기 경주 로비 화면. 세션 목록이 비어 있고 방 만들기·방 들어가기·새로고침 버튼이 있다">
-          <figcaption><b>사진 1 — 검색 전</b>목록이 비어 있는 상태. 창 제목의 <code>Development PCD3D_SM6</code>가 개발 빌드입니다.</figcaption>
+          <figcaption><b>사진 1 — 검색 전</b>목록이 비어 있는 상태.</figcaption>
         </figure>
         <figure>
           <img src="../assets/images/kingsejong/session-found.png" alt="검색 결과로 세션 한 건이 표시된 화면. 호스트명 qwer1234, 방 이름 My Session Game, 인원 1/2, 핑 387">
-          <figcaption><b>사진 2 — 검색 결과</b> <b>호스트명 · 방 이름 · 인원 1/2 · 핑 387</b> 전부 세션 광고 설정값에서 읽어온 값입니다.</figcaption>
+          <figcaption><b>사진 2 — 검색 결과</b> <b>호스트명 · 방 이름 · 인원 1/2 · 핑 387</b> </figcaption>
         </figure>
       </div>
     </div>
@@ -95,6 +98,11 @@
       <a href="JJH_OnlineSubsystem_Visualization.html">세션 라이프사이클 · RPC 흐름 시각화</a>
       <span class="why">생성 · 검색 · 참가 · 트래블이 어떤 순서로 오가는지 단계별로 따라가는 페이지입니다.</span>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">세션 생성 · 검색 · 참가</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 02 ══════ -->
@@ -102,19 +110,22 @@
     <div class="feat-h">
       <span class="no">기능 02</span>
       <h2>맵 진입과 로비 복귀</h2>
-      <p class="one">참가에 성공했다는 것과 맵에 들어갔다는 것은 다른 사건입니다.</p>
+      <p class="one"></p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li>호스트는 세션 생성 성공 후 <code>ServerTravel</code>로 listen server 맵을 엽니다.
-        카테고리에 따라 <code>Run</code> / <code>Battle</code> / <code>Talk</code> 맵으로 분기합니다.</li>
-        <li>클라이언트는 <code>JoinSession</code> 결과에서
-        <code>GetResolvedConnectString</code>으로 접속 주소를 얻어
-        <code>ClientTravel(TRAVEL_Absolute)</code>합니다.</li>
-        <li>세션 퇴장은 <b>서버 RPC · Multicast RPC · Client RPC를 역할별로 나눠</b>
-        모든 플레이어가 같은 로비 복귀 경로를 타게 했습니다.</li>
+        <li>방을 만든 사람(호스트)은 세션 생성에 성공하면 <code>ServerTravel</code>로
+        <b>자기 자신이 서버 역할까지 겸하는</b> listen server를 엽니다.
+        카테고리에 따라 <code>Run</code> / <code>Battle</code> / <code>Talk</code> 맵으로 갈립니다.</li>
+        <li>들어가는 쪽은 <code>JoinSession</code> 결과에서
+        <code>GetResolvedConnectString</code>으로 <b>실제 접속 주소를 받아</b>
+        <code>ClientTravel</code>로 그 주소에 접속합니다.</li>
+        <li>방을 나가는 처리는 <b>보내는 방향에 따라 셋으로 나눴습니다</b> —
+        서버 RPC(<b>나 → 서버</b>) · Multicast(<b>서버 → 전원</b>) · Client RPC(<b>서버 → 한 명</b>).
+        <b>다만 이 셋을 <code>GameInstance</code>에 달아 실제로는 네트워크를 타지 못했습니다.</b>
+        아래 트러블슈팅에 적었습니다.</li>
       </ul>
     </div>
 
@@ -135,6 +146,11 @@
         <span class="n">실패 지점을 단계별로 추적 가능</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">맵 진입과 로비 복귀</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 03 ══════ -->
@@ -148,9 +164,10 @@
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li><code>WidgetSwitcher</code>로 방 만들기 · 방 찾기 · 캐릭터 선택 화면을 전환합니다.</li>
-        <li>슬라이더로 최대 인원을 실시간 조절하고, 그 값이 <b>세션 생성 파라미터와 UI 텍스트에 동시에</b> 반영됩니다.</li>
-        <li>검색 완료 델리게이트에서 결과 배열을 받아 스크롤박스에 <b>방 슬롯 위젯을 동적으로 생성</b>합니다.</li>
+        <li>화면을 따로 띄우지 않고 <code>WidgetSwitcher</code>로
+        방 만들기 · 방 찾기 · 캐릭터 선택을 전환합니다.</li>
+        <li>슬라이더로 최대 인원을 움직이면 그 값이 <b>세션을 만들 때 쓰는 값과 화면 글자에 동시에</b> 반영됩니다.</li>
+        <li>검색이 끝나면 결과 배열을 받아 <b>찾은 방 개수만큼 슬롯 위젯을 그 자리에서 만들어</b> 목록에 넣습니다.</li>
       </ul>
     </div>
 
@@ -199,14 +216,13 @@
       <h3>구현</h3>
       <ul>
         <li>캐릭터 선택 위젯에서 고른 <b>인덱스</b>를 <code>UJJH_GameInstance</code>에 보관합니다.
-        레벨 · 게임모드 · 플레이어컨트롤러 · 폰이 트래블마다 전부 새로 만들어지는 가운데
-        <b>끝까지 같은 객체로 남는 것은 <code>GameInstance</code> 하나</b>입니다.</li>
-        <li>새 맵에서 폰이 <code>BeginPlay</code>할 때 <b>자기 폰만</b> 서버 RPC(<code>ServerChangeMesh</code>)로
-        인덱스를 올립니다. 서버는 그 값을 <b>복제 프로퍼티</b>에 담고 Multicast로 전원에게 같은 메시를 입힙니다.</li>
+        <code>GameInstance</code>는 게임이 끝날 때까지 살아남기에, 로비에서 고른 값이 달리기 맵까지 따라옵니다.</li>
+        <li>새 맵에서 캐릭터가 <code>BeginPlay</code>할 때 <b>자기 것만</b> 서버 RPC(<code>ServerChangeMesh</code>)로
+        인덱스를 올려보냅니다. 서버는 그 값을 <b>복제 프로퍼티</b>
+        (<b>서버가 바꾸면 전원에게 자동으로 퍼지는 변수</b>)에 담고, Multicast로 모두에게 같은 외형을 입힙니다.</li>
         <li>남의 폰은 이미 복제돼 있는 인덱스를 읽어 그대로 적용합니다.
         각자 자기 것만 보고하고 반영은 서버가 하므로, <b>누가 먼저 들어왔는지와 무관하게</b> 같은 결과가 됩니다.</li>
-        <li>팀원이 만든 <b>대전 맵도 같은 <code>GameInstance</code> 값을 읽어</b> 캐릭터를 적용합니다.
-        맵마다 선택 화면을 다시 만들지 않았습니다.</li>
+        <li>팀원이 만든 <b>대전 맵도 같은 <code>GameInstance</code> 값을 읽어</b> 캐릭터를 적용합니다.</li>
       </ul>
     </div>
 
@@ -255,6 +271,11 @@
         <span class="n">같은 값을 대전 맵에서도 재사용 — 선택 화면은 하나</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t3">레벨을 넘어가도 유지되는 캐릭터</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 05 ══════ -->
@@ -268,8 +289,9 @@
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li>문제는 <code>DataTable</code>의 한 행(<b>단어 · 뜻 · 초성</b>)을 무작위로 뽑아
-        Multicast로 <b>전원에게 같은 문제</b>를 내려보냅니다. 화면에는 뜻과 초성만 뜨고 단어는 서버만 압니다.</li>
+        <li>문제는 <code>DataTable</code>(<b>엑셀 표처럼 생긴 데이터 시트</b>)의 한 행
+        (<b>단어 · 뜻 · 초성</b>)을 무작위로 뽑아 Multicast로 <b>전원에게 같은 문제</b>를 내려보냅니다.
+        화면에는 뜻과 초성만 뜨고 <b>정답 단어는 서버만 압니다.</b></li>
         <li>결승선 판정은 <b>서버에서만</b> 합니다. 결승선 액터의 오버랩을 서버가 받아
         게임모드의 <b>통과 순서 배열</b>에 넣습니다. 이 배열이 곧 뒤의 정답 순서가 됩니다.</li>
         <li>1등이 들어오면 나머지 화면에 <b>5초 카운트다운</b>이 뜨고, 끝나면 못 들어온 사람은
@@ -328,22 +350,40 @@
     <div class="feat-h">
       <span class="no"></span>
       <h2>트러블슈팅</h2>
-      <p class="one"></p>
+      <p class="one">막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다.</p>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t1">
       <h3>어려움</h3>
-      <p><b>기능 01 — 세션 생성 · 검색 · 참가</b></p>
+      <p><b><a class="flink" href="#f1">기능 01</a> — 세션 생성 · 검색 · 참가</b></p>
       <dl class="tbl">
-        <div><dt>문제</dt><dd><b>한글로 지은 방 이름이 Steam 세션에서 제대로 돌아오지 않았습니다.</b> 로컬 LAN에서는 멀쩡한데 Steam을 거치면 검색 결과의 방 이름이 깨졌습니다.</dd></div>
+        <div><dt>문제</dt><dd><b>한글로 지은 방 이름이 Steam 세션에서 제대로 들어오지 않았습니다.</b> 로컬 LAN에서는 멀쩡한데 Steam을 거치면 검색 결과의 방 이름이 깨졌습니다.</dd></div>
         <div><dt>원인</dt><dd>세션 광고 설정값은 Steam 서버를 거쳐 저장·전달됩니다. 그 경로에서 비ASCII 문자열이 안정적으로 보존된다는 보장이 없습니다.</dd></div>
         <div><dt>해결</dt><dd>방 이름을 <b>Base64로 인코딩해 등록</b>하고, 검색 결과를 표시할 때 디코딩하도록 바꿨습니다. 광고값에는 항상 ASCII만 올라가므로 경로와 무관하게 같은 문자열이 돌아옵니다.</dd></div>
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t2">
       <h3>어려움</h3>
-      <p><b>기능 04 — 레벨을 넘어가도 유지되는 캐릭터</b></p>
+      <p><b><a class="flink" href="#f2">기능 02</a> — 맵 진입과 로비 복귀</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd><b>호스트가 방을 나가면 남은 사람에게 아무 통보도 가지 않았습니다.</b>
+        나가는 본인은 로비로 잘 돌아오는데, 남은 사람들은 통보를 받는 게 아니라 연결이 끊겨 튕겼습니다.</dd></div>
+        <div><dt>원인</dt><dd>세 RPC를 <b><code>UJJH_GameInstance</code>에 달았기 때문</b>입니다.
+        <b>RPC는 액터에서만 네트워크를 탑니다.</b> 액터는 <code>Owner</code>를 타고
+        <code>PlayerController</code> → <code>NetConnection</code>에 닿아 <strong>보낼 주소</strong>를 알고,
+        <code>NetGUID</code>로 <strong>받는 쪽에서 같은 객체를 특정</strong>할 수 있습니다.
+        <code>GameInstance</code>는 둘 다 없어 <code>Server</code>·<code>Client</code>·<code>NetMulticast</code>
+        표시가 무시되고 <b>세 함수 모두 부른 자리에서 로컬 실행</b>됩니다. </dd></div>
+        <div><dt>해결</dt><dd>RPC를 <code>GameInstance에서 PlayerController</code>로 옮기면 됩니다 —
+        PC는 액터이고 각 플레이어와 1:1로 이어진 커넥션을 가지므로,
+        <strong>세 갈래로 나눈 설계는 그대로 두고 놓인 위치만 바꾸면</strong> 의도대로 동작합니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble" id="t3">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f4">기능 04</a> — 레벨을 넘어가도 유지되는 캐릭터</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd><b>로비에서 고른 캐릭터가 맵으로 넘어가면 기본 캐릭터로 돌아왔습니다.</b> 게다가 내 화면에서만 맞게 보이고 다른 플레이어의 화면에서는 다른 캐릭터로 보이는 경우도 있었습니다.</dd></div>
         <div><dt>원인</dt><dd>선택값을 <b>폰과 <code>PlayerState</code>에 담아뒀기 때문</b>입니다. 트래블은 레벨을 다시 여는 것이라 그 둘도 새로 만들어져 이전 레벨에서의 값을 보관할 수 없었습니다.</dd></div>
@@ -354,8 +394,12 @@
 
   <!-- ══════ 마무리 ══════ -->
   <div class="close">
-    <h2></h2>
-    <p></p>
+    <h2>범위와 한계</h2>
+    <p>5인 팀(프로그래머 3 · 아트 2) 프로젝트이고, 이 페이지에 적은 것은
+    <b>세션 · 맵 이동 · 로비 UI · 캐릭터 유지 · 달리기 미니게임</b>까지 제가 맡은 구간입니다.
+    대전 맵과 아트 리소스는 팀원 작업이며, 대전 맵은 제가 만든
+    <code>GameInstance</code> 캐릭터 값을 그대로 읽어 씁니다.<br>
+이 당시에 GameInstance와 PlayerController의 개념을 잘 알지 못해서 이런 트러블슈팅이 발생한 것이 아쉬웠습니다.</p>
   </div>
 
   <div class="foot">

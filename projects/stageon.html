@@ -64,10 +64,10 @@
       <ul>
         <li>카테고리 넷(<b>하늘 / 테마 / 특수효과 / 지면</b>)을 좌측 탭으로 두고,
         고른 카테고리의 프리셋 목록을 우측에 띄우는 설정 UI를 제작했습니다.</li>
-        <li>프리셋을 고르면 해당 <code>StreamLevel</code>을 동적으로 로드하고,
-        이전 것은 언로드합니다.</li>
-        <li>레벨에 딸린 오브젝트는 <code>Actor Tag</code>로 표시해 두고,
-        교체 시 태그 기준으로 일괄 정리합니다.</li>
+        <li>테마는 무대 한 채가 통째로 레벨 하나입니다. 고르면 해당 <code>StreamLevel</code>을
+        <b>그 자리에서 불러오고</b>(로드), 이전 것은 <b>내립니다</b>(언로드).</li>
+        <li>나머지 카테고리는 액터 단위라 <code>Actor Tag</code>(<b>액터에 붙여 둔 이름표</b>)로 묶어 두고,
+        교체할 때 <b>코드가 무엇이 올라와 있는지 몰라도</b> 태그만 보고 지우고 새로 스폰합니다.</li>
       </ul>
     </div>
 
@@ -76,11 +76,11 @@
       <div class="shots two">
         <figure>
           <img src="../assets/images/virtualidol/stage-preset-sky.png" alt="무대 제작 화면에서 하늘 카테고리를 선택해 밤하늘·맑은 하늘·먹구름 프리셋이 표시된 상태">
-          <figcaption><b>사진 1 — 하늘 카테고리</b>밤하늘 · 맑은 하늘 · 먹구름. 선택된 프리셋에 테두리가 붙습니다.</figcaption>
+          <figcaption><b>사진 1 — 하늘 카테고리</b>밤하늘 · 맑은 하늘 · 먹구름. 선택된 프리셋을 노란 테두리로 강조합니다.</figcaption>
         </figure>
         <figure>
-          <img src="../assets/images/virtualidol/stage-preset-theme.png" alt="같은 화면에서 테마 카테고리로 전환해 안개·하늘성·바다·폐허·책 프리셋이 표시된 상태">
-          <figcaption><b>사진 2 — 테마로 전환</b>카테고리를 바꾸면 목록과 무대가 함께 교체됩니다. 안개 · 하늘성 · 바다 · 폐허 · 책.</figcaption>
+          <img src="../assets/images/virtualidol/stage-preset-theme.png" alt="같은 화면에서 지면 카테고리로 전환해 안개·하늘성·바다·폐허·책 프리셋이 표시되고, 무대 바닥이 사진 1의 물에서 잔디 지형으로 바뀐 상태">
+          <figcaption><b>사진 2 — 지면 전환</b>안개 · 하늘성 · 바다 · 폐허 · 책. 카테고리를 바꾸면 그 카테고리의 프리셋이 뜨고, 고른 것이 무대에 올라옵니다. <strong>사진 1과 같은 무대인데 바닥이 바뀐 것</strong>이 보입니다.</figcaption>
         </figure>
       </div>
     </div>
@@ -88,10 +88,15 @@
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>프리셋 추가 시 코드 수정 불필요</span>
+        <span>프리셋이 늘어도 <b>코드는 그대로</b> — 아트가 액터·레벨만 넘기면 반영</span>
         <span class="n">카테고리 4종 조합으로 무대 구성</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">무대 구성 시스템</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 02 ══════ -->
@@ -99,15 +104,15 @@
     <div class="feat-h">
       <span class="no">기능 02</span>
       <h2>무대 썸네일 생성과 업로드</h2>
-      <p class="one">저장하는 순간의 카메라 시점을 그대로 찍어 무대의 대표 이미지로 씁니다.</p>
+      <p class="one">방금 만든 무대를 그 화면 그대로 찍어, 저장 목록에서 그림으로 구분되게 했습니다.</p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li><code>SceneCaptureComponent2D</code>와 <code>RenderTarget</code>으로
-        <b>현재 카메라 시점</b>을 이미지로 캡처합니다.</li>
-        <li>캡처한 이미지를 <code>HTTP Multipart</code>로 업로드하고,
+        <li><b>화면에 보이지 않는 카메라</b>(<code>SceneCaptureComponent2D</code>)로 현재 시점을 찍어
+        <b>이미지 버퍼</b>(<code>RenderTarget</code>)에 담습니다.</li>
+        <li>담은 이미지를 <code>HTTP Multipart</code>(<b>파일을 첨부해 보내는 형식</b>)로 업로드하고,
         <b>응답으로 받은 URL</b>을 무대 저장 데이터에 연결합니다.</li>
         <li>저장된 무대는 목록에서 이 썸네일로 구분됩니다.</li>
       </ul>
@@ -142,10 +147,12 @@
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li>공연자의 웹캠을 <b>Remocapp</b>이 읽어 모션 데이터를 <code>OSC</code>로 송신하고,
-        언리얼이 <code>UDP</code> 소켓으로 직접 수신합니다.</li>
-        <li>받은 데이터를 주소 패턴별로 나눠 <b>모션</b>과 <b>페이셜</b>을 다른 경로로 처리합니다.</li>
-        <li>수신한 값을 <code>VRM4U</code> 아바타에 반영해 무대 위 캐릭터가 움직입니다.</li>
+        <li>공연자의 웹캠을 <b>Remocapp</b>(외부 모션캡처 앱)이 읽어 모션 데이터를
+        <code>OSC</code>(<b>모션·음향 장비가 쓰는 메시지 규격</b>)로 쏘고,
+        언리얼이 <code>UDP</code> 소켓으로 <b>중계 없이 바로</b> 받습니다.</li>
+        <li>받은 데이터를 <b>주소 패턴</b>(메시지 앞에 붙는 이름)별로 갈라
+        <b>몸 동작</b>과 <b>표정</b>을 다른 경로로 처리합니다.</li>
+        <li>수신한 값을 <code>VRM4U</code>(<b>아바타 플러그인</b>) 캐릭터에 반영해 무대 위에서 움직입니다.</li>
         <li><b>기여 범위</b> — 구조 선택과 연결은 제가 했고,
         소켓 생성·수신 스레드·바이트 파싱은 <code>VRM4U</code>와 <code>UOSCServer</code> 플러그인이 처리했습니다.</li>
       </ul>
@@ -156,8 +163,8 @@
       <div class="shots">
         <figure>
           <img src="../assets/images/virtualidol/stage-osc-tracking.png" alt="무대 위 아바타가 움직이고, 화면 우측에 Remocapp 창의 웹캠 피드가 함께 떠 있는 장면">
-          <figcaption><b>외부 앱에서 언리얼까지</b>우측 <b>Remocapp</b> 창의 웹캠 영상이 실시간으로 좌측 아바타 동작이 됩니다.
-          주변 분홍색은 입장한 관객들이고, 말풍선은 채팅입니다.</figcaption>
+          <figcaption><b>외부 앱에서 언리얼까지</b> 웹캠 영상이 실시간으로 좌측 아바타에 연동됩니다. 
+          주변 분홍색은 입장한 관객들이고, 말풍선은 이모티콘 채팅입니다.</figcaption>
         </figure>
       </div>
     </div>
@@ -173,8 +180,13 @@
     <div class="part p-next">
       <h3>이어서</h3>
       <a href="miniosc.html">MiniOscReceiver · 측정 전문</a>
-      <span class="why">위 구조 선택이 옳았는지 2년 뒤에 직접 재구현해 측정한 후속 실험입니다.</span>
+      <span class="why">OSC 선택이 옳았는지 구현해 측정한 후속 실험입니다.</span>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">실시간 모션 수신 구조</a>
+    </div>
+
   </section>
 
   <!-- ══════ 트러블슈팅 ══════ -->
@@ -182,40 +194,30 @@
     <div class="feat-h">
       <span class="no"></span>
       <h2>트러블슈팅</h2>
-      <p class="one"></p>
+      <p class="one">막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다.</p>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t1">
       <h3>어려움</h3>
-      <p><b>기능 01 — 무대 구성 시스템</b></p>
+      <p><b><a class="flink" href="#f1">기능 01</a> — 무대 구성 시스템</b></p>
       <dl class="tbl">
-        <div><dt>문제</dt><dd><b>아트 리소스가 개발 후반까지 계속 들어왔습니다.</b> 무대 프리셋이 하나 추가될 때마다 코드를 고쳐야 하면 일정이 감당되지 않았습니다.</dd></div>
+        <div><dt>문제</dt><dd>프로젝트 특성상 <b>아트 리소스가 개발 후반까지 계속 들어왔습니다.</b> 무대 프리셋이 하나 추가될 때마다 코드를 고쳐야 하면 일정 내에 해결 할 수 없었습니다.</dd></div>
         <div><dt>원인</dt><dd>무대 오브젝트를 코드에서 직접 참조하고 있었기 때문입니다. 무엇이 올라와 있는지를 코드가 알아야만 치울 수 있는 구조였습니다.</dd></div>
-        <div><dt>해결</dt><dd>무대를 <code>StreamLevel</code> 단위로 나누고, 정리 대상을 <b>개별 참조가 아니라 <code>Actor Tag</code>로</b> 식별하게 바꿨습니다. 새 프리셋은 레벨과 태그만 갖추면 되므로 <b>코드 수정 없이 반영</b>됩니다.</dd></div>
+        <div><dt>해결</dt><dd>무대를 <code>StreamLevel</code> 단위로 나누고, 정리 대상을 <b>개별 참조가 아니라 <code>Actor Tag</code>로</b> 식별하게 바꿨습니다. 새 프리셋은 액터나 레벨에 묶어 스폰/파괴하거나 로드/언로드 하면 되니 <b>코드 수정 없이 반영</b>됩니다.</dd></div>
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t2">
       <h3>어려움</h3>
-      <p><b>기능 02 — 무대 썸네일 생성과 업로드</b></p>
+      <p><b><a class="flink" href="#f3">기능 03</a> — 실시간 모션 수신 구조</b></p>
       <dl class="tbl">
-        <div><dt>미작성</dt><dd>이 기능의 트러블슈팅은 아직 정리하지 않았습니다.
-        <b>업로드 응답을 기다리는 동안의 처리</b>(저장 버튼 중복 입력, 실패 시 재시도, 캡처 해상도나 용량 문제) 같은 게 있었다면
-        문제 / 원인 / 해결 세 칸에 맞춰 알려주시면 채웁니다.</dd></div>
-      </dl>
-    </div>
-
-    <div class="part p-trouble">
-      <h3>어려움</h3>
-      <p><b>기능 03 — 실시간 모션 수신 구조</b></p>
-      <dl class="tbl">
-        <div><dt>문제</dt><dd>모션 데이터를 <b>본(bone) 단위로 <code>RPC</code> 전달</b>하던 초기 구조가 실시간을 따라가지 못했습니다. 동작이 뚝뚝 끊겨 보였습니다.</dd></div>
-        <div><dt>원인</dt><dd>본 개수만큼 호출이 늘어납니다. 게다가 <b><code>RPC</code>로는 외부 프로그램의 데이터를 직접 받을 수 없어</b>, 모션캡처 앱의 값을 일단 서버로 들여오는 중계 계층이 한 겹 더 필요했습니다.</dd></div>
+        <div><dt>문제</dt><dd>모션 데이터를 <b>뼈(본) 하나마다 <code>RPC</code></b>(엔진이 대신 보내 주는 원격 호출)<b>로 전달</b>하던 초기 구조가 실시간을 따라가지 못했습니다. 동작이 뚝뚝 끊겨 보였습니다.</dd></div>
+        <div><dt>원인</dt><dd>사람 하나에 뼈가 수십 개라 <b>뼈 개수만큼 호출이 늘어납니다.</b> 게다가 <b><code>RPC</code>로는 외부 프로그램의 데이터를 직접 받을 수 없어</b>, 모션캡처 앱의 값을 일단 서버로 들여오는 중계 계층이 한 겹 더 필요했습니다.</dd></div>
         <div><dt>해결</dt><dd>엔진 네트워킹 경로를 거치지 않고 <b><code>UDP</code> 소켓으로 직행하는 <code>OSC</code> 수신</b>으로 바꿨습니다. 외부 앱에서 언리얼까지 중계 없이 한 번에 들어옵니다.</dd></div>
       </dl>
       <p style="margin-top:12px; font-size:14px; color:var(--ink-2)">
-        이 판단이 실제로 옳았는지는 <b>2년 뒤에 직접 확인했습니다.</b>
-        플러그인이 감추고 있던 소켓·수신 스레드·바이트 파싱을 직접 구현하고
+        <b>후에 미니 프로젝트로 직접 확인했습니다.</b>
+        플러그인이 감추고 있던 소켓·수신 스레드·바이트 파싱을 구현하고
         같은 데이터를 RPC로도 보내 비교했습니다.
       </p>
     </div>
@@ -236,6 +238,9 @@
   </div>
 
 </main>
+
+
+
 
 
 

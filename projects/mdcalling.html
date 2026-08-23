@@ -45,13 +45,12 @@
       <div>
         <h2>어떤 게임인가</h2>
         <p>NPC에게 주문을 받고, 치킨·피자 같은 음식을 가방에 넣어 목적지까지 배달합니다.
-        가방은 <b>테트리스처럼 칸을 차지하는 격자</b>라, 무엇을 어떻게 넣느냐가 한 번에 받을 수 있는
+        가방은 <b>음식이 테트리스처럼 칸을 차지하는 인벤토리</b>라, 무엇을 어떻게 넣느냐가 한 번에 받을 수 있는
         주문 수를 결정합니다.</p>
         <p>제 담당은 <b>가방(인벤토리) 설계와 구현</b>, <b>대화 시스템 연동과 선택지 UI</b>,
         그리고 <b>배달 도메인 재설계</b>입니다.</p>
         <p><b>퀘스트 프레임워크와 마우스·게임패드 입력 체계는 팀원이 설계한 것</b>이며,
-        저는 그 위에서 확장하는 쪽을 맡았습니다. 기여 범위는 저장소 README에
-        <code>git blame</code> 기준으로 정리해 두었습니다.</p>
+        저는 그 위에서 확장하는 쪽을 맡았습니다. </p>
       </div>
       <figure>
         <img src="../assets/images/mdcalling/quest-title.png" alt="두 번째 배달 — 고등학교의 모든 주문을 배달하세요 퀘스트 안내">
@@ -64,26 +63,29 @@
   <section class="feat" id="f1">
     <div class="feat-h">
       <span class="no">기능 01</span>
-      <h2>테트리스형 그리드 인벤토리와 무게중심</h2>
-      <p class="one">음식마다 차지하는 칸 모양이 다르고 회전해서 끼워 넣습니다.
-      그리고 짐이 한쪽으로 쏠리면 가방이 실제로 기웁니다.</p>
+      <h2>테트리스형 인벤토리와 무게중심</h2>
+      <p class="one">음식마다 차지하는 칸 모양이 다르고 회전해서 배치합니다.
+      짐이 한쪽으로 쏠리면 배달통이 실제로 기웁니다.</p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li><code>InventoryModel</code>이 <b>2차원 배열로 점유 상태</b>를 관리하고,
-        변경이 생기면 <b>이벤트만 발행</b>합니다. 뷰는 그 이벤트를 받아 그릴 뿐
-        모델을 역참조하지 않습니다 — 이벤트 기반 MVC입니다.</li>
-        <li>배치 가능 여부는 격자 위에서 즉시 표시됩니다(밝은 칸이 놓을 수 있는 자리).</li>
-        <li>격자에 놓인 아이템의 <b>무게 × (아이템 중심 X − 격자 중심 X)</b>를 전부 더해
-        <b>토크</b>를 냅니다. 오른쪽에 무거운 걸 몰면 양수, 왼쪽이면 음수입니다.
-        토크는 <b>아이템을 놓거나 뺄 때만</b> 다시 계산합니다 — 매 프레임 도는 계산이 아닙니다.</li>
-        <li>모델은 <b>각도를 모릅니다.</b> <code>OnTorqueChanged</code>로 토크 값만 발행하고,
-        그걸 각도로 바꾸는 일은 <code>InventoryTiltView</code>가 합니다.
-        기울기 배율과 최대 각도는 인스펙터 값이라 <b>연출만 따로 조정</b>됩니다.</li>
-        <li>담당 파일 — <code>InventoryModel</code>, <code>InventoryController</code>,
-        <code>InventoryState</code>, <code>InventoryTiltView</code>.</li>
+        <li><code>InventoryModel</code>은
+        <b>어느 칸에 무엇이 있는지</b>만 알고 화면을 모릅니다.
+        무언가 바뀌면 <b>알림만 쏘고</b>, 화면 쪽이 그것을 받아 다시 그립니다.<br>
+        데이터는 <code>InventoryItem[,]</code>에 <b>칸마다 그 칸을 차지한 아이템</b>을 넣어,
+        3×2 아이템이면 <b>여섯 칸에 같은 아이템</b>이 들어갑니다.<br>
+        아이템 목록이 필요한 토크 계산용으로는 중복 없는
+        <code>HashSet&lt;InventoryItem&gt;</code>을 따로 둡니다.</li>
+        <li>화면 쪽(<code>InventoryGridView</code>)은 <b>칸 오브젝트</b>를
+        <code>InventoryCellView[,]</code>에, <b>아이콘 오브젝트</b>를
+        <code>Dictionary&lt;InventoryItem, InventoryItemView&gt;</code>에 담습니다.
+      </li>
+        <li>아이콘은 <b>칸의 자식이 아니라 인벤토리의 자식</b>입니다.
+ <b>인벤토리 좌표로 위치만 받아서</b> 칸 위에 겹쳐 그릴 수 있습니다. </li>
+        <li>놓을 수 있는 자리는 인벤토리 위에 바로 보여 주고(밝은 칸),
+        배달통이 <b>얼마나 한쪽으로 쏠렸는지</b>(토크)는 <b>아이템을 놓거나 뺄 때만</b> 계산합니다.</li>
       </ul>
 
       <figure class="dgm">
@@ -132,9 +134,8 @@
             </g>
           </g>
         </svg>
-        <figcaption><b>역방향 화살표가 없는 것이 핵심입니다.</b> 뷰는 모델을 참조하지 않고,
-        모델이 발행한 이벤트만 받아 그립니다. 그래서 모델은 <code>Vector2Int</code> 외에 유니티 타입을
-        쓰지 않고, <code>MonoBehaviour</code> 없이 단독으로 테스트할 수 있습니다.</figcaption>
+        <figcaption><b>역방향 화살표가 없는 것이 핵심입니다.</b> 뷰는 모델을 역참조하지 않고,
+        이벤트만 받아 계산합니다. </figcaption>
       </figure>
     </div>
 
@@ -142,8 +143,9 @@
       <h3>화면</h3>
       <div class="shots two">
         <figure>
-          <img src="../assets/images/mdcalling/inventory-grid.png" alt="5x5 격자 가방에 치킨과 피자가 각각 여러 칸을 차지하고 놓여 있는 화면">
-          <figcaption><b>사진 1 — 배치 상태</b>치킨과 피자가 각각 여러 칸을 차지합니다. 밝은 칸이 배치 가능 영역 표시입니다.</figcaption>
+          <img src="../assets/images/mdcalling/inventory-grid.png" alt="5x5 인벤토리 가방이 한쪽으로 기울어진 채 떠 있고, 치킨과 피자가 각각 여러 칸을 차지하고 놓여 있는 화면">
+          <figcaption><b>사진 1 — 배치 상태</b>치킨과 피자가 각각 여러 칸을 차지합니다. 밝은 칸이 놓을 수 있는 자리이고,
+          <strong>인벤토리 전체가 비스듬한 것</strong>이 지금 실린 짐의 쏠림입니다.</figcaption>
         </figure>
       </div>
     </div>
@@ -151,10 +153,10 @@
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>충돌 판정에서 회전 분기 제거</span>
-        <span>토크 재계산은 배치·제거 시에만</span>
-        <span class="n">뷰가 모델을 역참조하지 않는 단방향 구조</span>
-        <span class="n">모델은 각도를 모르고 토크만 발행</span>
+        <span>겹침 판정에서 <b>회전했는지 따지는 분기</b>를 없앰</span>
+        <span>쏠림 계산은 <b>놓거나 뺄 때만</b></span>
+        <span class="n">화면이 데이터를 거꾸로 참조하지 않는 한 방향 구조</span>
+        <span class="n">데이터 쪽은 각도를 모르고 <b>쏠린 정도만</b> 알림</span>
       </div>
     </div>
 
@@ -164,6 +166,12 @@
       <span class="why">실제 <code>RecalculateTorque()</code> 계산식을 그대로 옮긴 시뮬레이터입니다.
       아이템을 놓아 보면 토크 값과 기울기가 즉시 바뀝니다. 구조 설명도 같은 페이지에 있습니다.</span>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">아이템을 회전시키면 패드 커서가 어긋나는 현상이 발생했습니다.</a><br>
+      <a href="#t3">여러 칸을 차지하는 아이템을 한 장의 스프라이트로 그리기</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 02 ══════ -->
@@ -178,17 +186,11 @@
       <h3>구현</h3>
       <ul>
         <li><code>YarnDialogueManager</code>가 Yarn 커맨드·함수 핸들러를 등록해
-        <b><code>.yarn</code> 대화 스크립트와 게임 로직을 잇습니다.</b></li>
-        <li>대화가 게임 상태를 직접 물을 수 있도록 <code>[YarnFunction]</code>을 노출했습니다.
-        덕분에 대화 작가가 <code>&lt;&lt;if has_delivery_for_pickup_location()&gt;&gt;</code> 같은
-        분기를 <b>코드 수정 없이 스크립트 안에서</b> 쓸 수 있습니다.</li>
-        <li><code>LocalOptionPresenter</code>로 Yarn 기본 선택지 표시기를 대체했습니다.
-        선택지를 화면 하단이 아니라 <b>말하는 대상 근처에</b> 띄우고,
-        <code>YarnOptionsAutoFocus</code>가 첫 선택지에 자동으로 포커스를 잡습니다.</li>
-        <li><b>타협한 부분</b> — <code>[YarnFunction]</code>은 Yarn 측 요구로 반드시 <code>static</code>이어야 합니다.
-        그래서 &ldquo;지금 대화 중인 장소&rdquo;를 <code>static</code> 필드로 두고 주입하는 방식을 썼습니다.
-        전역 상태라 대화가 끝날 때 반드시 되돌려야 다음 대화가 오염되지 않습니다 —
-        <b>대화가 동시에 두 개 진행되지 않는다는 게임 규칙에 기대고 있는 구현</b>입니다.</li>
+        <b><code>.yarn</code> 대화 스크립트를 연동합니다.</b></li>
+        <li>게임 쪽 함수를 <code>[YarnFunction]</code>으로 열어 두면
+        <b>대화 스크립트가 해당 함수를 이용할 수 있습니다.</b><br>
+        ex )  <code>&lt;&lt;if has_delivery_for_pickup_location()&gt;&gt;</code> -
+        &ldquo;이 장소에 받아 갈 주문이 있나&rdquo;를 <b>게임 쪽 함수로 이용함</b></li>
         <li>담당 파일 — <code>YarnDialogueManager</code>, <code>LocalOptionPresenter</code>,
         <code>OptionItemPrefab</code>, <code>YarnOptionsAutoFocus</code>.</li>
       </ul>
@@ -199,7 +201,7 @@
       <div class="shots">
         <figure>
           <img src="../assets/images/mdcalling/dialogue.png" alt="최배달 NPC의 대사 — 단체주문이야. 저기 치킨이랑 피자 고등학교로 배달해주면 된다">
-          <figcaption><b>Yarn Spinner 대화</b>이 대사 하나가 &lsquo;고등학교로 치킨과 피자&rsquo;라는 배달 조건을 만듭니다. 대상이 NPC가 아니라 <b>장소</b>입니다.</figcaption>
+          <figcaption><b>Yarn Spinner 대화</b>이 대사 하나가 &lsquo;고등학교로 치킨과 피자&rsquo;라는 배달 조건을 만듭니다. 대상이 NPC가 아니라 <strong>장소</strong>입니다.</figcaption>
         </figure>
       </div>
     </div>
@@ -219,25 +221,22 @@
     <div class="feat-h">
       <span class="no">기능 03</span>
       <h2>퀘스트 구조 재설계 — 사람이 아니라 장소로</h2>
-      <p class="one">퀘스트를 사람이 아니라 <b>장소에 매달아</b>, 콘텐츠를 늘릴 때마다
+      <p class="one">퀘스트가 늘어날 때마다
       NPC를 만들어야 하는 구조를 끊었습니다.</p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li><b>이전에는 대화를 NPC가 소유했습니다.</b> 대화 시작 노드가 <code>NpcController</code>의
+        <li><b>이전에는 대화를 NPC에 의존했습니다.</b> 대화 시작 노드가 <code>NpcController</code>의
         데이터에 박혀 있어서, 배달지를 하나 늘리려면 그 대화를 들고 있을
         <b>NPC 게임오브젝트를 월드에 새로 배치</b>해야 했습니다.</li>
-        <li><code>Location</code>을 ScriptableObject로 도입하고, <b>대화 시작 노드의 소유자를
-        NPC에서 장소(<code>PlaceInteractable</code>)로 옮겼습니다.</b> 상호작용 대상이 건물 자체가 되고,
+        <li><code>Location</code>을 ScriptableObject로 만들고,
+        <b>대화를 누가 들고 있느냐를 NPC에서 장소(<code>PlaceInteractable</code>)로 옮겼습니다.</b>
+        말을 거는 대상이 건물 자체가 되고,
         등장 인물은 장소 대화 UI의 <b>캐릭터 스프라이트</b>로 그려집니다. 덕분에
         <b>한 장소에 여러 인물을 세울 수 있고, NPC 오브젝트를 늘리지 않아도 됩니다.</b></li>
-        <li><code>PlaceInteractableManager</code>가 <code>Location → PlaceInteractable</code> 사전을 들고
-        장소를 조회합니다. NPC 기준 조건 <b>4종을 삭제</b>하고 판정을 장소 기준 질의로 통합했습니다.</li>
-        <li>진행도에 따라 대화가 바뀌는 것은, <code>QuestAction</code> 확장점에 추가한 제 액션이
-        <b>그 장소의 yarn 시작 노드를 갈아끼우기 때문</b>입니다.
-        원래 대화로 되돌리는 <code>defaultYarnStartNode</code> 경로도 함께 뒀습니다.</li>
+        <li> <code>QuestAction</code> 확장점에 액션을 추가해  <b>그 장소의 Yarn 시작 노드를 갈아끼웁니다.</b> 그래서 진행도에 따라 대화가 바뀔 수 있습니다. <br>원래 대화로 되돌리는 <code>defaultYarnStartNode</code> 경로도 함께 뒀습니다.</li>
       </ul>
 
       <figure class="dgm">
@@ -315,9 +314,7 @@
             </g>
           </g>
         </svg>
-        <figcaption><b>바꾼 것은 &ldquo;퀘스트를 어디에 매다는가&rdquo;입니다.</b> 사람에 매달면 콘텐츠를 늘릴 때마다
-        NPC를 만들어야 하고, 그 NPC가 자리를 비운 시간대에는 배달이 아예 성립하지 않습니다.
-        장소에 매달면 <b>건물만 배치하면 되고, 누가 거기 서 있든 무관해집니다.</b></figcaption>
+        <figcaption> 장소가 소유하게 하면 <strong>건물만 배치하면 되고, 누가 거기 서 있든 무관해집니다.</strong></figcaption>
       </figure>
 
       <figure class="dgm" style="margin-top:20px">
@@ -367,10 +364,10 @@
             </g>
           </g>
         </svg>
-        <figcaption><b>다섯 칸 중 팀 프레임워크는 맨 위 하나뿐입니다.</b> 프레임워크는 &ldquo;그룹이 끝나면 액션을 실행한다&rdquo;까지만 하고,
-        <b>무엇을 실행할지·어떤 장소를 찾을지·그 장소가 무슨 말을 하게 될지는 전부 제가 만든 도메인</b>입니다.
-        <code>QuestAction</code>이 <code>[SerializeReference]</code>로 선언된 덕에 파생 클래스를 에셋에 담을 수 있어,
-        이 연결에 <b>프레임워크 코드를 한 줄도 고치지 않았습니다.</b></figcaption>
+        <figcaption><b>다섯 칸 중 팀 프레임워크는 하나뿐입니다.</b> 프레임워크는 &ldquo;그룹이 끝나면 액션을 실행한다&rdquo;까지만 하고,
+        <strong>무엇을 실행할지·어떤 장소를 찾을지·그 장소가 무슨 말을 하게 될지는 전부 제가 만든 도메인</strong>입니다.
+        <code>QuestAction</code>이 <code>[SerializeReference]</code>로 선언된 덕에 파생 클래스를 에셋에 담을 수 있어서
+ <strong>팀의 프레임워크를 갈아엎지 않을 수 있었습니다.</strong></figcaption>
       </figure>
     </div>
 
@@ -387,7 +384,6 @@
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span>NPC 종속 조건 4종 제거</span>
         <span>팀 프레임워크 수정 0</span>
         <span class="n">대화 시작 노드의 소유자를 NPC → 장소로 이전</span>
         <span class="n">한 장소에 여러 인물 — NPC 오브젝트 증식 차단</span>
@@ -399,40 +395,146 @@
       <h3>이어서</h3>
       <a href="https://github.com/AIMHYUK/MdCalling-Showcase#5-팀-퀘스트-프레임워크-분석-본인-작성-코드-아님" target="_blank" rel="noreferrer">퀘스트 프레임워크 구조 분석</a>
       <span class="why">확장하기 전에 팀 프레임워크를 어디까지 파악했는지 —
-      계층·상태·보고 흐름 다이어그램으로 정리했습니다. <b>본인 작성 코드가 아닙니다.</b></span>
+      계층·상태·보고 흐름 다이어그램으로 정리했습니다.</span>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t4">배달 조건이 NPC에 묶여 확장이 막힘</a>
+    </div>
+
   </section>
+
+  <!-- ══════ 기능 04 ══════ -->
+  <section class="feat" id="f4">
+    <div class="feat-h">
+      <span class="no">기능 04</span>
+      <h2>게임패드 내비게이션과 하이브리드 입력</h2>
+      <p class="one">유니티 자동 내비게이션은 아이템 크기를 모릅니다. 커서 이동을 직접 짜고, 마우스와의 차이는 한 곳에서 흡수했습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>인벤토리는 드래그 앤 드롭이라 <b>&ldquo;지금 어느 칸을 가리키는가&rdquo;</b>가 있어야 성립합니다.
+        그런데 그 값을 얻는 방법이 장치마다 다릅니다 —
+        <b>마우스는 화면 좌표를 그대로 주지만, 게임패드에는 좌표라는 개념이 없고</b>
+        <code>EventSystem</code>이 선택한 <b>UI 오브젝트</b>만 있습니다.</li>
+        <li>그래서 게임패드 쪽은 <b>선택된 칸의 화면 중심을 커서 좌표로 만들어</b> 넘깁니다.
+        입력을 <code>IInventoryInputProvider</code> 하나로 추상화해,
+        <b>그 아래 코드는 마우스인지 패드인지 알 필요 없이 </b> 좌표값만 받아서 씁니다.</li>
+        <li><b>이동 계산만 직접 짰습니다.</b> 유니티 <code>Selectable</code>의 Navigation(Automatic)은
+        <b>화면상 위치만 보고</b> 다음 대상을 고릅니다. 
+        피자가 3×2를 차지하면 오른쪽 한 번에 <b>3칸을 건너뛰어야</b> 하는데,
+        Navigation은 그게 안 되서 이동을 구현했습니다.</li>
+        <li>그리드 왼쪽 끝에서 왼쪽을 더 밀면 <b>바깥 영역으로 넘어가고</b>,
+        바깥에서 그리드 쪽으로 밀면 가장자리 칸으로 들어옵니다.
+        바깥 영역도 같은 <code>EventSystem</code> 체계 안에 있어 이동이 끊기지 않습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <figure>
+        <pre class="logbox"><span class="c">// 세 층으로 갈린다 — 가운데가 본인 몫</span>
+
+<span class="c">[팀]</span>  Input Actions 에셋 (키 바인딩)
+          ↓
+      PlayerStateBase.HandleAButtonClick(...)      <span class="c">// 버튼별 진입점</span>
+          ↓
+<span class="c">[본인]</span> InventoryState                             <span class="c">// 진입점을 오버라이드해 받는다</span>
+          │
+          ├─ <span class="hi">커서를 어디로 옮길까</span>  ── 칸 인덱스로 계산 (좌표 아님)
+          │     GetSmartNavigationTarget(현재칸, 방향)
+          │       아이템 위면 → <span class="ok">아이템 폭만큼 건너뛴다</span>
+          │       빈 칸이면   → 한 칸
+          │       가장자리면  → 바깥 영역으로 전환
+          │     → SelectCell(target) → EventSystem.SetSelectedGameObject
+          │
+          └─ <span class="hi">지금 어느 칸을 가리키나</span> ── 화면 좌표로 환산
+                CurrentMode = Mouse | Gamepad        <span class="c">// 매 프레임 판별</span>
+                마우스  → 포인터 좌표를 그대로
+                게임패드 → 선택된 UI의 사각형 중심
+                            corners = 선택 오브젝트의 네 꼭짓점
+                            return (좌하단 + 우상단) / 2
+                선택 없음 → 화면 중앙
+          ↓
+<span class="c">[본인]</span> InventoryController.SetPointerScreenPosition(pos)
+          <span class="ok">// 컨트롤러는 좌표만 받는다. 어느 장치인지 모른다</span></pre>
+        <p class="logcap">
+    컨트롤러 입장에서는 어느 장치인지 알 필요 없이 좌표 하나만 받을 수 있습니다. </p>
+      </figure>
+    </div>
+
+    <div class="part p-trouble" id="t1">
+      <h3>판단</h3>
+      <p><b>왜 인터페이스를 붙이지 않았나</b></p>
+      <dl class="tbl">
+        <div><dt>만든 것</dt><dd>입력 인터페이스와 장치별 구현체 둘을 <b>완성했습니다.</b> 커서 좌표 하나와 이벤트 넷(집기 누름·뗌, 취소, 배출)으로 컨트롤러가 알아야 할 것을 줄이는 설계였습니다.</dd></div>
+        <div><dt>다시 본 것</dt><dd>팀의 상태 머신이 <b>이미 버튼별 진입점을 열어두고 있었습니다.</b> 인터페이스가 흡수하려던 차이는 그 진입점 안에서 <code>if</code> 하나로 갈리는 것이었고, 컨트롤러가 실제로 필요로 한 값은 <b>좌표 하나뿐</b>이었습니다.</dd></div>
+        <div><dt>기준</dt><dd>추상화는 <b>대상이 앞으로 늘어날 때</b> 가치가 있습니다. 입력 장치는 마우스와 게임패드 둘에서 멈출 예정이었고, 그 둘을 이미 구분할 수 있으니 계층을 하나 더 두면 <b>읽을 코드만 늘어난다</b>고 봤습니다.</dd></div>
+        <div><dt>한 것</dt><dd>환산 로직을 <code>InventoryState</code>로 <b>옮기고</b> 인터페이스는 붙이지 않았습니다. <b>목표는 그대로 달성했고 불필요한 클래스를 생성하지 않았습니다.</b> </dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span class="n">아이템 크기를 아는 커서 이동 — 다중 칸 아이템에서 헛돌지 않음</span>
+        <span class="n">컨트롤러가 마우스·게임패드를 구분하지 않음</span>
+        <span class="n">장치 전환이 매 프레임 자동 — 조작이 끊기지 않음</span>
+        <span class="n">같은 목표를 클래스를 추가하지 않고 구현</span>
+      </div>
+    </div>
+
+    <div class="part p-next">
+      <h3>이어서</h3>
+      <a href="https://github.com/AIMHYUK/MdCalling-Showcase#2-마우스게임패드-하이브리드-입력--인터페이스를-접고-자리를-옮긴-것" target="_blank" rel="noreferrer">입력 처리 — 설계와 판단 근거</a>
+      <span class="why">처음 설계한 인터페이스, 옮긴 뒤의 실제 구조, 그리고 그렇게 판단한 근거를 정리했습니다.
+      팀 배관과 본인 작업의 경계도 3층 표로 나눠 두었습니다.</span>
+    </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">아이템을 회전시키면 패드 커서가 어긋나는 현상이 발생했습니다.</a>
+    </div>
+
+  </section>
+
 
   <!-- ══════ 트러블슈팅 ══════ -->
   <section class="feat" id="trouble">
     <div class="feat-h">
       <span class="no"></span>
       <h2>트러블슈팅</h2>
-      <p class="one"></p>
+      <p class="one">막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다. 고치지 못하고 기록만 남긴 것도 그대로 뒀습니다.</p>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t2">
       <h3>어려움</h3>
-      <p><b>기능 01 — 여러 칸을 차지하는 아이템을 한 장의 스프라이트로 그리기</b></p>
+      <p><b><a class="flink" href="#f1">기능 01</a> · <a class="flink" href="#f4">04</a> - 아이템을 회전시키면 패드 커서가 어긋나는 현상이 발생했습니다.</b></p>
       <dl class="tbl">
-        <div><dt>문제</dt><dd>가방은 고정 크기 셀의 격자인데 아이템은 한 칸이 아니라
-        <b><code>EffectiveSize</code>만큼 여러 칸을 차지합니다.</b> 셀마다 스프라이트를 타일링하면
-        치킨 한 마리가 네 조각으로 잘려 보입니다. <b>아이템 하나는 몇 칸을 덮든 스프라이트 한 장이어야 했습니다.</b></dd></div>
-        <div><dt>원인</dt><dd>격자 UI를 짜면 자연히 아이템 <code>RectTransform</code>을
-        <b>셀의 자식으로</b> 넣게 됩니다. 그런데 자식이 되는 순간 아이템은 부모 셀의 사각형에 묶여
+        <div><dt>문제</dt><dd>배치·충돌·렌더링은 회전을 반영하는데, <b>게임패드 커서가 회전한 아이템 위에서 엉뚱한 칸으로 점프</b>했습니다. 예를 들어 5×5 인벤토리에서 4×2 피자를 회전해 세로로(실제 2×4) 놓고 오른쪽을 누르면 <code>x=1 → x=4</code>로 뛰어, <b>피자 바로 옆 빈 칸(<code>x=3</code>)에 갈 수 없었습니다.</b> 무게중심 계산도 같은 증상으로 한 칸 어긋나 있었습니다.</dd></div>
+        <div><dt>원인</dt><dd>회전한 크기를 <b><code>EffectiveSize</code>라는 파생 프로퍼티</b>(값을 따로 저장하지 않고, <b>물어볼 때마다 원본 크기와 회전 여부로 계산해 돌려주는 속성</b>)로 만들었습니다. 그러면 쓰는 쪽은 회전했는지 따질 필요 없이 <b>크기만 물어보면 됩니다.</b> 그런데 <b>나중에 추가한 커서 이동과 무게중심 계산이 <code>EffectiveSize</code>를 안 쓰고 원본 크기를 그대로 가져다 썼습니다.</b> 테스트에 쓴 아이템 하나가 정사각형이라 회전해도 크기가 안 바뀌었고, 그래서 오래 드러나지 않았습니다.</dd></div>
+        <div><dt>배운 것</dt><dd><b>파생 프로퍼티는</b> <b>나중에 코드를 쓰는 사람이 "그 값을 써야 한다"는 걸 알고 있어야</b> 성립합니다. 원본 크기를 꺼내 쓸 수 있게 열어두면 그 전제는 언젠가 깨집니다. 지금이라면 <b>원본 크기를 아예 못 꺼내게 막아, 인벤토리를 다루는 코드가 <code>EffectiveSize</code>만 쥐게</b> 하겠습니다. 개발 종료 후 발견해 수정하지 않고 기록만 남겼습니다.</dd></div>
+      </dl>
+    </div>
+    <div class="part p-trouble" id="t3">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f1">기능 01</a> — 여러 칸을 차지하는 아이템을 한 장의 스프라이트로 그리기</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>가방은 고정 크기 칸이 늘어선 인벤토리인데 아이템은 한 칸이 아니라
+        <b><code>EffectiveSize</code>만큼 여러 칸을 차지합니다.</b> 칸마다 스프라이트를 타일링하면
+        치킨 스프라이트가 2*2 칸에 하나씩 들어갑니다. <b>아이템 하나는 몇 칸을 덮든 스프라이트 한 장이어야 했습니다.</b></dd></div>
+        <div><dt>원인</dt><dd>인벤토리 UI를 짜면 자연히 아이템 <code>RectTransform</code>을
+        <b>칸의 자식으로</b> 넣게 됩니다. 그런데 자식이 되는 순간 아이템은 부모 칸의 사각형에 묶여
         <b>한 칸 크기를 넘어설 수 없습니다.</b> 부모를 넘어 여러 칸을 덮을 방법이 없었습니다.</dd></div>
-        <div><dt>해결</dt><dd>아이템 뷰를 셀의 자식이 아니라 <b>격자 루트의 형제로 생성해</b>
-        (<code>Instantiate(itemPrefab, _rectTransform)</code>) 셀 층 위에 겹쳤습니다.
-        <br><b>부모–자식이 아닌데 어떻게 칸에 들어맞는가</b> — 두 층이 <b>같은 배치 규약</b>을 쓰기 때문입니다.
-        셀도 아이템도 <code>anchorMin·anchorMax·pivot = Vector2.up</code>(좌상단)으로 두고,
-        <code>anchoredPosition = (x, −y) × TotalCellSize</code>라는 <b>동일한 식</b>으로 자리를 잡습니다.
-        다른 것은 <code>sizeDelta</code>뿐이라 계층 관계 없이도 정확히 겹칩니다.</dd></div>
+        <div><dt>해결</dt><dd>아이템 뷰를 칸의 자식이 아니라 <b>인벤토리 루트의 형제로 생성해</b>
+        (<code>Instantiate(itemPrefab, _rectTransform)</code>) 칸 층 위에 겹쳤습니다.</dd></div>
       </dl>
 
       <figure class="dgm">
         <svg viewBox="0 0 760 196" role="img" aria-labelledby="inv-t inv-d">
-          <title id="inv-t">셀 층 위에 아이템 층을 겹치는 방식과 sizeDelta 계산</title>
-          <desc id="inv-d">셀과 아이템은 같은 부모의 형제로 놓이고 같은 앵커와 같은 좌표식을 씁니다. 아이템의 sizeDelta는 칸수 곱하기 TotalCellSize에서 cellSpacing 하나를 뺀 값입니다. 마지막 칸 뒤의 간격은 아이템 바깥이기 때문입니다.</desc>
+          <title id="inv-t">칸 층 위에 아이템 층을 겹치는 방식과 sizeDelta 계산</title>
+          <desc id="inv-d">칸과 아이템은 같은 부모의 형제로 놓이고 같은 앵커와 같은 좌표식을 씁니다. 아이템의 sizeDelta는 칸수 곱하기 TotalCellSize에서 cellSpacing 하나를 뺀 값입니다. 마지막 칸 뒤의 간격은 아이템 바깥이기 때문입니다.</desc>
           <g font-family="-apple-system, 'Malgun Gothic', system-ui, sans-serif">
             <g fill="#ffffff" stroke="#d5d4cf" stroke-width="1.5">
               <rect x="30" y="26" width="90" height="80" rx="4"></rect>
@@ -454,51 +556,26 @@
             <text x="375" y="88" font-size="11" fill="#a8320c">아이템 바깥</text>
 
             <g font-size="12" fill="#4f5459">
-              <text x="470" y="44">셀과 아이템은 <tspan font-weight="700" fill="#16181a">같은 부모의 형제</tspan></text>
               <text x="470" y="68" font-family="Consolas, monospace" font-size="11" fill="#16181a">pivot = Vector2.up</text>
               <text x="470" y="88" font-family="Consolas, monospace" font-size="11" fill="#16181a">anchoredPosition = (x, −y) × Total</text>
-              <text x="470" y="114">다른 건 <tspan font-weight="700" fill="#16181a">sizeDelta</tspan>뿐이라 정확히 겹친다</text>
+              <text x="470" y="114">3 * (아이템+칸 사이 패딩) - 칸 사이 패딩</text>
             </g>
           </g>
         </svg>
-        <figcaption><b>여기서 한 번 틀렸습니다.</b> 3칸짜리 <code>sizeDelta</code>를
-        <code>3 × TotalCellSize</code>로 잡았더니 <b><code>cellSpacing</code> 하나만큼 삐져나와</b>
-        옆 칸을 침범한 것처럼 보였습니다. 간격은 <b>칸과 칸 사이에만</b> 존재하므로 마지막 칸 뒤의 간격은 빼야 합니다.
-        같은 <code>− cellSpacing</code>이 <b>격자 전체 크기를 잡는 <code>BuildGrid</code>에도 똑같이</b> 들어갑니다.</figcaption>
+        <figcaption>아이템이 칸을 덮으면 <b>레이캐스트를 가로채</b> 칸 클릭이 막힐 수 있으나
+        여기서는 문제가 되지 않았습니다. <br>커서가 어느 칸인지를 <b>레이캐스트가 아니라 좌표 계산</b>으로 구하기 때문입니다 (<code>ScreenPointToLocalPointInRectangle</code> → <code>FloorToInt</code>).</figcaption>
       </figure>
 
-      <dl class="tbl" style="margin-top:14px">
-        <div><dt>좌표계</dt><dd>그리드는 y가 <b>아래로</b> 증가하고 유니티 UI 로컬 좌표는 <b>위로</b> 증가합니다.
-        그려 넣을 때 <code>anchoredPosition</code>에서 <code>−y</code>로 뒤집고,
-        <b>화면 좌표를 셀로 역변환할 때도 같은 부호 처리를 합니다</b> —
-        <code>ScreenPointToLocalPointInRectangle</code>으로 로컬 좌표를 얻은 뒤
-        <code>Mathf.FloorToInt(−localPoint.y / TotalCellSize)</code>. 한쪽만 뒤집으면 상하가 반전됩니다.</dd></div>
-        <div><dt>드로우 순서</dt><dd>아이템이 셀 위에 그려지는 것은 <b>계층 순서(sibling index) 덕</b>입니다.
-        셀은 <code>BuildGrid</code>에서, 아이템은 <code>OnItemPlaced</code> 콜백에서 생성되므로
-        아이템이 <b>항상 더 나중 형제</b>가 되고 유니티 UI는 나중 형제를 위에 그립니다.
-        <code>SetAsLastSibling</code> 같은 정렬 코드가 따로 없는 이유입니다.</dd></div>
-        <div><dt>입력 판정</dt><dd>아이템이 셀을 덮으면 <b>레이캐스트를 가로채</b> 셀 클릭이 막힐 수 있습니다.
-        여기서는 문제가 되지 않았습니다 — 커서가 어느 칸인지를 <b>레이캐스트가 아니라 좌표 계산</b>으로 구하기 때문입니다
-        (<code>ScreenPointToLocalPointInRectangle</code> → <code>FloorToInt</code>).
-        <b>겹치기로 한 결정이 입력 쪽에서 대가를 치르지 않은 이유</b>입니다.</dd></div>
-        <div><dt>회전</dt><dd>회전은 <b>루트가 아니라 아이콘 <code>RectTransform</code>에만</b> 겁니다.
-        루트를 돌리면 <code>anchoredPosition</code> 기준 격자 배치까지 함께 회전해 좌표가 깨집니다.
-        루트 사각형은 <code>EffectiveSize</code>로 이미 가로세로가 뒤바뀐 상태이므로,
-        아이콘만 <code>Quaternion.Euler(0, 0, −90)</code>로 돌리고 <code>sizeDelta</code>의 폭·높이를 맞바꿔 채웁니다.
-        원본 비율은 <code>preserveAspect</code>가 지킵니다.</dd></div>
-      </dl>
-    </div>
+          </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t4">
       <h3>어려움</h3>
-      <p><b>기능 03 — 배달 조건이 NPC에 묶여 확장이 막힘</b></p>
+      <p><b><a class="flink" href="#f3">기능 03</a> — 배달 조건이 NPC에 묶여 확장이 막힘</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>배달 조건이 <b>NPC에 묶여 있어</b> 확장이 막혔습니다. 그 NPC가 월드에 배치되어 있어야 하고,
-        자리를 비운 시간대에는 배달이 아예 성립하지 않았습니다. 배달지를 늘리려면 <b>NPC를 그만큼 만들어야</b> 했습니다.
+        NPC 두 명을 동시에 출연시키기 힘들었습니다. 배달지를 늘리려면 <b>NPC를 그만큼 만들어야</b> 했습니다.
         그렇다고 <b>팀원이 설계한 퀘스트 프레임워크를 제가 고칠 수는 없었습니다.</b></dd></div>
-        <div><dt>원인</dt><dd>도메인 모델이 잘못 잡혀 있었습니다. 플레이어가 실제로 하는 일은 &ldquo;누구를 만나는 것&rdquo;이 아니라
-        <b>&ldquo;어디로 가는 것&rdquo;</b>인데, 조건은 사람에 붙어 있었습니다.</dd></div>
-        <div><dt>해결</dt><dd>도메인을 장소 기준으로 다시 짜 <b>NPC 종속 조건 4종을 제거</b>했습니다.
+        <div><dt>해결</dt><dd>장소 기준으로 다시 짜 <b>NPC 종속 조건을 제거</b>했습니다.
         프레임워크 자체는 건드리지 않고, 열어둔 확장 지점인 <code>QuestAction</code>에
         <b>새 액션을 추가하는 방식으로만</b> 연결했습니다. 콘텐츠를 늘릴 때 이제 건물만 배치하면 됩니다.</dd></div>
       </dl>
@@ -507,8 +584,11 @@
 
   <!-- ══════ 마무리 ══════ -->
   <div class="close">
-    <h2></h2>
-    <p></p>
+    <h2>범위와 한계</h2>
+    <p>3인 창업 팀 프로젝트이고, 이 페이지는 <b>인벤토리 · 대화 연동 · 배달 도메인 · 입력 처리</b>까지
+    제가 맡은 구간입니다. <b>퀘스트 프레임워크와 입력 바인딩 체계는 팀원이 설계한 것</b>이며,
+    저는 그 프레임워크를 고치지 않고 <b>열어 둔 확장 지점 위에서만</b> 붙였습니다.
+    개발은 2026.01–04이고 이후 6월까지는 발표 준비 기간입니다.</p>
   </div>
 
   <div class="foot">
@@ -517,6 +597,12 @@
   </div>
 
 </main>
+
+
+
+
+
+
 
 
 

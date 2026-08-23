@@ -21,14 +21,15 @@
 
   <header class="ph">
     <h1>GASPractice</h1>
-    <p class="sub">LoL식 QWER 스킬 구조를 <b>Gameplay Ability System</b>으로 재현하며
-    GAS의 핵심 개념을 익힌 학습 프로젝트입니다.</p>
+    <p class="sub">LoL식 QWER 스킬 구조를 <b>Gameplay Ability System</b>
+    (<b>스킬 · 효과 · 상태를 엔진이 정한 틀로 다루는 언리얼 기능</b>)으로 재현하고,
+    그 위에 <b>CommonUI 레이어 프레임워크</b>와 게임패드 조작을 얹은 학습 프로젝트입니다.</p>
 
     <dl class="facts">
       <div><dt>종류</dt><dd>학습용 개인 프로젝트</dd></div>
       <div><dt>엔진 · 언어</dt><dd>Unreal Engine 5.6 · C++</dd></div>
       <div><dt>규모</dt><dd>개인</dd></div>
-      <div><dt>본인 작성</dt><dd>8개 파일 · 564줄</dd></div>
+      <div><dt>본인 작성</dt><dd>18개 파일 · 1,739줄</dd></div>
     </dl>
 
     <div class="about">
@@ -37,26 +38,10 @@
         <p>스킬 시스템을 캐릭터 클래스에 직접 구현하면 스킬이 늘어날수록 캐릭터가 비대해지고,
         쿨다운·자원 소모·상태이상 같은 <b>공통 규칙이 스킬마다 중복</b>됩니다.
         GAS가 그걸 어떻게 나누는지 손으로 확인하는 것이 목표였습니다.</p>
-        <p>핵심은 <b>어빌리티가 피해량을 직접 깎지 않는다</b>는 점입니다.
-        어빌리티는 <code>GameplayEffect</code>를 <b>적용</b>할 뿐이고 실제 수치 변경은
-        <code>AttributeSet</code>이 처리합니다. 그래서 밸런스 수정이
-        코드가 아니라 <b>데이터(GE 에셋) 쪽으로</b> 넘어갑니다.</p>
-      </div>
-      <div>
-        <h2>본인 작성 범위</h2>
-        <div class="tscroll" style="margin-top:0">
-          <table class="scope">
-            <thead><tr><th>구분</th><th>경로</th><th class="n">라인</th></tr></thead>
-            <tbody>
-              <tr class="me"><td>본인 작성</td><td><code>Source/GASPractice/</code> 8개 파일</td><td class="n">564</td></tr>
-              <tr class="tpl"><td>언리얼 템플릿</td><td><code>Variant_Combat</code> 외</td><td class="n">4,616</td></tr>
-              <tr class="tpl"><td>언리얼 기본 에셋</td><td><code>Content/</code> (Mannequin 등)</td><td class="n">—</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p style="margin-top:9px; font-size:13px; color:var(--ink-2)">
-        Third Person 템플릿 위에 GAS를 얹은 구조라 <b>저장소 대부분은 엔진이 제공한 코드</b>입니다.
-        오해가 없도록 README에도 같은 표를 넣어 두었습니다.</p>
+        <p>핵심은 <b>스킬이 체력을 직접 깎지 않는다</b>는 점입니다.
+        스킬은 &ldquo;이 효과를 걸어라&rdquo;(<code>GameplayEffect</code>)까지만 하고,
+        실제로 수치를 바꾸는 것은 그 수치를 들고 있는 쪽(<code>AttributeSet</code>)입니다.
+        그래서 <b>밸런스를 맞출 때 코드가 아니라 데이터 파일을 고칩니다.</b></p>
       </div>
     </div>
   </header>
@@ -72,62 +57,69 @@
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
-        <li><code>GameplayAbility</code> — <b>무엇을 하는가</b>.
-        <code>GASTraceDamageAbility</code>가 전방 트레이스로 대상을 찾습니다.</li>
-        <li><code>GameplayEffect</code> — <b>무엇이 변하는가</b>.
-        피해량 · 마나 비용 · 쿨다운을 <b>각각 별도 GE로</b> 두었습니다.</li>
-        <li><code>GameplayTag</code> — <b>지금 어떤 상태인가</b>.
-        <code>State.Stunned</code>, <code>Cooldown.Q</code> 같은 태그로 활성화를 막습니다.</li>
-        <li>GAS 흐름 자체를 검증하려고 <code>GASTestDamageAbility</code>(자기 피해 스킬)를
-        따로 만들어 먼저 돌렸습니다.</li>
+        <li><code>GameplayAbility</code> — <b>무엇을 하는가</b>(스킬 한 개).
+        <code>GASTraceDamageAbility</code>가 <b>앞쪽으로 선을 쏘아</b> 맞은 대상을 찾습니다.(이즈리얼 q의 모작)</li>
+        <li><code>GameplayEffect</code> — <b>무엇이 변하는가</b>(수치를 바꾸는 데이터).
+        피해량 · 마나 비용 · 쿨다운을 <b>서로 다른 GE 셋으로</b> 갈라 뒀습니다.</li>
+        <li><code>GameplayTag</code> — <b>지금 어떤 상태인가</b>(붙였다 떼는 이름표).
+        <code>State.Stunned</code>, <code>Cooldown.Q</code>가 붙어 있으면 스킬이 발동하지 않습니다.</li>
       </ul>
     </div>
 
     <div class="part p-shot">
       <h3>화면</h3>
       <figure>
-        <pre class="logbox"><span class="c">// 총 4쌍의 파일입니다.</span>
-Source/GASPractice/
+        <pre class="logbox">Source/GASPractice/
 ├─ GASCharacter               <span class="hi">250줄</span>  ASC 소유, 어트리뷰트 초기화, QWER 입력 바인딩
 ├─ GASPlayerAttributeSet       <span class="hi">74줄</span>  Health/Mana 어트리뷰트, 변경 클램프
 ├─ GASTraceDamageAbility      <span class="hi">182줄</span>  트레이스 판정 후 GameplayEffect 적용
 └─ GASTestDamageAbility        <span class="hi">58줄</span>  GAS 흐름 검증용 자기 피해 스킬
                              <span class="ok">─────</span>
                              </pre>
-        <p class="logcap"></p>
+        <p class="logcap"><b>파일 구성</b>스킬을 하나 더 붙일 때 새로 만드는 클래스는 
+        <code>GameplayAbility</code> 하나뿐이고, 캐릭터와 어트리뷰트 파일은 그대로입니다.</p>
       </figure>
     </div>
 
     <div class="part p-result">
       <h3>성과</h3>
       <div class="res">
-        <span class="n">밸런스 수정이 코드 밖으로</span>
-        <span class="n">스킬 간 공통 규칙 중복 제거</span>
+        <span class="n">밸런스 수정이 코드 밖으로 — 데이터만 고치면 됨</span>
+        <span class="n">쿨다운·비용 같은 공통 규칙을 스킬마다 다시 쓰지 않음</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">어빌리티 · 이펙트 · 태그 세 축으로 분리</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 02 ══════ -->
   <section class="feat" id="f2">
     <div class="feat-h">
       <span class="no">기능 02</span>
-      <h2>어트리뷰트 클램프 — 두 경로를 다 막다</h2>
-      <p class="one"></p>
+      <h2>어트리뷰트 클램프 </h2>
+      <p class="one">체력·마나가 0 아래로 내려가거나 최대치를 넘지 않도록,
+      <b>값이 바뀌는 두 지점에서 값을 clamp합니다.</b></p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
         <li><code>Health</code> / <code>MaxHealth</code> / <code>Mana</code> / <code>MaxMana</code>
-        네 개를 정의하고, <b>변경 지점 두 곳을 모두</b> 막았습니다.</li>
-        <li><code>PreAttributeChange</code> — 값이 바뀌기 <b>직전 모든 경로</b>에서 호출됩니다.
-        들어오려는 값을 0~Max로 <b>잘라서 돌려보내</b>, <code>CurrentValue</code>가 범위를 벗어나지 않게 합니다.</li>
-        <li><code>PostGameplayEffectExecute</code> — <b>Instant GE가 실행된 뒤</b> 호출됩니다.
-        <b><code>BaseValue</code>를 클램프</b>하고, <code>MaxHealth</code>가 줄었으면
-        <code>Health</code>를 그 범위로 내립니다. 사망 판정 같은 후처리도 여기입니다.</li>
-        <li>두 훅이 막는 것은 경로가 아니라 <b>값</b>입니다.
-        <code>PreAttributeChange</code>만 쓰면 Instant GE가 밀어넣은 <code>BaseValue</code>가 음수로 남아,
-        <b>화면은 0인데 회복이 안 먹는 상태</b>가 됩니다.</li>
+        네 개를 정의했습니다. 그런데 GAS의 어트리뷰트는 <b>값을 두 개 갖습니다</b> —
+        화면에 보이는 <code>CurrentValue</code>와 바탕이 되는 <code>BaseValue</code>.
+        <b>둘을 고칠 수 있는 자리가 서로 달라서, 두 곳에서 다 clamp합니다.</b></li>
+        <li><code>PreAttributeChange</code> — 값이 바뀌기 <b>직전에</b> 어느 경로로 들어오든 불립니다.
+        들어오려는 값을 0~Max로 <b>잘라서 돌려보내</b>,
+        <code>CurrentValue</code>(<b>지금 화면에 보이는 값</b>)가 범위를 벗어나지 않게 합니다.</li>
+        <li><code>PostGameplayEffectExecute</code> — <b>Instant GE</b>(<b>한 번에 딱 적용되는 효과</b>)가
+        실행된 <b>뒤에</b> 불립니다. <code>BaseValue</code>(<b>바탕이 되는 원래 값</b>)를 자르고,
+        최대 체력이 줄었으면 현재 체력도 그만큼 내립니다. 사망 판정도 여기서 합니다.</li>
+        <li>둘이 지키는 것은 <b>경로가 아니라 값</b>입니다.
+        <code>PreAttributeChange</code>만 쓰면 Instant GE가 밀어 넣은 <code>BaseValue</code>가 음수로 남아,
+        <b>화면에는 0인데 회복이 안 먹는</b> 상태가 됩니다.</li>
       </ul>
     </div>
 
@@ -144,8 +136,8 @@ Duration / Infinite GE ──▶ <span class="ok">PreAttributeChange</span>  ✔
 PreAttributeChange 만        <span class="bad">→ GE 실행 결과를 놓친다</span>
 PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Setter 경로를 놓친다</span></pre>
         <p class="logcap"><b>적용 경로</b>겹쳐서 막는 게 아닙니다.
-        <code>PreAttributeChange</code>는 <b><code>CurrentValue</code></b>를,
-        <code>PostGameplayEffectExecute</code>는 <b><code>BaseValue</code></b>를 맡습니다.</p>
+        <code>PreAttributeChange</code>는 <strong><code>CurrentValue</code></strong>를,
+        <code>PostGameplayEffectExecute</code>는 <strong><code>BaseValue</code></strong>를 맡습니다.</p>
       </figure>
     </div>
 
@@ -156,6 +148,11 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
         <span class="n">사망 판정을 한 자리로</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">어트리뷰트 클램프 — 두 경로를 다 막다</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 03 ══════ -->
@@ -163,7 +160,7 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
     <div class="feat-h">
       <span class="no">기능 03</span>
       <h2>쿨다운을 타이머가 아니라 태그로</h2>
-      <p class="one">상태를 값으로 들고 있지 않으면 조건문이 늘지 않습니다.</p>
+      <p class="one">조건문으로 막는것이 아닌 태그의 유무로 쿨다운을 컨트롤합니다. </p>
     </div>
 
     <div class="part p-impl">
@@ -173,7 +170,7 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
         <b><code>Cooldown.Q</code> 같은 태그의 존재 여부</b>로 표현했습니다.</li>
         <li>쿨다운 GE가 적용되는 동안 그 태그가 붙어 있고,
         어빌리티는 <b>해당 태그가 있으면 활성화되지 않습니다.</b></li>
-        <li>기절 같은 상태이상도 같은 방식입니다 — <code>State.Stunned</code>가 붙어 있으면 발동이 막힙니다.</li>
+        <li>기절 같은 상태이상도 같은 방식입니다 — <code>State.Stunned</code>가 붙어 있으면 타 스킬 발동이 막힙니다.</li>
       </ul>
     </div>
 
@@ -183,8 +180,8 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
         <figure>
           <img src="../assets/images/gas/showdebug-tags.webp" alt="언리얼 showdebug abilitysystem 오버레이. 어트리뷰트 Health 100, MaxHealth 100, Mana 30, MaxMana 100이 나열되고 Owned Tags에 Cooldown.Q가 하나 표시돼 있으며 TraceDamage 적중 로그가 함께 보인다">
           <figcaption><b>실행 중 태그 상태</b><code>showdebug abilitysystem</code>으로 띄운 화면입니다.
-          Q를 쓴 직후라 <b>Owned Tags에 <code>Cooldown.Q</code>가 붙어 있고</b>, 이 태그가 있는 동안 같은 어빌리티는 발동하지 않습니다.
-          마나도 100에서 30으로 줄어 있습니다 — <b>쿨다운 · 비용 · 피해를 각각 별도 GE로 나눈 결과</b>가 한 화면에 같이 보입니다.</figcaption>
+          Q를 쓴 직후라 <strong>Owned Tags에 <code>Cooldown.Q</code>가 붙어 있고</strong>, 이 태그가 있는 동안 같은 어빌리티는 발동하지 않습니다.
+        </figcaption>
         </figure>
       </div>
     </div>
@@ -196,6 +193,195 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
         <span class="n">쿨다운과 상태이상을 같은 방식으로 처리</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t3">쿨다운을 타이머가 아니라 태그로</a>
+    </div>
+
+  </section>
+
+  <!-- ══════ 기능 04 ══════ -->
+  <section class="feat" id="f4">
+    <div class="feat-h">
+      <span class="no">기능 04</span>
+      <h2>CommonUI 레이어 프레임워크 — 창이 늘어도 겹치는 순서를 코드가 외우지 않게</h2>
+      <p class="one">어느 창이 위에 있는지를 코드가 기억하지 않고 레이어 배치로 결정.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>창을 화면에 그냥 붙이면 <b>먼저 붙인 게 아래, 나중이 위</b>가 됩니다. 그러면
+        그때부터 &ldquo;설정 창이 인벤토리보다 위인가&rdquo;를 <b>코드가 기억</b>해야 합니다.
+        화면이 늘수록 그 기억이 틀리기 시작합니다.</li>
+        <li>레이어를 <b>Game / GameMenu / Menu / Modal 넷으로 미리 고정</b>했습니다.
+        각 층은 <b>자기 안에서만 창이 쌓이고</b>,
+        레이어끼리의 위아래는 <b>블루프린트 배치가 한 번</b> 정합니다.</li>
+        <li>레이어 키를 <code>enum</code>이 아니라 <b><code>FGameplayTag</code></b>로 두고 에셋쪽에서 늘어나게 했습니다.
+        enum로 두면 층을 하나 추가할 때마다 <b>그 목록을 쓰는 파일이 전부 다시 빌드</b>됩니다. 언리얼은 빌드가 무거워서 이게 시간낭비라고 판단했습니다.</li>
+        <li><code>PopWidget()</code>은 <b>레이어 태그를 받지 않습니다.</b>
+        받게 하면 띄운 쪽과 닫는 쪽이 레이어 이름을 서로 맞춰 들고 있어야 하고,
+        나중에 한 쪽이 화면을 다른 레이어로 옮기면 <b>반대쪽이 실패</b>합니다. 위젯들을 인자로 받고 위젯 전체를 순환하여 오류를 방지했습니다. </li>
+      
+        <li>이 구조는 <b>에픽의 Lyra가 CommonUI를 사용한 방식</b>과 같은 계열입니다.</li></ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <figure>
+        <pre class="logbox"><span class="c">// 레이어 넷을 고정하면 "누가 위인가" 판단이 사라진다</span>
+
+<span class="hi">Modal</span>     확인 팝업. 무조건 최상단
+<span class="hi">Menu</span>      인벤토리 · 설정. 게임 화면을 완전히 덮는다
+<span class="hi">GameMenu</span>  게임 위에 겹치는 UI. 퀵슬롯, 상호작용 프롬프트
+<span class="hi">Game</span>      HUD. 항상 깔려 있다
+
+<span class="c">// 화면을 새로 만드는 사람이 답할 것은 하나뿐이다 — "이건 어느 레이어인가"</span>
+PushWidgetToLayer(<span class="ok">TAG_UI_Layer_Modal</span>, WBP_ConfirmDialog);
+PopWidget(Widget);   <span class="c">// 어느 레이어인지 호출부가 몰라도 된다</span></pre>
+        <p class="logcap"><b>층을 미리 정해두면</b>&ldquo;설정 창이 인벤토리보다 위인가&rdquo;를 따질 일이 없어집니다 —
+        둘 다 Menu 레이어에 들어가 <strong>나중 것이 위</strong>라는 스택 규칙만 따르면 되기 때문입니다.</p>
+      </figure>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span class="n">겹치는 순서를 배치 한 번으로 고정</span>
+        <span class="n">층을 추가해도 다시 빌드할 필요 없음</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 05 ══════ -->
+  <section class="feat" id="f5">
+    <div class="feat-h">
+      <span class="no">기능 05</span>
+      <h2>게임패드 내비게이션</h2>
+      <p class="one">&ldquo;지금 UI가 입력을 먹는 중인가&rdquo;를 아무도 기억하지 않습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>화면마다 <code>SetInputMode</code>를 부르면 팝업이 겹치는 순간 문제가 생깁니다.
+        팝업을 닫을 때 <code>GameOnly</code>로 되돌리면 <b>아래 메뉴가 아직 떠 있는데 캐릭터가 움직입니다.</b>
+        그래서 보통 ui 카운터를 세지만 , 그 카운터가 어긋나는 버그가 종종 생깁니다.</li>
+        <li><b>화면마다 UIOnly , GameOnly 등을 미리 선언하게</b> 했습니다.
+        창이 열리고 닫힐 때마다 엔진이 <b>맨 위 창에 적힌 값</b>을 알아서 적용합니다.</li>
+        <li>게임패드에는 마우스 커서가 없어서, 창이 뜰 때 <b>&ldquo;처음 선택될 버튼&rdquo;을 정해주지 않으면
+        스틱을 아무리 밀어도 아무 일이 없습니다.</b>
+        그래서 창을 만들 때 그걸 빠뜨리면 <b>경고가 뜨도록</b> 해뒀습니다.</li>
+        <li>하단 액션 바(<code>CommonBoundActionBar</code>)를 붙여 <b>입력 방식에 따라 힌트가 바뀌게</b> 했습니다.
+        패드를 쥐면 <code>Ⓑ 취소</code>, 마우스를 만지면 <code>Esc 취소</code>로 바뀝니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots">
+        <figure>
+          <img src="../assets/gifs/gas/commonui-nav.gif" alt="게임패드로 일시정지 메뉴를 열고 버튼 사이를 이동한 뒤 확인 팝업을 띄우고 B 버튼으로 팝업과 메뉴를 차례로 닫는 장면. 하단에 취소 액션 힌트가 표시된다">
+          <figcaption><b>게임패드 내비게이션</b>메뉴를 열면 캐릭터가 멈추고, 패드로 버튼 사이를 옮겨 다닙니다.
+          <strong>B로 팝업만 닫으면 캐릭터는 여전히 멈춰 있고</strong>, B를 한 번 더 눌러 메뉴까지 닫아야 조작이 돌아옵니다.
+          <br><strong> 스택 최상단 화면의 선언이 그때그때 적용됩니다.</strong></figcaption>
+        </figure>
+      </div>
+      <figure style="margin-top:12px">
+        <pre class="logbox"><span class="c">// 실행 로그 — 아무도 SetInputMode를 부르지 않았다</span>
+
+Applying input config for leaf-most node [WBP_PauseMenu_C_0]
+    InputMode: Previous (Game), New (<span class="ok">Menu</span>)      <span class="c">← 메뉴 열림, 캐릭터 정지</span>
+[User 0] Focused desired target 계속하기          <span class="c">← 패드 포커스 자동 지정</span>
+
+Applying input config for leaf-most node [WBP_ConfirmDialog_C_0]
+[User 0] Focused desired target WBP_MenuButton_1  <span class="c">← 팝업이 떠도 모드 변경 로그가 없다</span>
+
+[WBP_PauseMenu_C_0] handled back with default implementation
+Applying input config for leaf-most node [WBP_HUD_C_0]
+    InputMode: Previous (Menu), New (<span class="ok">Game</span>)      <span class="c">← 메뉴까지 닫혀야 조작 복귀</span></pre>
+        <p class="logcap"><b>가운데 두 줄이 핵심</b>확인 팝업이 최상단이 됐는데 <strong>모드 변경 로그가 찍히지 않습니다.</strong>
+        팝업이 입력 모드에 관여하지 않도록 선언해 둔 결과입니다.</p>
+      </figure>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span class="n">입력 모드 추적 변수 0개</span>
+        <span class="n">마우스와 패드가 같은 코드로 동작</span>
+      </div>
+    </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t4">확인 팝업이 두 번째부터 뜨지 않음</a><br>
+      <a href="#t5">액션 바에 아무것도 표시되지 않음</a>
+    </div>
+
+  </section>
+
+  <!-- ══════ 기능 06 ══════ -->
+  <section class="feat" id="f6">
+    <div class="feat-h">
+      <span class="no">기능 06</span>
+      <h2>쿨다운 링 — UMG와 Slate 두 계층으로 나눠 만들기</h2>
+      <p class="one">도형 하나 때문에 위젯을 늘리거나 머티리얼을 만들지 않았습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>UMG만으로 원형 게이지를 만들면 <b>Image를 여러 장 배치</b>하거나
+        <b>머티리얼에 파라미터를 넘겨야</b> 합니다. 전자는 위젯 수가 늘고,
+        후자는 이 도형 하나 때문에 머티리얼 에셋이 생깁니다.</li>
+        <li>그래서 <b>한 계층 아래(Slate)로 내려가 호를 직접 그렸습니다</b> (<code>SGASCooldownRing</code>).
+        원 위의 점들을 계산해 선으로 잇는 것이라, <b>위젯 하나에 그리기 한 번</b>으로 끝납니다.</li>
+        <li>진행도는 슬롯 위젯이 <code>NativeTick</code>에서 넣어주되,
+        <b>쿨다운이 도는 동안에만</b> 갱신합니다. 슬롯이 넷이어도 <b>놀고 있는 슬롯은 아무 비용이 없습니다.</b>
+        값을 <code>TAttribute</code>로 받게 해둬서, 나중에 델리게이트를 걸어
+        <b>&ldquo;그릴 때 읽어가는&rdquo; 방식으로 바꿀 여지</b>는 남겼습니다.</li>
+        <li>다만 그렇게 만든 위젯은 <b>에디터에서 끌어다 놓을 수가 없습니다.</b>
+        그래서 <b>에디터가 다룰 수 있는 껍데기</b>(<code>UGASCooldownRingWidget</code>)를 한 겹 씌워, 다른 화면에서도
+        <b>팔레트에서 끌어다 쓰는 부품</b>이 되게 했습니다.</li>
+        <li>남은 시간은 <b>UI가 따로 세지 않고 GE의 쿨다운을 매 틱 물어봅니다.</b>
+        UI가 자기 타이머를 돌리면 일시정지 · 배속 · 재접속에서 <b>실 타이머와 어긋날 수 있습니다.</b></li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <figure>
+        <pre class="logbox"><span class="c">// UObject 계층과 Slate 계층이 갈리는 지점</span>
+
+<span class="hi">UGASSkillSlotButton</span>    (CommonButtonBase)  쿨다운 상태를 알고 비율을 넘긴다
+        │  SetProgress(0.62)
+        ▼
+<span class="hi">UGASCooldownRingWidget</span> (UWidget)  <span class="c">← UObject. 에디터가 편집, GC가 관리</span>
+        │                                <span class="c">   아무것도 그리지 않는다</span>
+        │  RebuildWidget() / SynchronizeProperties() / ReleaseSlateResources()
+        ▼
+<span class="hi">SGASCooldownRing</span>       (SWidget)   <span class="c">← UObject가 아니다. TSharedPtr로 산다</span>
+                                         <span class="c">   OnPaint에서 실제로 그린다</span>
+
+<span class="c">// SWidget은 GC가 모른다 — 손으로 놓지 않으면 UMG가 사라져도 살아남는다</span>
+void UGASCooldownRingWidget::ReleaseSlateResources(bool bReleaseChildren)
+{
+    Super::ReleaseSlateResources(bReleaseChildren);
+    MyCooldownRing.<span class="ok">Reset()</span>;
+}</pre>
+        <p class="logcap"><b>두 계층</b>위 두 칸은 <strong>에디터가 다루는 설계도</strong>일 뿐 아무것도 그리지 않고,
+        맨 아래 한 칸만 실제로 그립니다. 가운데 래퍼가 있는 이유는
+        <strong>Slate 위젯을 디자이너에서 쓸 수 있게 만들기 위해서</strong>입니다.</p>
+      </figure>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span class="n">슬롯 하나당 위젯 1개 · 그리기 1번</span>
+        <span class="n">쿨다운 정보를 UI가 따로 갖지 않음</span>
+      </div>
+    </div>
   </section>
 
   <!-- ══════ 트러블슈팅 ══════ -->
@@ -203,12 +389,12 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
     <div class="feat-h">
       <span class="no"></span>
       <h2>트러블슈팅</h2>
-      <p class="one"></p>
+      <p class="one">막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다.</p>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t1">
       <h3>어려움</h3>
-      <p><b>기능 01 — 어빌리티 · 이펙트 · 태그 세 축으로 분리</b></p>
+      <p><b><a class="flink" href="#f1">기능 01</a> — 어빌리티 · 이펙트 · 태그 세 축으로 분리</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>처음에는 스킬 로직을 캐릭터 클래스에 직접 넣었습니다. 스킬이 넷으로 늘자 <b>쿨다운·마나 검사·피해 계산이 스킬마다 똑같이 복제</b>됐습니다.</dd></div>
         <div><dt>원인</dt><dd>&ldquo;무엇을 하는가&rdquo;와 &ldquo;무엇이 변하는가&rdquo;를 한 곳에서 처리했기 때문입니다. 공통 규칙이 있어도 붙일 자리가 없었습니다.</dd></div>
@@ -216,9 +402,9 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t2">
       <h3>어려움</h3>
-      <p><b>기능 02 — 어트리뷰트 클램프 — 두 경로를 다 막다</b></p>
+      <p><b><a class="flink" href="#f2">기능 02</a> — 어트리뷰트 클램프 — 두 경로를 다 막다</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>체력을 0~Max로 제한했는데도 <b>어떤 경로로는 범위를 벗어난 값이 들어왔습니다.</b> </dd></div>
         <div><dt>원인</dt><dd>GAS에서 어트리뷰트가 바뀌는 경로가 <b>하나가 아니었습니다</b>. Instant GE는 즉시 실행되고, Duration/Infinite GE는 지속 중 계속 값을 밀며, 코드에서 직접 Setter를 호출할 수도 있었습니다. 훅 하나로는 이 셋을 다 잡지 못했습니다.</dd></div>
@@ -226,16 +412,61 @@ PostGameplayEffectExecute 만 <span class="bad">→ Duration/Infinite GE와 Sett
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t3">
       <h3>어려움</h3>
-      <p><b>기능 03 — 쿨다운을 타이머가 아니라 태그로</b></p>
+      <p><b><a class="flink" href="#f3">기능 03</a> — 쿨다운을 타이머가 아니라 태그로</b></p>
       <dl class="tbl">
-        <div><dt>문제</dt><dd>FSM의 경우 스킬을 하나 추가할 때마다 <b>캐릭터 클래스에 쿨다운 변수와 조건문이 하나씩 늘었습니다.</b> QWER 넷이면 넷, 여기에 기절·침묵 같은 상태가 붙으면 추가적으로 고려할 요소가 늘어납니다.</dd></div>
+        <div><dt>문제</dt><dd>상태를 캐릭터가 직접 들고 관리하는 방식(FSM)에서는 스킬을 하나 추가할 때마다 <b>캐릭터 클래스에 쿨다운 변수와 조건문이 하나씩 늘었습니다.</b> QWER 넷이면 넷이고, 여기에 기절·침묵 같은 상태가 붙으면 따져야 할 조합이 또 늘어납니다.</dd></div>
         <div><dt>원인</dt><dd>&ldquo;지금 쓸 수 있는가&rdquo;를 <b>캐릭터가 들고 있는 값들의 조합</b>으로 판단했기 때문입니다. 조건이 늘면 판단 코드도 같이 늘어납니다.</dd></div>
         <div><dt>해결</dt><dd>상태를 <b>태그의 유무</b>로 바꿨습니다. 어빌리티마다 &ldquo;이 태그가 있으면 못 쓴다&rdquo;만 선언해두면, 쿨다운이든 기절이든 침묵이든 <b>같은 메커니즘</b>으로 처리할 수 있습니다.</dd></div>
       </dl>
     </div>
+
+    <div class="part p-trouble" id="t4">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f5">기능 05</a> — 확인 팝업이 두 번째부터 뜨지 않음</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>확인 팝업이 <b>처음 한 번은 정상적으로 뜨는데</b>, 닫은 뒤 다시 열면 아무것도 나오지 않았습니다. 버튼 클릭 로그는 매번 찍혀 입력은 정상적으로 도달하고 있었습니다.</dd></div>
+        <div><dt>원인</dt><dd>CommonUI 컨테이너는 <b>위젯을 풀에 반납했다가 재사용</b>합니다. 팝업에 &ldquo;비활성화될 때 <code>Collapsed</code>&rdquo;만 설정하고 <b>&ldquo;활성화될 때 되돌리기&rdquo;를 빠뜨려</b>, 재사용된 인스턴스가 <code>Collapsed</code>인 채로 활성화됐습니다. 새로 만든 인스턴스는 기본 가시성을 갖고 있어 <b>처음 한 번만 정상 동작</b>한 것입니다.</dd></div>
+        <div><dt>해결</dt><dd>엔진 로그를 <code>VeryVerbose</code>로 올려 컨테이너 내부를 확인했습니다. 정상 동작하는 일시정지 메뉴에는 <code>set visibility to [Visible] on activation</code> 줄이 있는데 <b>팝업에만 그 줄이 없다</b>는 대조가 답이었습니다. 짝이 되는 설정을 켜자 인스턴스가 재사용되어도 정상 표시됐습니다. <b>풀링이 있는 UI 프레임워크에서는 비활성화에서 바꾼 상태를 활성화에서 되돌려야 한다</b>는 것을 배웠습니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble" id="t5">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f5">기능 05</a> — 액션 바에 아무것도 표시되지 않음</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>하단 액션 바를 배치하고 버튼 클래스까지 지정했는데 화면에 아무것도 뜨지 않았습니다. 에러도 경고도 없었습니다.</dd></div>
+        <div><dt>원인</dt><dd>원인이 <b>네 겹</b>이었습니다. ① 액션 바 표시는 바인딩마다 <b>기본이 꺼짐</b>이라 화면별로 켜야 합니다. ② 데이터 테이블의 해당 행에 <b>게임패드 키가 비어 있어</b> 패드 사용 중에는 전부 걸러졌습니다. ③ 언리얼은 <b>키 아이콘을 기본 제공하지 않아</b> 키↔이미지 대응표를 직접 만들어야 했습니다. ④ 그 대응표의 패드 이름이 <b>플랫폼 기본값과 달라</b> 조회에서 제외됐습니다.</dd></div>
+        <div><dt>해결</dt><dd>엔진의 진단 명령으로 한 겹씩 좁혔습니다. 필터를 무시하는 콘솔 변수로 <b>바 자체가 살아 있는지</b> 먼저 확인하고, 활성 트리 덤프로 <b>바인딩이 등록됐는지</b> 확인한 뒤, 마우스↔패드를 오가며 <b>어느 입력 방식에서 걸리는지</b>를 갈랐습니다. 증상이 하나여도 원인이 여러 겹일 때는 <b>층마다 확인 수단을 따로 두는 것</b>이 빨랐습니다.</dd></div>
+      </dl>
+    </div>
   </section>
+
+  <div class="close">
+    <h2>UI 세 기능을 관통하는 한 문장</h2>
+    <p><b>&ldquo;답을 아는 쪽에 물어보고, 사본을 만들지 않는다.&rdquo;</b>
+    세 기능은 서로 다른 문제를 풀지만 판단은 하나였습니다 —
+    <b>이미 답을 아는 쪽이 있는데 그 값을 코드가 따로 들고 있으면, 언젠가 두 값이 어긋납니다.</b></p>
+
+    <div class="tscroll" style="margin-top:14px">
+      <table class="scope">
+        <thead>
+          <tr><th>무엇을</th><th>누가 이미 알고 있나</th><th>그래서 코드가 안 하는 일</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>어느 창이 위인가</td><td>레이어 배치</td><td>띄우는 코드마다 순서를 기억</td></tr>
+          <tr><td>지금 몇 장 떠 있나</td><td>레이어 스택</td><td>카운터 변수를 세는 것</td></tr>
+          <tr class="me"><td>쿨다운이 몇 초 남았나</td><td>쿨다운 GE</td><td>UI가 자기 타이머를 굴리는 것</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="logcap" style="font-size:12.5px"><b>왜 사본이 문제인가</b>사본은 만드는 순간이 아니라
+    <strong>나중에 어긋납니다.</strong> 창을 다른 레이어로 옮겼을 때, 창이 예외로 닫혔을 때,
+    일시정지 · 배속 · 재접속이 끼었을 때 — 전부 <strong>두 값이 다르게 흐르기 시작하는 지점</strong>입니다.
+    그때 나는 버그는 크래시도 로그도 없이 <strong>화면만 조용히 틀립니다.</strong>
+    그래서 성능을 조금 내주더라도(레이어 넷 순회, 매 틱 조회) <strong>틀릴 수 있는 자리 자체를 없애는 쪽</strong>을 택했습니다.</p>
+  </div>
 
   <div class="foot">
     <span>조준혁 · GAME CLIENT PROGRAMMER</span>

@@ -21,7 +21,8 @@
 
   <header class="ph">
     <h1>MiniOscReceiver</h1>
-    <p class="sub">OSC구조를 <b>다시 만들어 측정한</b> 실험입니다.</p>
+    <p class="sub">Stage On에서 골랐던 <code>OSC</code> 수신 구조를
+    <b>플러그인 없이 직접 다시 만들어 측정한</b> 실험입니다.</p>
 
     <dl class="facts">
       <div><dt>종류</dt><dd>검증용 개인 프로젝트</dd></div>
@@ -37,9 +38,8 @@
         모션 데이터를 <code>RPC</code> 대신 <code>UDP/OSC</code>로 받도록 바꾼 판단이 있었습니다.
         그런데 그때 <b>소켓·수신 스레드·바이트 파싱은 플러그인이 처리했고</b>,
         제가 실제로 확인한 것은 &ldquo;끊겨 보이던 게 나아졌다&rdquo;는 증상뿐이었습니다.</p>
-        <p>그래서 플러그인 없이 그 계층을 만들고, <b>같은 데이터를 RPC로도 보내는 비교군</b>을
-        함께 만들어 비교해보았습니다.</p>
-        <p></p>
+        <p>그래서 플러그인이 감추고 있던 그 계층을 직접 만들고,
+        <b>같은 데이터를 RPC로도 보내는 비교군</b>을 함께 세워 나란히 재봤습니다.</p>
       </div>
       <figure>
         <pre class="logbox"><span class="c">// 파이썬이 보낸 x = 1.5 가 실제로 도착하는 모습</span>
@@ -61,14 +61,14 @@
     <div class="feat-h">
       <span class="no">기능 01</span>
       <h2>UDP 소켓과 전용 수신 스레드</h2>
-      <p class="one">네트워크에서 데이터를 1MS마다 꺼내옵니다.</p>
+      <p class="one">게임 프레임을 기다리지 않고, <b>전용 스레드가 1ms마다</b> 소켓을 확인합니다.</p>
     </div>
 
     <div class="part p-impl">
       <h3>구현</h3>
       <ul>
         <li><code>FUdpSocketBuilder</code>로 소켓을 열고 수신 버퍼를 <b>1MB</b>로 잡았습니다.</li>
-        <li><code>FUdpSocketReceiver</code>가 만든 <b>전용 스레드에서 1ms 간격으로 폴링</b>합니다.</li>
+        <li><code>FUdpSocketReceiver</code>가 만든 <b>전용 스레드에서 1ms마다 폴링</b>합니다.</li>
         <li>종료는 <b>스레드를 먼저 멈추고 그다음 소켓</b>을 닫습니다.
         소켓은 <code>delete</code>가 아니라 서브시스템에 <code>DestroySocket</code>으로 반납합니다.</li>
       </ul>
@@ -77,11 +77,24 @@
     <div class="part p-shot">
       <h3>화면</h3>
       <figure>
-        <pre class="logbox"><span class="c">// 정상 수신 중 — 계측 로그</span>
-[OSC][stats] 수신 <span class="ok">60.0 Hz</span> / 적용 <span class="ok">60.0 Hz</span> / 누적 1800 패킷 / 파싱실패 <span class="ok">0</span>
-[OSC][stats] 수신 <span class="ok">60.0 Hz</span> / 적용 <span class="ok">60.0 Hz</span> / 누적 3600 패킷 / 파싱실패 <span class="ok">0</span></pre>
-        <p class="logcap"><b>계측 로그</b>수신 Hz는 네트워크로 도착한 양, 적용 Hz는 게임 스레드가 실제로 반영한 양입니다.
-        <b>두 값이 갈라지면 게임 스레드가 밀리고 있다는 뜻</b>이라 지표를 둘로 나눴습니다.</p>
+        <pre class="logbox"><span class="c">// 무엇을 재는가 — ReceiveStatsComponent</span>
+<span class="c">// 한 포즈 = 조각 여러 개</span>
+<span class="c">//   OSC  본 200 + 페이셜 1 = 조각 201    120fps → 초당 24,120</span>
+<span class="c">//   RPC  본 200            = 조각 200    120fps → 초당 24,000</span>
+
+수신 Hz   초당 도착한 조각 수
+갱신 Hz   포즈가 도착한 프레임이 초당 몇 번이었나   <span class="hi">← 새 포즈를 몇 번 받았나</span>
+FPS       초당 전체 프레임 수                     <span class="hi">← 갱신 Hz의 상한</span>
+버스트    한 프레임에 도착한 조각 수               <span class="hi">← 한 포즈면 OSC 201 · RPC 200</span>
+
+<span class="c">// 버스트 ÷ 한 포즈 조각 수 = 그 프레임에 도착한 포즈 수</span>
+<span class="ok">201</span>   한 포즈가 통째로 도착     정상
+<span class="bad">402</span>   두 포즈가 한 프레임에 겹침   앞 포즈는 버려진다
+
+<span class="c">// 갱신 Hz</span>
+<span class="ok">갱신 = FPS</span>   매 프레임 새 포즈 — 밀리지 않는다
+<span class="bad">갱신 &lt; FPS</span>   새 포즈가 덜 도착 — 그만큼 끊겨 보인다</pre>
+        <p class="logcap"><b>무엇을 재는가</b>조각(본)을 몇 개 처리했는지보다 <strong>새 포즈가 몇 번 도착했는지</strong>가 실제 프레임에 더 영향을 미칩니다.<strong>실측값과 RPC와의 차이는 바로 아래 기능 02에서 다룹니다.</strong></p>
       </figure>
     </div>
 
@@ -89,87 +102,22 @@
       <h3>성과</h3>
       <div class="res">
         <span class="n">송신 Hz를 그대로 따라가는 수신</span>
-        <span class="n">PIE 종료 후 포트 바인딩 실패 없음</span>
+        <span class="n">에디터 실행(PIE)을 껐다 켜도 포트가 잡힌 채 남지 않음</span>
       </div>
     </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">UDP 소켓과 전용 수신 스레드</a>
+    </div>
+
   </section>
 
   <!-- ══════ 기능 02 ══════ -->
   <section class="feat" id="f2">
     <div class="feat-h">
       <span class="no">기능 02</span>
-      <h2>OSC 바이트 파싱</h2>
-      <p class="one"></p>
-    </div>
-
-    <div class="part p-impl">
-      <h3>구현</h3>
-      <ul>
-        <li><b>4바이트 정렬</b> — <code>(n + 3) &amp; ~3</code>.
-        <code>/cube/pos</code>는 9글자지만 널 포함 12바이트를 소비합니다.(4의 배수를 맞춰야 하기 때문)</li>
-        <li><b>빅엔디안 조립</b> — OSC는 네트워크 바이트 오더입니다. 가장 앞 바이트를 최상위로 두고 조립합니다.</li>
-        <li><b>float는 비트 재해석</b> — <code>FMemory::Memcpy</code>로 32비트를 그대로 옮깁니다.</li>
-        <li>매 읽기마다 경계를 검사하고, 모르는 타입 태그를 만나면 즉시 실패시킵니다.</li>
-      </ul>
-    </div>
-
-    <div class="part p-shot">
-      <h3>화면</h3>
-      <figure>
-        <pre class="logbox"><span class="c">// 값을 바꾸는 게 아니라 같은 비트를 다시 읽는다</span>
-0x3FC00000  <span class="bad">(float)AsInt   → 1069547520.0</span>   <span class="c">← 정수를 실수로 '변환'</span>
-0x3FC00000  <span class="ok">Memcpy 재해석  → 1.5</span>            <span class="c">← 같은 32비트를 IEEE754로</span>
-
-<span class="c">// 매 읽기마다 경계 검사 — 없으면 잘린 패킷 하나로 버퍼 오버리드</span>
-if (InOutOffset + 4 &gt; Size) return false;</pre>
-        <p class="logcap"><b>비트 재해석</b>같은 값을 (float)캐스팅하면 10억이 나옵니다. <br>원한 건 같은 32비트를 실수 형식으로 다시 읽는 것이기 때문에 Memcpy로 비트를 그대로 복사하여 IEEE754 규칙으로 읽어 1.5라는 값을 얻었습니다.</p>
-      </figure>
-    </div>
-
-    <div class="part p-result">
-      <h3>성과</h3>
-      <div class="res">
-        <span>파싱 실패 0</span>
-        <span class="n">플러그인 없이 OSC 1.0 해석</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════ 기능 03 ══════ -->
-  <section class="feat" id="f3">
-    <div class="feat-h">
-      <span class="no">기능 03</span>
-      <h2>스레드 경계 — SPSC 락프리 큐</h2>
-      <p class="one">수신 스레드와 게임 스레드의 역할을 분리했습니다.</p>
-    </div>
-
-    <div class="part p-impl">
-      <h3>구현</h3>
-      <ul>
-        <li>수신 스레드는 <b>파싱해서 큐에 넣는 일까지만</b> 합니다.
-        <code>TQueue&lt;FOscMessage, EQueueMode::Spsc&gt;</code>로 게임 스레드에 넘깁니다.</li>
-        <li>계측 카운터조차 <code>FPlatformAtomics::InterlockedIncrement</code>로 원자적으로 올립니다.
-        <code>++</code>는 읽고·더하고·쓰는 세 동작이라 중간에 끼어들면 값이 어긋납니다.</li>
-        <li>게임 스레드는 <code>Tick</code>에서 큐를 비우고 주소 패턴으로 분기해
-        위치는 <code>Transform</code>에, 페이셜은 로그로 보냅니다.</li>
-      </ul>
-    </div>
-
-    <div class="part p-result">
-      <h3>성과</h3>
-      <div class="res">
-        <span class="n">수신 경로에 대기 없음</span>
-        <span class="n">데이터 레이스·GC 크래시 제거</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════ 기능 04 ══════ -->
-  <section class="feat" id="f4">
-    <div class="feat-h">
-      <span class="no">기능 04</span>
       <h2>RPC와 비교 측정</h2>
-      <p class="one"></p>
+      <p class="one">같은 데이터를 OSC와 RPC 양쪽으로 보내, 부하를 올렸을 때 <b>어떤 차이가 발생하는지</b> 측정했습니다.</p>
     </div>
 
     <div class="part p-impl">
@@ -177,11 +125,12 @@ if (InOutOffset + 4 &gt; Size) return false;</pre>
       <ul>
         <li>같은 궤도 데이터를 RPC로도 보내는 비교군(<code>RpcMotionActor</code>)을 만들고,
         <b>양쪽에 같은 계측 컴포넌트</b>를 붙였습니다.</li>
-        <li>동일한 조건에서 전송방식(OSC vs RPC)만 다르게 했습니다.<br> -<code>SetReplicateMovement(false)</code>로 자동 복제를 막고
-        (안 막으면 RPC와 무관하게 큐브가 움직입니다) <br>
-       -<code>HasAuthority()(서버이면)</code>면 계측하지 않았습니다
-                (서버에서 재면 실행한 함수가 바로 적용되어서 의미가 없음).</li>
-        <li>본 개수를 1개 → 100~200개로 올려 <b>실제 모션캡처 수준의 부하</b>를 만들었습니다.</li>
+        <li>조건은 똑같이 두고 <b>전송 방식(OSC vs RPC)만</b> 바꿨습니다.<br>
+        · <code>SetReplicateMovement(false)</code>로 <b>엔진이 알아서 해 주는 위치 동기화를 껐습니다</b>
+        — 안 끄면 RPC가 도착하든 말든 큐브가 움직여 측정이 무의미해집니다.<br>
+        · <code>HasAuthority()</code>(<b>서버 쪽</b>)일 때는 재지 않았습니다
+        — 서버는 호출한 함수가 그 자리에서 실행되니 전달률이라는 게 없습니다.</li>
+        <li>뼈(본) 개수를 1개 → 100~200개로 올려 <b>실제 모션캡처 수준의 부하</b>를 만들었습니다.</li>
       </ul>
     </div>
 
@@ -199,25 +148,25 @@ LogNet: UNetConnection::Close
 OSC 수신 <span class="hi">24120</span> / 실질갱신 <span class="bad">3.0</span>  / FPS <span class="bad">3.0</span>  / 평균버스트 <span class="bad">8047</span>
 OSC 수신 <span class="hi">23639</span> / 실질갱신 55.2 / FPS 55.2 / 평균버스트 434
 OSC 수신 <span class="hi">24119</span> / 실질갱신 <span class="ok">60.0</span> / FPS <span class="ok">60.0</span> / 평균버스트 402</pre>
-        <p class="logcap"><b>실제 로그</b>Reliable RPC는 느려지는 게 아니라 <b>연결이 끊깁니다.</b>
+        <p class="logcap"><b>실제 로그</b>Reliable RPC는 느려지는 게 아니라 <strong>연결이 끊깁니다.</strong>
         OSC는 전부 수신했지만 초기에 FPS가 3까지 떨어졌습니다.</p>
       </figure>
 
       <div class="shots two" style="margin-top:14px">
         <figure>
           <img src="../assets/images/miniosc/osc-success.webp" alt="OSC 수신 중 화면. 계측 오버레이에 수신 24119.6, 갱신 120.0, FPS 120.0, 버스트 201.00, 유실 0으로 표시돼 있다">
-          <figcaption><b>OSC · UDP</b>송신 24,120을 <b>그대로 받았습니다.</b>
-          버스트 201은 한 프레임에 보낸 양(본 200 + 페이셜 1)이 그 프레임에 전부 반영됐다는 뜻이라
-          <b>뭉쳐서 밀리는 구간이 없습니다.</b> 갱신 120 = FPS 120.</figcaption>
+          <figcaption><b>OSC · UDP</b>송신 24,120을 <strong>그대로 받았습니다.</strong>
+          버스트 201은 한 프레임에 보낸 양(본 200 + 페이셜 1)이 그 프레임에 전부 반영했다는 뜻입니다. 
+          갱신 120 = FPS 120.</figcaption>
         </figure>
         <figure>
           <img src="../assets/images/miniosc/rpc-unreliable.webp" alt="Unreliable RPC 수신 중 화면. 서버 송신시도 23999.6 Hz, 클라이언트 수신 112.0, 갱신 56.0, FPS 120.0, 버스트 2.00, 누적 유실 310628로 표시돼 있다">
-          <figcaption><b>RPC · Unreliable</b>같은 조건(120Hz × 본 200)에서 서버는 초당 <b>24,000번 호출</b>하는데
-          클라이언트에 도착한 것은 <b>112개</b>입니다. 연결은 살아 있지만 누적 유실이 <b>31만</b>을 넘었습니다.</figcaption>
+          <figcaption><b>RPC · Unreliable</b>같은 조건(120Hz × 본 200)에서 서버는 초당 <strong>24,000번 호출</strong>하는데
+          클라이언트에 도착한 것은 <strong>112개</strong>입니다. 연결은 살아 있지만 누적 유실이 <strong>31만</strong>을 넘었습니다.</figcaption>
         </figure>
       </div>
       <p class="logcap" style="font-size:12.5px"><b>촬영 조건</b>두 경로를 동시에 돌리면 서로 부하를 주므로
-      <b>각각 단독으로 재고 송신 조건만 맞췄습니다.</b> OSC 촬영 시 RPC 액터를, RPC 촬영 시 OSC 송신기를 껐습니다.</p>
+      <strong>각각 단독으로 재고 송신 조건만 맞췄습니다.</strong> OSC 촬영 시 RPC 액터를, RPC 촬영 시 OSC 송신기를 껐습니다.</p>
 
       <div class="tscroll" style="margin-top:14px">
         <table class="scope">
@@ -251,27 +200,111 @@ OSC 수신 <span class="hi">24119</span> / 실질갱신 <span class="ok">60.0</s
     </div>
   </section>
 
+  <!-- ══════ 기능 03 ══════ -->
+  <section class="feat" id="f3">
+    <div class="feat-h">
+      <span class="no">기능 03</span>
+      <h2>OSC 바이트 파싱</h2>
+      <p class="one">도착한 바이트 덩어리에서 주소와 숫자를 파싱합니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li><b>4바이트 정렬</b> — <code>(n + 3) &amp; ~3</code>.
+        <code>/cube/pos</code>는 9글자지만 널 포함 12바이트를 소비합니다.(4의 배수를 맞춰야 하기 때문)</li>
+        <li><b>빅엔디안 조립</b> — OSC는 네트워크 바이트 오더(<b>큰 자리를 앞에 두는 순서</b>)입니다.
+        가장 앞 바이트를 최상위로 두고 조립합니다.</li>
+        <li><b>float는 값을 바꾸지 않고 비트만 다시 읽습니다</b> —
+        <code>FMemory::Memcpy</code>로 32비트를 그대로 옮깁니다.</li>
+        <li>매 읽기마다 경계를 검사하고, 모르는 타입 태그를 만나면 즉시 실패시킵니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <figure>
+        <pre class="logbox"><span class="c">// 값을 바꾸는 게 아니라 같은 비트를 다시 읽는다</span>
+0x3FC00000  <span class="bad">(float)AsInt   → 1069547520.0</span>   <span class="c">← 정수를 실수로 '변환'</span>
+0x3FC00000  <span class="ok">Memcpy 재해석  → 1.5</span>            <span class="c">← 같은 32비트를 IEEE754로</span>
+
+<span class="c">// 매 읽기마다 경계 검사 — 없으면 잘린 패킷 하나로 버퍼 오버리드</span>
+if (InOutOffset + 4 &gt; Size) return false;</pre>
+        <p class="logcap"><b>비트 재해석</b>같은 값을 (float)캐스팅하면 10억이 나옵니다. <br>원한 건 같은 32비트를 실수 형식으로 다시 읽는 것이기 때문에 Memcpy로 비트를 그대로 복사하여 IEEE754 규칙으로 읽어 1.5라는 값을 얻었습니다.</p>
+      </figure>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>파싱 실패 0</span>
+        <span class="n">플러그인 없이 OSC 1.0 해석</span>
+      </div>
+    </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">OSC 바이트 직접 파싱</a>
+    </div>
+
+  </section>
+
+  <!-- ══════ 기능 04 ══════ -->
+  <section class="feat" id="f4">
+    <div class="feat-h">
+      <span class="no">기능 04</span>
+      <h2>스레드 경계 — SPSC 락프리 큐</h2>
+      <p class="one">넣는 쪽과 받는 쪽을 구분했습니다.
+      <b>SPSC</b>는 넣는 쪽 하나 · 꺼내는 쪽 하나, <b>락프리</b>는 서로 기다리지 않는다는 뜻입니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>수신 스레드는 <b>파싱해서 큐에 넣는 일까지만</b> 합니다.
+        <code>TQueue&lt;FOscMessage, EQueueMode::Spsc&gt;</code>로 게임 스레드에 넘깁니다.</li>
+        <li>계측 카운터조차 <code>FPlatformAtomics::InterlockedIncrement</code>로
+        <b>atomic한 동작으로</b> 증가시킵니다.
+        <code>++</code>는 읽고·더하고·쓰는 세 동작이라 중간에 끼어들면 값이 어긋납니다.</li>
+        <li>게임 스레드는 <code>Tick</code>에서 큐를 비우고 주소 패턴으로 갈라
+        위치는 <code>Transform</code>에, 표정(페이셜)은 로그로 보냅니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span class="n">수신 스레드가 게임 스레드를 기다리지 않음</span>
+        <span class="n">두 스레드가 같은 값을 동시에 건드려 생기던 크래시 제거</span>
+      </div>
+    </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t3">스레드 경계 — SPSC 락프리 큐</a>
+    </div>
+
+  </section>
+
   <!-- ══════ 트러블슈팅 ══════ -->
   <section class="feat" id="trouble">
     <div class="feat-h">
       <span class="no"></span>
       <h2>트러블슈팅</h2>
-      <p class="one"></p>
+      <p class="one">막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다.</p>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t1">
       <h3>어려움</h3>
-      <p><b>기능 01 — UDP 소켓과 전용 수신 스레드</b></p>
+      <p><b><a class="flink" href="#f1">기능 01</a> — UDP 소켓과 전용 수신 스레드</b></p>
       <dl class="tbl">
-        <div><dt>문제</dt><dd>게임 스레드에서 소켓을 읽으면 <b>프레임당 한 번(≈16ms)밖에 확인하지 못합니다.</b> 그 사이 도착한 패킷이 커널 버퍼에 쌓이다 넘칩니다.</dd></div>
-        <div><dt>원인</dt><dd><code>UDP</code>는 재전송이 없습니다. 버퍼가 차면 <b>커널이 조용히 버리고</b> 애플리케이션은 그 사실조차 모릅니다.</dd></div>
+        <div><dt>문제</dt><dd>게임 스레드에서 소켓을 읽으면 <b>프레임당 한 번밖에 확인하지 못합니다.</b> 그 사이 도착한 패킷이 커널 버퍼에 쌓이다 넘칩니다.</dd></div>
+        <div><dt>원인</dt><dd><code>UDP</code>는 재전송이 없습니다. 버퍼가 차면 <b>커널이 버리고</b> 애플리케이션은 그 사실조차 모릅니다.</dd></div>
         <div><dt>해결</dt><dd>수신을 <b>전용 스레드로 분리해 1ms마다</b> 확인하고, 커널 버퍼도 크게 잡았습니다. 1ms면 60~120Hz 스트림을 놓치지 않으면서 CPU 부하도 크지 않습니다.</dd></div>
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t2">
       <h3>어려움</h3>
-      <p><b>기능 02 — OSC 바이트 직접 파싱</b></p>
+      <p><b><a class="flink" href="#f3">기능 03</a> — OSC 바이트 직접 파싱</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>조립한 <code>0x3FC00000</code>을 <code>(float)</code>로 캐스팅했더니 <b>약 10억이 나왔습니다.</b> 기대한 값은 <code>1.5</code>였습니다.</dd></div>
         <div><dt>원인</dt><dd>캐스팅은 <b>값을 변환</b>합니다. 
@@ -291,14 +324,14 @@ OSC 수신 <span class="hi">24119</span> / 실질갱신 <span class="ok">60.0</s
       </dl>
     </div>
 
-    <div class="part p-trouble">
+    <div class="part p-trouble" id="t3">
       <h3>어려움</h3>
-      <p><b>기능 03 — 스레드 경계 — SPSC 락프리 큐</b></p>
+      <p><b><a class="flink" href="#f4">기능 04</a> — 스레드 경계 — SPSC 락프리 큐</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>수신 콜백에서 액터를 직접 움직이면 <b>값이 절반만 갱신되거나 크래시</b>가 났습니다.</dd></div>
         <div><dt>원인</dt><dd>언리얼의 <code>UObject</code>는 스레드 세이프하지 않습니다. 게임 스레드가 큐브의 위치를 읽어서 그리는 한복판에 수신 스레드가 값을 덮어 씌워서 그 결과로 <br>- 값이 절반만 갱신됨 (x는 새 값, y는 옛 값)
  <br> - GC가 그 순간 그 오브젝트를 정리 중이었다면 → 이미 해제된 메모리를 건드림 → 크래시</dd></div>
-        <div><dt>해결</dt><dd>컨베이너 벨트를 생각하며 큐 하나로 생산자(수신 스레드) , 소비자(게임 스레드)를 확정했습니다. <b>락은 쓰지 않았습니다.</b> 수신 스레드가 락을 기다리며 멈추면 그동안 소켓을 못 읽어 커널 버퍼가 차고, 결국 데이터 유실로 이어지기 때문입니다.</dd></div>
+        <div><dt>해결</dt><dd>컨베이어 벨트처럼, 큐 하나를 두고 <b>올리는 쪽(수신 스레드)과 내리는 쪽(게임 스레드)을 구분했습니다.</b> <b>락은 쓰지 않았습니다.</b> 수신 스레드가 락이 풀리기를 기다리며 멈추면 그동안 소켓을 못 읽어 커널 버퍼가 차고, 결국 데이터 유실로 이어지기 때문입니다.</dd></div>
       </dl>
     </div>
   </section>
@@ -312,8 +345,6 @@ OSC 수신 <span class="hi">24119</span> / 실질갱신 <span class="ok">60.0</s
     <b>OSC의 &ldquo;유실 0&rdquo;도 유지되지 않을 것입니다.</b> </p>
     <p style="margin-top:9px"><code>NetServerMaxTickRate</code> 조작이 PIE에서 적용되지 않아 <b>틱레이트의 영향은 검증하지 못했습니다.</b>
     본 데이터가 위치(float 3개)뿐이고 실제 모션캡처는 회전까지 보내므로, <b>부하를 실제보다 가볍게 잡았습니다.</b></p>
-    <p style="margin-top:9px"></p>
-    <p style="margin-top:9px"></p>
   </div>
 
   <div class="foot">

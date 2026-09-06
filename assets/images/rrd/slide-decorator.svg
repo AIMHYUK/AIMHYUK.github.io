@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692 230" width="692" height="230" role="img" aria-label="강화 데코레이터 체인 다이어그램">
+  <style>
+    .s { font-family: Pretendard, "Malgun Gothic", system-ui, sans-serif; }
+    .t { font-size: 13.5px; fill: #111; font-weight: 700; }
+    .g { font-size: 11px;   fill: #666; }
+    .b { font-size: 11.5px; fill: #333; }
+    .l { font-size: 11.5px; fill: #111; font-weight: 700; }
+  </style>
+  <rect width="692" height="230" fill="#ffffff"/>
+
+  <!-- 진입 -->
+  <rect x="0.75" y="72" width="96" height="48" fill="#ffffff" stroke="#111" stroke-width="1.5"/>
+  <text class="s b" x="48" y="92" text-anchor="middle">강화 카드</text>
+  <text class="s b" x="48" y="108" text-anchor="middle">선택</text>
+
+  <g stroke="#111" stroke-width="1.5" fill="none"><path d="M97 96 L186 96"/></g>
+  <path d="M194 96 L184 91 L184 101 Z" fill="#111"/>
+  <text class="s l" x="145" y="87" text-anchor="middle">GainUpgrade(id)</text>
+
+  <!-- 라우터 -->
+  <rect x="194" y="66" width="132" height="60" fill="#C5FF82" stroke="#111" stroke-width="1.5"/>
+  <text class="s t" x="260" y="90" text-anchor="middle">UpgradeApplier</text>
+  <text class="s g" x="260" y="107" text-anchor="middle">id 그룹 · 등급 파싱</text>
+  <text class="s g" x="260" y="120" text-anchor="middle">단일 출처</text>
+
+  <!-- 분기 -->
+  <g stroke="#111" stroke-width="1.5" fill="none">
+    <path d="M326 96 C 344 96, 344 32, 358 32"/>
+    <path d="M326 96 L358 96"/>
+    <path d="M326 96 C 344 96, 344 160, 358 160"/>
+  </g>
+  <path d="M366 32  L356 27  L356 37  Z" fill="#111"/>
+  <path d="M366 96  L356 91  L356 101 Z" fill="#111"/>
+  <path d="M366 160 L356 155 L356 165 Z" fill="#111"/>
+
+  <!-- 레지스트리 3종 -->
+  <rect x="366" y="8" width="326" height="48" fill="#ffffff" stroke="#111"/>
+  <text class="s t" x="380" y="28">TDTurretUpgrade</text>
+  <text class="s g" x="380" y="45">타워 스탯 — 공격력 · 공속 · 사거리 · 오버로드</text>
+
+  <rect x="366" y="72" width="326" height="48" fill="#ffffff" stroke="#111"/>
+  <text class="s t" x="380" y="92">TDProjectileTrait</text>
+  <text class="s g" x="380" y="109">탄환의 생애 — OnLaunch / OnReflect / OnHit</text>
+
+  <rect x="366" y="136" width="326" height="48" fill="#ffffff" stroke="#111"/>
+  <text class="s t" x="380" y="156">TDReflectWallTrait</text>
+  <text class="s g" x="380" y="173">벽에 맞는 순간 — 폭발 · 관통 · 메소흡수 · 지대</text>
+
+  <!-- 상태 경계 -->
+  <rect x="0.75" y="196" width="690" height="28" fill="#ffffff" stroke="#111"/>
+  <text class="s b" x="16" y="215">특성 객체 = 무상태(공유)　·　발사마다 변하는 값은 탄환의 traitState — 풀에서 꺼낼 때 새로 만든다</text>
+</svg>

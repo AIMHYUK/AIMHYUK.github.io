@@ -28,8 +28,8 @@
     <dl class="facts">
       <div><dt>장르</dt><dd>모바일 점프 액션 (무한 스크롤)</dd></div>
       <div><dt>엔진 · 언어</dt><dd>Unity · C#</dd></div>
-      <div><dt>소속 · 규모</dt><dd>주식회사 디몽 인턴 · 사수와 2인 개발</dd></div>
-      <div><dt>담당</dt><dd>클라이언트 개발 · 2025.03 ~ 06 </dd></div>
+      <div><dt>소속 · 규모</dt><dd>주식회사 디몽 인턴 · 3인 (개발 2 · 아트 1)</dd></div>
+      <div><dt>담당</dt><dd>클라이언트 개발 · 2025.04 ~ 06 (인턴 2025.03 ~ 06)</dd></div>
     </dl>
 
     <div class="about">
@@ -476,7 +476,7 @@ AddProduct(광고제거, NonConsumable, {
       <p><b><a class="flink" href="#f2">기능 02</a> — 인앱 결제 — 광고 제거 상품</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>구매 완료를 처리하는 함수 안에서 <b>Firebase 저장을 기다릴 수 없었습니다.</b> 저장을 <code>async void</code>로 두자, 저장이 실패해도 <b>아무도 모르게 넘어갔습니다.</b> 돈을 낸 유저의 광고 제거가 사라질 수 있었습니다.</dd></div>
-        <div><dt>원인</dt><dd><code>ProcessPurchase</code>는 스토어에 <b>처리 결과를 즉시 돌려줘야 하는 함수</b>라 <code>await</code>를 걸 수 없습니다. 그렇다고 <code>async void</code>로 만들면 예외가 호출자에게 전달되지 않아 <b>실패가 조용히 삼켜집니다.</b></dd></div>
+        <div><dt>원인</dt><dd><code>ProcessPurchase</code>는 스토어에 <b>처리 결과를 즉시 돌려줘야 하는 함수</b>라 <code>await</code>를 걸 수 없습니다. 그렇다고 <code>async void</code>로 만들면 예외가 호출자에게 전달되지 않아 <b>실패가 경고 없이 삼켜집니다.</b></dd></div>
         <div><dt>해결</dt><dd>저장을 <b><code>Task</code>를 반환하는 별도 래퍼</b>로 떼어내고 그 안에서 <code>try/catch</code>로 실패를 잡아 로그를 남기게 했습니다. 스토어에는 결과를 바로 돌려주고, 저장은 <b>실패해도 흔적이 남는 경로</b>로 분리했습니다.</dd></div>
       </dl>
     </div>

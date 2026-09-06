@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692 230" width="692" height="230" role="img" aria-label="게임 플로우 2층 구조 다이어그램">
+  <style>
+    .s  { font-family: Pretendard, "Malgun Gothic", system-ui, sans-serif; }
+    .t  { font-size: 15px; fill: #111; font-weight: 700; }
+    .g  { font-size: 11.5px; fill: #666; }
+    .b  { font-size: 12px; fill: #333; }
+    .l  { font-size: 11.5px; fill: #111; font-weight: 700; }
+    .p  { font-size: 12px; fill: #111; }
+  </style>
+  <rect width="692" height="230" fill="#ffffff"/>
+
+  <!-- 1층 -->
+  <rect x="0.75" y="6" width="690" height="52" fill="#ffffff" stroke="#111" stroke-width="1.5"/>
+  <text class="s t" x="18" y="29">GameFlowManager</text>
+  <text class="s g" x="176" y="29">@Logic · 세션 수명 — 맵이 바뀌어도 살아있다</text>
+  <text class="s b" x="18" y="48">타이틀 · 맵선택 · 스테이지 · 결과　|　런 진행도　|　스테이지 간 맵 이동</text>
+
+  <!-- 층간 -->
+  <g stroke="#111" stroke-width="1.5" fill="none">
+    <path d="M150 60 L150 92"/>
+    <path d="M542 94 L542 62"/>
+  </g>
+  <path d="M150 100 L145 90 L155 90 Z" fill="#111"/>
+  <path d="M542 54 L537 64 L547 64 Z" fill="#111"/>
+  <text class="s l" x="160" y="76">EnterStage(n)</text>
+  <text class="s l" x="532" y="76" text-anchor="end">OnStageResult(won)</text>
+
+  <!-- 2층 -->
+  <rect x="0.75" y="100" width="690" height="76" fill="#ffffff" stroke="#111" stroke-width="1.5"/>
+  <text class="s g" x="18" y="119">맵 수명 — 맵이 로드될 때 생기고, 언로드되면 사라진다</text>
+
+  <g>
+    <rect x="18"  y="128" width="210" height="36" fill="#ffffff" stroke="#111"/>
+    <text class="s t" x="30" y="145" style="font-size:13px">PhaseManager</text>
+    <text class="s g" x="30" y="158" style="font-size:10.5px">Stage 1 · Build → Battle → Win/Lose</text>
+
+    <rect x="240" y="128" width="210" height="36" fill="#ffffff" stroke="#111"/>
+    <text class="s t" x="252" y="145" style="font-size:13px">PhaseManager</text>
+    <text class="s g" x="252" y="158" style="font-size:10.5px">Stage 2 · 같은 구조</text>
+
+    <rect x="462" y="128" width="210" height="36" fill="#ffffff" stroke="#111"/>
+    <text class="s t" x="474" y="145" style="font-size:13px">PhaseManager</text>
+    <text class="s g" x="474" y="158" style="font-size:10.5px">Stage 3 · 같은 구조</text>
+  </g>
+
+  <!-- 정책 -->
+  <rect x="0.75" y="186" width="690" height="38" fill="#C5FF82" stroke="#111" stroke-width="1.5"/>
+  <text class="s l" x="18" y="210" style="font-size:12.5px">IsAllowed(phase, action)</text>
+  <text class="s p" x="168" y="210">Build → place · upgrade　|　Battle → towerAttack · traps · wave　— 정책의 유일한 출처</text>
+</svg>

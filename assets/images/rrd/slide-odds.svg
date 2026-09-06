@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 692 196" width="692" height="196" role="img" aria-label="카테고리별 진열 출현 확률 비교 차트">
+  <style>
+    .s   { font-family: Pretendard, "Malgun Gothic", system-ui, sans-serif; }
+    .lg  { font-size: 11.5px; fill: #333; }
+    .cat { font-size: 11.5px; fill: #333; }
+    .val { font-size: 10.5px; fill: #555; }
+    .ax  { font-size: 10.5px; fill: #666; }
+    .fn  { font-size: 10.5px; fill: #444; }
+  </style>
+  <rect width="692" height="196" fill="#ffffff"/>
+
+  <!-- 범례 -->
+  <rect x="100" y="4" width="11" height="11" fill="#2a78d6"/>
+  <text class="s lg" x="117" y="14">전체 풀에서 직접 추첨</text>
+  <rect x="268" y="4" width="11" height="11" fill="#eb6834"/>
+  <text class="s lg" x="285" y="14">2단계 추첨 (구현)</text>
+
+  <line x1="100" y1="26" x2="100" y2="166" stroke="#d5d4cf"/>
+  <text class="s ax" x="533" y="21" text-anchor="middle">25%</text>
+
+  <!-- 단발 터렛 : 20% → 25% -->
+  <text class="s cat" x="90" y="52" text-anchor="end">단발 터렛</text>
+  <path d="M100 34 H443 Q447 34 447 38 V42 Q447 46 443 46 H100 Z" fill="#2a78d6"/>
+  <text class="s val" x="453" y="44">20%</text>
+  <path d="M100 48 H529 Q533 48 533 52 V56 Q533 60 529 60 H100 Z" fill="#eb6834"/>
+
+  <!-- 레이저 터렛 : 20% → 25% -->
+  <text class="s cat" x="90" y="86" text-anchor="end">레이저 터렛</text>
+  <path d="M100 68 H443 Q447 68 447 72 V76 Q447 80 443 80 H100 Z" fill="#2a78d6"/>
+  <text class="s val" x="453" y="78">20%</text>
+  <path d="M100 82 H529 Q533 82 533 86 V90 Q533 94 529 94 H100 Z" fill="#eb6834"/>
+
+  <!-- 직사각 반사벽 : 30% → 25% -->
+  <text class="s cat" x="90" y="120" text-anchor="end">직사각 반사벽</text>
+  <path d="M100 102 H616 Q620 102 620 106 V110 Q620 114 616 114 H100 Z" fill="#2a78d6"/>
+  <text class="s val" x="626" y="112">30%</text>
+  <path d="M100 116 H529 Q533 116 533 120 V124 Q533 128 529 128 H100 Z" fill="#eb6834"/>
+
+  <!-- 삼각 반사벽 : 30% → 25% -->
+  <text class="s cat" x="90" y="154" text-anchor="end">삼각 반사벽</text>
+  <path d="M100 136 H616 Q620 136 620 140 V144 Q620 148 616 148 H100 Z" fill="#2a78d6"/>
+  <text class="s val" x="626" y="146">30%</text>
+  <path d="M100 150 H529 Q533 150 533 154 V158 Q533 162 529 162 H100 Z" fill="#eb6834"/>
+
+  <!-- 25% 기준선: 막대 위, 흰 여백으로 분리 -->
+  <line x1="533" y1="26" x2="533" y2="166" stroke="#ffffff" stroke-width="3"/>
+  <line x1="533" y1="26" x2="533" y2="166" stroke="#666"/>
+
+  <text class="s fn" x="0" y="186">종류가 적은 터렛이 각 20% → 25%로 회복 · 터렛이 뜰 확률 40% → 50%　|　풀 20종(단발4 · 레이저4 · 직사각6 · 삼각6)</text>
+</svg>

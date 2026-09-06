@@ -34,7 +34,7 @@
       </div><div>
         <dt>출시</dt>
         <dd>Google Play · App Store
-        <span>Bounce Hero : 꿈돌이 · 사수와 2인 공동 개발</span></dd>
+        <span>Bounce Hero : 꿈돌이 · 개발 2인 · 아트 1인</span></dd>
       </div>
       
       <div>
@@ -53,36 +53,6 @@
 
   <ul class="plist">
 
-    <!-- SpriteBatchDemo -->
-    <li class="pcard">
-      <div class="pcard-media">
-        <img src="assets/images/thumbs/spritebatch.jpg" alt="SpriteBatchDemo 실행 화면. 제목 표시줄에 Batched, 스프라이트 20000개, 드로우콜 1, CPU제출 0.334ms, 421 FPS. 알록달록한 도형 2만 개가 화면을 가득 채우고 있다">
-      </div>
-      <div>
-        <div class="pcard-head">
-          <h3>SpriteBatchDemo</h3>
-          <span class="meta">Direct3D 11 · C++ · 개인</span>
-        </div>
-        <p class="what">엔진 없이 Win32와 Direct3D 11만으로 만든 2D 스프라이트 렌더러입니다.
-        움직이는 스프라이트 2만 개에 <b>배칭 · 인스턴싱 · 컬링</b>을 직접 구현하고,
-        각각이 렌더 스레드 CPU를 얼마나 비우는지 <b>숫자로 실측</b>했습니다.</p>
-        <dl class="mini">
-          <dt>담당</dt>
-          <dd>전부. 창 · 디바이스 · 스왑체인 · 셰이더부터 세 가지 제출 경로
-          (<code>Naive</code> / <code>Batched</code> / <code>Instanced</code>)와 계측까지.</dd>
-          <dt class="t">어려움</dt>
-          <dd>드로우 콜 횟수만 낮춘 실험은 <b>1.35배</b>뿐이었음 →
-          진짜 비용은 드로우 횟수가 아니라 <b>업로드를 2만 번 하는 쪽</b>이었고,
-          그걸 포함해 다시 재자 <b>CPU 제출 약 5배</b>가 드러남</dd>
-        </dl>
-        <div class="marks">
-          <span class="n">드로우 콜 20,000 → 1</span>
-          <span class="n">CPU 제출 약 5배 감소</span>
-          <a href="projects/spritebatch.html">상세 보기</a>
-        </div>
-      </div>
-    </li>
-
     <!-- Stage On -->
     <li class="pcard">
       <div class="pcard-media">
@@ -91,7 +61,7 @@
       <div>
         <div class="pcard-head">
           <h3>Stage On</h3>
-          <span class="meta">UE5 · 7인 팀 · 2024.09 ~ 11</span>
+          <span class="meta">UE5 · 7인 팀 · 2024.09 ~ 12</span>
         </div>
         <p class="what">버튜버의 <b>실시간 라이브</b>를 위한 가상 콘서트 플랫폼. 관객이 무대를 직접 만들어 저장하고 버튜버는 해당 무대에서 공연을 개최할 수 있습니다.</p>
         <dl class="mini">
@@ -120,14 +90,16 @@
       <div>
         <div class="pcard-head">
           <h3>MiniOscReceiver</h3>
-          <span class="meta">UE 5.6 · 개인 · 2026.07 · <b>Stage On 후속</b></span>
+          <span class="meta">UE 5.6 · 개인 · 2026.07 – 09 · <b>Stage On 후속</b></span>
         </div>
         <p class="what">위 Stage On 당시엔 시간이 부족해 깊이 파지 못했던 구조를  <b>후에 재구현</b>해
-        측정한 실험입니다. 소켓·수신 스레드·바이트 파서를 만들어 RPC와 OSC의 차이를 살펴보았습니다.</p>
+        측정한 실험입니다. 소켓·수신 스레드·바이트 파서를 만들어 RPC와 OSC의 차이를 살펴보았고,
+        <b>그때 포기했던 재전송 구조까지 다시 세워</b> 본 데이터를 압축해 인터넷 너머로 보내봤습니다.</p>
         <dl class="mini">
           <dt>담당</dt>
           <dd><code>UDP</code> 소켓.<br> 1ms 폴링 수신 스레드.
-         <br> OSC 바이트 파싱(4바이트 정렬·빅엔디안·비트 재해석). <br>SPSC 락프리 큐 - <b>수신 스레드가 게임 스레드를 기다리지 않음.</b></dd>
+         <br> OSC 바이트 파싱(4바이트 정렬·빅엔디안·비트 재해석). <br>SPSC 락프리 큐 - <b>수신 스레드가 게임 스레드를 기다리지 않음.</b>
+         <br> 본 압축(이름 제거 → 회전 <code>int16</code> 양자화) <b>호출당 6,868B → 526B</b>. UDP 멀티캐스트 재구현.</dd>
           <dt class="t">어려움</dt>
           <dd>수신 콜백에서 액터를 직접 움직이니 <b>값이 절반만 갱신되거나 크래시</b>
           (언리얼 <code>UObject</code>는 스레드 세이프하지 않음) →
@@ -136,6 +108,7 @@
         </dl>
         <div class="marks">
           <span>Unreliable · Reliable RPC 대비 OSC 전달률 100% · 유실 0 확인</span>
+          <span class="n">인터넷 너머 본 200개 · 60Hz 유실 0</span>
           <a href="projects/miniosc.html">상세 보기</a>
         </div>
       </div>
@@ -149,7 +122,7 @@
       <div>
         <div class="pcard-head">
           <h3>Bounce Hero : 꿈돌이</h3>
-          <span class="meta">Unity · 디몽 인턴 · 사수와 2인 · 2025.03 ~ 06</span>
+          <span class="meta">Unity · 디몽 인턴 · 3인 (개발 2 · 아트 1) · 2025.04 ~ 06</span>
         </div>
         <p class="what">대전관광공사 마스코트 꿈돌이가 발판을 밟고 올라가는 모바일 점프 게임.
       양대 마켓에 출시하고 라이브 운영까지 했습니다.</p>
@@ -182,7 +155,7 @@
       <div>
         <div class="pcard-head">
           <h3>배달왕 김족구</h3>
-          <span class="meta">Unity 6 · 3인 창업 팀 · 2026.01 ~ 06</span>
+          <span class="meta">Unity 6 · 3인 팀 · 2026.01 ~ 04</span>
         </div>
         <p class="what">주문을 받아 배달가방에 음식을 실어 배달하는 게임.
        무엇을 어디에 싣느냐에 따라
@@ -206,6 +179,43 @@
       </div>
     </li>
 
+    <!-- 에델슈타인을 지켜라 -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <img src="assets/images/rrd/rrd-aim-reflect.webp" alt="에델슈타인을 지켜라 빌드 화면. 초록색 조준선이 반사벽에 맞고 직각으로 꺾여 나가고, 아래에 기물 상점 슬롯이 놓여 있다">
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>에델슈타인을 지켜라</h3>
+          <span class="meta">MapleStory Worlds · mLua · 4인 팀 · 2026.07 ~ 08</span>
+        </div>
+        <p class="what">레이저와 탄환을 <b>반사벽에 튕겨</b> 몰려오는 적을 막는 디펜스 게임.
+        벽마다 특성이 달라 튕기는 순간 탄환의 성질이 바뀝니다.
+        넥슨 패스트 트랙 해커톤 <b>「2026 메커톤」 2회차</b>에 참가해 만들었습니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd><b>게임 플로우 · 페이즈 아키텍처</b> — 맵이 바뀌어도 남는 <code>GameFlowManager</code>(타이틀·맵선택·스테이지·결과)와
+          맵마다 생겼다 사라지는 <code>PhaseManager</code>(빌드·전투·정지·승패)로 <b>상태를 두 층으로</b> 나눔.
+          페이즈별 허용 행동은 <code>IsAllowed()</code> 한 곳으로 통일.<br>
+          <b>탄환 · 특성 데코레이터</b> — 수치는 타워에 ID를 쌓아 발사 때 계산, 특성은 탄환·벽에 ID를 기록해
+          발사·반사·명중 시점에 호출. <b>관통·메소흡수·빙결을 레지스트리 등록만으로 추가.</b><br>
+          <b>TFT식 상점 · 리롤</b> — 진열 풀 20종(터렛 8 · 반사벽 12)에서 종류가 적은 쪽이 묻히지 않도록
+          <b>카테고리 먼저 뽑고 종류를 뽑음</b> — 터렛 출현 <b>40% → 50%</b>.
+          비용 차감과 슬롯 소진은 서버에서 검증.</dd>
+          <dt class="t">어려움</dt>
+          <dd>탄이 가끔 지형지물을 <b>그냥 통과</b>하는데 재현조차 불규칙했음 →
+          지형과의 거리가 <b>0.001 이상일 때만</b> 적중으로 치고 있어, 멀리 있다가 한 프레임 만에 그 안쪽으로 들어오면
+          판정을 놓치고 다음 프레임에 뚫고 지나감 →
+          <b><code>tEnter</code>·<code>tExit</code> 두 값</b>으로 탄환이 지형 앞인지 안인지 계산하도록 교체</dd>
+        </dl>
+        <div class="marks">
+          <span>넥슨 「2026 메커톤」 2회차 참가</span>
+          <span class="n">특성 추가가 레지스트리 등록 한 줄로 끝남</span>
+          <a href="projects/edelstein.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
     <!-- 세종대왕 -->
     <li class="pcard">
       <div class="pcard-media">
@@ -214,7 +224,7 @@
       <div>
         <div class="pcard-head">
           <h3>프로젝트 세종대왕</h3>
-          <span class="meta">UE5 · 5인 팀 · OnlineSubsystem</span>
+          <span class="meta">UE5 · 5인 팀 · 2024.08 ~ 09</span>
         </div>
         <p class="what">한옥 마을 배경의 멀티플레이 미니게임 모음.
         달리기 대결 · 발음 대결 · OX 퀴즈 총 세 종류의 맵으로 구성되어 있습니다.</p>
@@ -244,7 +254,7 @@
       <div>
         <div class="pcard-head">
           <h3>Isekiro</h3>
-          <span class="meta">UE5 · 팀 프로젝트 · 전투 판정 프로토타입</span>
+          <span class="meta">UE5 · 팀 프로젝트 · 2024.06 ~ 07</span>
         </div>
         <p class="what">적의 공격을 타이밍에 맞춰 튕겨내며 체간을 깎는 세키로 모작입니다.</p>
         <dl class="mini">
@@ -305,7 +315,7 @@
       <div>
         <div class="pcard-head">
           <h3>GASPractice</h3>
-          <span class="meta">UE 5.6 · 개인 · 학습</span>
+          <span class="meta">UE 5.6 · 개인 · 2026.05 ~ 08</span>
         </div>
         <p class="what">LoL식 QWER 스킬 구조를 Gameplay Ability System으로 재현하고,
         그 위에 <b>CommonUI 레이어 프레임워크</b>와 게임패드 내비게이션을 얹은 학습 프로젝트입니다.</p>
@@ -323,6 +333,36 @@
           <span class="n">스킬 추가해도 조건문이 늘지 않음</span>
           <span class="n">CommonUI 실습</span>
           <a href="projects/gas.html">상세 보기</a>
+        </div>
+      </div>
+    </li>
+
+    <!-- SpriteBatchDemo -->
+    <li class="pcard">
+      <div class="pcard-media">
+        <img src="assets/images/thumbs/spritebatch.jpg" alt="SpriteBatchDemo 실행 화면. 제목 표시줄에 Batched, 스프라이트 20000개, 드로우콜 1, CPU제출 0.334ms, 421 FPS. 알록달록한 도형 2만 개가 화면을 가득 채우고 있다">
+      </div>
+      <div>
+        <div class="pcard-head">
+          <h3>SpriteBatchDemo</h3>
+          <span class="meta">Direct3D 11 · C++ · 개인 · 2026.08</span>
+        </div>
+        <p class="what">엔진 없이 Win32와 Direct3D 11만으로 만든 2D 스프라이트 렌더러입니다.
+        움직이는 스프라이트 2만 개에 <b>배칭 · 인스턴싱 · 컬링</b>을 직접 구현하고,
+        각각이 렌더 스레드 CPU를 얼마나 비우는지 <b>숫자로 실측</b>했습니다.</p>
+        <dl class="mini">
+          <dt>담당</dt>
+          <dd>전부. 창 · 디바이스 · 스왑체인 · 셰이더부터 세 가지 제출 경로
+          (<code>Naive</code> / <code>Batched</code> / <code>Instanced</code>)와 계측까지.</dd>
+          <dt class="t">어려움</dt>
+          <dd>드로우 콜 횟수만 낮춘 실험은 <b>1.35배</b>뿐이었음 →
+          진짜 비용은 드로우 횟수가 아니라 <b>업로드를 2만 번 하는 쪽</b>이었고,
+          그걸 포함해 다시 재자 <b>CPU 제출 약 5배</b>가 드러남</dd>
+        </dl>
+        <div class="marks">
+          <span class="n">드로우 콜 20,000 → 1</span>
+          <span class="n">CPU 제출 약 5배 감소</span>
+          <a href="projects/spritebatch.html">상세 보기</a>
         </div>
       </div>
     </li>

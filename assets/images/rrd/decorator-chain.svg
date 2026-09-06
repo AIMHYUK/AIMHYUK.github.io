@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 500" width="1060" height="500" role="img" aria-labelledby="ttl desc">
+  <title id="ttl">강화 데코레이터 체인</title>
+  <desc id="desc">강화 카드가 확정되면 GainUpgrade 하나만 호출된다. 라우터가 id를 파싱해 터렛 스탯, 탄환 생애, 반사벽 세 레지스트리 중 하나로 보낸다. 아래는 무상태 특성 객체와 탄환별 traitState의 경계.</desc>
+
+  <style>
+    .s   { font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+    .m   { font-family: "Cascadia Mono", Consolas, "D2Coding", ui-monospace, monospace; }
+    .cap { font-size: 11.5px; fill: #777c82; letter-spacing: .06em; }
+    .h2  { font-size: 15px;   fill: #16181a; font-weight: 700; }
+    .tag { font-size: 11.5px; fill: #777c82; }
+    .b   { font-size: 12.5px; fill: #4f5459; }
+    .xs  { font-size: 11px;   fill: #777c82; }
+    .lbl { font-size: 12.5px; fill: #10508f; }
+    .pil { font-size: 11.5px; fill: #10508f; }
+  </style>
+
+  <rect width="1060" height="500" fill="#ffffff"/>
+
+  <text class="s cap" x="40" y="30">강화 카드 한 장이 확정된 뒤 — 효과를 뽑는 쪽은 그 효과가 무엇인지 모른다</text>
+
+  <!-- 진입 -->
+  <rect x="40" y="176" width="140" height="64" fill="#ffffff" stroke="#d5d4cf"/>
+  <text class="s b"  x="110" y="202" text-anchor="middle">강화 카드 선택</text>
+  <text class="s xs" x="110" y="222" text-anchor="middle">웨이브 · 스테이지 사이</text>
+
+  <g stroke="#10508f" stroke-width="2" fill="none"><path d="M180 208 L282 208"/></g>
+  <path d="M292 208 L282 203 L282 213 Z" fill="#10508f"/>
+  <text class="m lbl" x="236" y="196" text-anchor="middle">GainUpgrade(id)</text>
+
+  <!-- 라우터 -->
+  <rect x="292" y="164" width="238" height="88" fill="#f7fafd" stroke="#d5d4cf"/>
+  <rect x="292" y="164" width="4"   height="88" fill="#10508f"/>
+  <text class="m h2" x="314" y="192">UpgradeApplier</text>
+  <text class="s b"  x="314" y="214">라우터 — id의 그룹 · 등급을</text>
+  <text class="s b"  x="314" y="234">파싱하는 단일 출처</text>
+
+  <!-- 분기 -->
+  <g stroke="#10508f" stroke-width="2" fill="none">
+    <path d="M530 208 C 546 208, 546 84, 552 84"/>
+    <path d="M530 208 L552 208"/>
+    <path d="M530 208 C 546 208, 546 352, 552 352"/>
+  </g>
+  <path d="M560 84  L550 79  L550 89  Z" fill="#10508f"/>
+  <path d="M560 208 L550 203 L550 213 Z" fill="#10508f"/>
+  <path d="M560 352 L550 347 L550 357 Z" fill="#10508f"/>
+
+  <!-- 레지스트리 1 -->
+  <rect x="560" y="40" width="460" height="88" fill="#ffffff" stroke="#d5d4cf"/>
+  <text class="m h2"  x="582" y="66">TDTurretUpgrade</text>
+  <text class="s tag" x="740" y="66">타워 스탯 — 수치를 올린다</text>
+  <text class="s b"   x="582" y="90">공격력 · 공속 · 사거리 · 오버로드</text>
+  <text class="s xs"  x="582" y="112">그룹별 최고 등급 하나만 반영(치환) → 최종 스탯 제공자를 반환</text>
+
+  <!-- 레지스트리 2 -->
+  <rect x="560" y="152" width="460" height="112" fill="#ffffff" stroke="#10508f"/>
+  <text class="m h2"  x="582" y="178">TDProjectileTrait</text>
+  <text class="s tag" x="742" y="178">탄환의 생애 — 행동을 바꾼다</text>
+  <g>
+    <rect x="582" y="192" width="80"  height="24" fill="#f7fafd" stroke="#10508f"/>
+    <text class="m pil" x="622" y="208" text-anchor="middle">OnLaunch</text>
+    <rect x="672" y="192" width="84"  height="24" fill="#f7fafd" stroke="#10508f"/>
+    <text class="m pil" x="714" y="208" text-anchor="middle">OnReflect</text>
+    <rect x="766" y="192" width="62"  height="24" fill="#f7fafd" stroke="#10508f"/>
+    <text class="m pil" x="797" y="208" text-anchor="middle">OnHit</text>
+  </g>
+  <text class="s xs" x="582" y="238">변형 기반(그 변형 타워만 강해짐) / 전역(모든 타워에 행동 부여) 두 스코프로 분리</text>
+  <text class="s xs" x="582" y="256">같은 그룹은 최고 등급 하나만 남긴다 — 스택이 아니라 치환</text>
+
+  <!-- 레지스트리 3 -->
+  <rect x="560" y="308" width="460" height="88" fill="#ffffff" stroke="#d5d4cf"/>
+  <text class="m h2"  x="582" y="334">TDReflectWallTrait</text>
+  <text class="s tag" x="746" y="334">벽에 맞는 순간</text>
+  <text class="s b"   x="582" y="358">폭발반사 · 도탄관통 · 메소흡수 · 화염 / 냉각 지대</text>
+  <text class="s xs"  x="582" y="380">벽마다 홀더 컴포넌트가 자기 특성 id를 들고 있다 — 벽 모양과 직교</text>
+
+  <!-- 상태 경계 -->
+  <rect x="40" y="416" width="980" height="76" fill="#f3f3f1" stroke="#d5d4cf"/>
+  <line x1="530" y1="416" x2="530" y2="492" stroke="#d5d4cf"/>
+  <text class="s cap" x="62" y="440">특성 객체 — 무상태</text>
+  <text class="s b"   x="62" y="462">설정과 훅 함수만 갖는다. 레지스트리에서 캐시해 모든 탄환이 공유</text>
+  <text class="m cap" x="552" y="440">탄환 인스턴스 — traitState</text>
+  <text class="s b"   x="552" y="462">발사마다 변하는 값(누적 배율 등). 풀에서 꺼낼 때 새로 만든다</text>
+  <text class="s xs"  x="62" y="482">풀링 재사용으로 누적 배율이 다음 발까지 남던 버그를, 이 경계를 그어서 끊었다</text>
+</svg>

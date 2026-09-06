@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 302" width="520" height="302" role="img" aria-labelledby="ttl desc">
+  <title id="ttl">상점 진열 카테고리별 출현 확률</title>
+  <desc id="desc">전체 풀에서 직접 뽑으면 단발과 레이저 터렛이 각 20퍼센트, 직사각과 삼각 반사벽이 각 30퍼센트로 기운다. 카테고리를 먼저 뽑는 2단계 추첨에서는 네 카테고리가 모두 25퍼센트로 같아진다.</desc>
+
+  <style>
+    .s   { font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+    .m   { font-family: "Cascadia Mono", Consolas, "D2Coding", ui-monospace, monospace; }
+    .ttl { font-size: 12.5px; fill: #4f5459; font-weight: 700; }
+    .lg  { font-size: 11.5px; fill: #4f5459; }
+    .cat { font-size: 11.5px; fill: #4f5459; }
+    .val { font-size: 11px;   fill: #4f5459; }
+    .ax  { font-size: 11px;   fill: #777c82; }
+    .fn  { font-size: 11px;   fill: #4f5459; }
+    .fn2 { font-size: 10.5px; fill: #777c82; }
+  </style>
+
+  <rect width="520" height="302" fill="#ffffff"/>
+
+  <text class="s ttl" x="16" y="22">카테고리별 진열 출현 확률</text>
+
+  <!-- 범례 -->
+  <rect x="108" y="36" width="11" height="11" fill="#2a78d6"/>
+  <text class="s lg" x="125" y="46">전체 풀에서 직접 추첨</text>
+  <rect x="286" y="36" width="11" height="11" fill="#eb6834"/>
+  <text class="s lg" x="303" y="46">2단계 추첨 (구현)</text>
+
+  <!-- 축 · 기준선 -->
+  <line x1="108" y1="70" x2="108" y2="244" stroke="#d5d4cf"/>
+  <text class="m ax" x="385" y="64" text-anchor="middle">25%</text>
+
+  <!-- 단발 터렛 : 20% → 25% -->
+  <text class="s cat" x="96" y="101" text-anchor="end">단발 터렛</text>
+  <path d="M108 82 H325 Q329 82 329 86 V92 Q329 96 325 96 H108 Z" fill="#2a78d6"/>
+  <text class="m val" x="335" y="93">20%</text>
+  <path d="M108 98 H381 Q385 98 385 102 V108 Q385 112 381 112 H108 Z" fill="#eb6834"/>
+
+  <!-- 레이저 터렛 : 20% → 25% -->
+  <text class="s cat" x="96" y="143" text-anchor="end">레이저 터렛</text>
+  <path d="M108 124 H325 Q329 124 329 128 V134 Q329 138 325 138 H108 Z" fill="#2a78d6"/>
+  <text class="m val" x="335" y="135">20%</text>
+  <path d="M108 140 H381 Q385 140 385 144 V150 Q385 154 381 154 H108 Z" fill="#eb6834"/>
+
+  <!-- 직사각 반사벽 : 30% → 25% -->
+  <text class="s cat" x="96" y="185" text-anchor="end">직사각 반사벽</text>
+  <path d="M108 166 H436 Q440 166 440 170 V176 Q440 180 436 180 H108 Z" fill="#2a78d6"/>
+  <text class="m val" x="446" y="177">30%</text>
+  <path d="M108 182 H381 Q385 182 385 186 V192 Q385 196 381 196 H108 Z" fill="#eb6834"/>
+
+  <!-- 삼각 반사벽 : 30% → 25% -->
+  <text class="s cat" x="96" y="227" text-anchor="end">삼각 반사벽</text>
+  <path d="M108 208 H436 Q440 208 440 212 V218 Q440 222 436 222 H108 Z" fill="#2a78d6"/>
+  <text class="m val" x="446" y="219">30%</text>
+  <path d="M108 224 H381 Q385 224 385 228 V234 Q385 238 381 238 H108 Z" fill="#eb6834"/>
+
+  <!-- 25% 기준선: 막대 위에 그리고 흰 여백으로 분리 -->
+  <line x1="385" y1="70" x2="385" y2="244" stroke="#ffffff" stroke-width="3"/>
+  <line x1="385" y1="70" x2="385" y2="244" stroke="#777c82"/>
+
+  <!-- 주석 -->
+  <text class="s fn"  x="16" y="267">종류가 적은 터렛이 각 20% → 25%로 회복 · 터렛이 뜰 확률 40% → 50%</text>
+  <text class="s fn2" x="16" y="286">풀 20종(단발4 · 레이저4 · 직사각6 · 삼각6) · 2단계는 카테고리 4종 균등이라 각 25%</text>
+</svg>

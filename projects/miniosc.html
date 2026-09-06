@@ -22,12 +22,13 @@
   <header class="ph">
     <h1>MiniOscReceiver</h1>
     <p class="sub">Stage On에서 골랐던 <code>OSC</code> 수신 구조를
-    <b>플러그인 없이 직접 다시 만들어 측정한</b> 실험입니다.</p>
+    <b>플러그인 없이 직접 다시 만들어 측정한</b> 실험입니다.
+    나중에는 <b>그때 포기했던 재전송 구조까지 다시 세워</b> 인터넷 너머로 보내봤습니다.</p>
 
     <dl class="facts">
       <div><dt>종류</dt><dd>검증용 개인 프로젝트</dd></div>
       <div><dt>엔진 · 언어</dt><dd>Unreal Engine 5.6 · C++ · Python</dd></div>
-      <div><dt>규모 · 기간</dt><dd>개인 · 2026.07</dd></div>
+      <div><dt>규모 · 기간</dt><dd>개인 · 2026.07 – 09</dd></div>
       <div><dt>담당</dt><dd>전부</dd></div>
     </dl>
 
@@ -130,7 +131,7 @@ FPS       초당 전체 프레임 수                     <span class="hi">← �
         — 안 끄면 RPC가 도착하든 말든 큐브가 움직여 측정이 무의미해집니다.<br>
         · <code>HasAuthority()</code>(<b>서버 쪽</b>)일 때는 재지 않았습니다
         — 서버는 호출한 함수가 그 자리에서 실행되니 전달률이라는 게 없습니다.</li>
-        <li>뼈(본) 개수를 1개 → 100~200개로 올려 <b>실제 모션캡처 수준의 부하</b>를 만들었습니다.</li>
+        <li>뼈(본) 개수를 1개 → 100~200개로 올렸습니다. Stage On 실데이터는 본 56 + 표정 52 = <b>한 포즈 108값</b>이므로, <b>실제의 1~2배 부하</b>입니다.</li>
       </ul>
     </div>
 
@@ -285,6 +286,138 @@ if (InOutOffset + 4 &gt; Size) return false;</pre>
   </section>
 
   <!-- ══════ 트러블슈팅 ══════ -->
+  <!-- ══════ 기능 05 ══════ -->
+  <section class="feat" id="f5">
+    <div class="feat-h">
+      <span class="no">기능 05</span>
+      <h2>본을 묶어서 압축</h2>
+      <p class="one">Stage On 발표 원고에 적었던 &ldquo;다시 한다면 프레임마다 본을 묶어서 보낼 것 같다&rdquo;를
+      <b>실제로 해보고 바이트를 쟀습니다.</b></p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>실패 커밋의 RPC 구조를 그대로 떼어와, <b>본 하나당 RPC가 아니라 프레임당 1회 · 본 전체를 한 덩어리로</b> 조건을 바꿨습니다.</li>
+        <li>페이로드를 3단계로 줄였습니다.<br>
+        · <b>본 이름 제거</b> — 양쪽이 같은 순서를 알면 인덱스로 충분합니다.<br>
+        · <b>회전 쿼터니언 4성분을 각각 <code>float</code> → <code>int16</code></b> (본당 16B → 8B).<br>
+        · <b>위치는 루트 하나만</b> — 계층 구조라 나머지 본은 회전만으로 자세가 복원됩니다. 스케일은 어차피 1이라 보내지 않습니다.<br>
+        · <b>표정 값은 <code>float</code> → <code>uint8</code></b> — ARKit이 0~1로 주므로 1/255 단위면 충분합니다.</li>
+        <li>RPC를 아예 빼고 <b>UDP 멀티캐스트</b>로도 다시 만들었습니다. 21바이트 헤더를 직접 정의하고,
+        언리얼 수신기 · 송신기 · 중계기를 모두 만들어 <b>파이썬 대조군과 같은 와이어 포맷</b>으로 나란히 쟀습니다.</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="tscroll">
+        <table class="scope">
+          <thead>
+            <tr><th>단계</th><th class="n">호출당</th><th class="n">0-B 대비</th><th class="n">유실</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>이름 + 위치 · 회전 · 스케일 전부</td><td class="n">6,868B</td><td class="n">100%</td><td class="n">76.6%</td></tr>
+            <tr><td>본 이름 제거</td><td class="n">4,261B</td><td class="n">62%</td><td class="n">62.7%</td></tr>
+            <tr class="me"><td>회전 양자화 + 위치는 루트만</td><td class="n">526B</td><td class="n">7.7%</td><td class="n">0.14%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="logcap" style="font-size:12.5px"><b>측정 조건</b>본 56 + 표정 52. 본 개수와 표정 개수를 따로 0으로 두고
+      차이를 재서 뽑은 <strong>실측값</strong>이며 산술 추정이 아닙니다.</p>
+
+      <figure style="margin-top:14px">
+        <pre class="logbox"><span class="c">// 무엇이 얼마를 먹고 있었나 — 표정 52개의 몫</span>
+이름 + Transform 전부   <span class="bad">1,734B</span>   이름 1,526B + float 값 208B
+이름 제거                 208B   float 52개
+<span class="ok">uint8 양자화               52B</span>   uint8 52개</pre>
+        <p class="logcap"><b>블렌드셰이프 이름만 매 프레임 1,526B</b>페이로드의 22%인데,
+        <strong>받는 쪽은 그 이름의 접두어를 잘라 버리고 있었습니다.</strong> 보내고 받아서 버리는 데 프레임당 1.5KB를 쓰고 있던 셈입니다.</p>
+      </figure>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>호출당 6,868B → 526B (7.7%)</span>
+        <span>유실 76.6% → 0.14%</span>
+        <span class="n">멀티캐스트 기준 200본 12,057B → 1,685B (7.2배)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 06 ══════ -->
+  <section class="feat" id="f6">
+    <div class="feat-h">
+      <span class="no">기능 06</span>
+      <h2>실제 회선에서 측정 — 인터넷 너머까지</h2>
+      <p class="one">루프백에서는 셋 다 유실 0이었습니다. <b>압축의 값어치는 실제 회선에서만 드러났습니다.</b></p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>언리얼이 깔려 있지 않은 노트북에서도 돌리려고 <b>패키징 빌드</b>를 만들고,
+        그룹 주소 · 랜카드 · 포트를 <b>커맨드라인으로 덮어쓸 수 있게</b> 했습니다.
+        수신 액터도 콘솔 없이 자동으로 뜨도록 서브시스템을 붙였습니다.</li>
+        <li><b>유선(데스크탑) → Wi-Fi(노트북)</b> 로 압축 3단계를 각각 3,000프레임씩 보냈습니다.</li>
+        <li><b>언리얼 수신기를 무선 쪽에 놓고 파이썬 대조군을 같은 랜카드에 동시에</b> 붙였습니다.
+        혼자 재면 숫자가 나빠도 회선 탓인지 언리얼 탓인지 가를 수 없기 때문입니다.</li>
+        <li>마지막으로 <b>호스트가 방을 열고, 휴대폰 핫스팟에 물린 노트북이 공인 IP로 접속</b>하게 했습니다.
+        같은 공유기에 붙어 있으면 공인 IP로 접속해도 인터넷을 타지 않습니다(헤어핀 NAT).</li>
+      </ul>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="tscroll">
+        <table class="scope">
+          <thead>
+            <tr><th>인코딩</th><th class="n">프레임당</th><th class="n">보낸 대역폭</th><th class="n">도착 대역폭</th><th class="n">유실</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>이름 + 전부</td><td class="n">12,057B</td><td class="n">1,413 KB/s</td><td class="n">~344 KB/s</td><td class="n">68.97%</td></tr>
+            <tr><td>이름 제거</td><td class="n">8,229B</td><td class="n">964 KB/s</td><td class="n">~350 KB/s</td><td class="n">56.83%</td></tr>
+            <tr class="me"><td>회전 양자화</td><td class="n">1,685B</td><td class="n">197 KB/s</td><td class="n">197 KB/s</td><td class="n">0.00%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="logcap" style="font-size:12.5px"><b>원인은 조각 수가 아니라 대역폭 상한</b>보낸 양이 1.5배 차이인데
+      <strong>도착량이 둘 다 ~350 KB/s에서 똑같이 멈췄습니다.</strong> IP 단편 유실로는 이 일치가 설명되지 않습니다.
+      무선 멀티캐스트는 AP가 최저 속도로 뿌리고 재전송하지 않아, 그 상한을 넘긴 만큼 그대로 버려집니다.</p>
+
+      <figure style="margin-top:14px">
+        <pre class="logbox"><span class="c">// 휴대폰 핫스팟에 물린 노트북 — 인터넷 너머 수신</span>
+HEADLESS + rate cap 200,000 : <span class="hi">&lt;공인IP&gt;:7777</span>      <span class="c">← 공인 IP로 접속</span>
+
+[VMC][수신 클라창] 도착 55/s (누적 4144) | <span class="ok">누락 0</span> | <span class="ok">역전 0</span> | 남이보낸것 4070
+
+IPv4 주소 . . . . . : <span class="hi">10.x.x.x</span>                    <span class="c">← 집 공유기(192.168.x.x)가 아님</span></pre>
+        <p class="logcap"><b>본 200개 · 60Hz를 프레임 유실 0으로 수신</b>&ldquo;누락 0&rdquo;은 프레임 번호가 하나도 건너뛰지 않았다는 뜻이라,
+        <strong>호스트가 보낸 것을 관객이 전부 받았습니다.</strong></p>
+      </figure>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>실제 무선 구간에서 압축 전 약 70% → 양자화 후 0%</span>
+        <span>인터넷 너머 본 200개 · 60Hz 유실 0</span>
+        <span class="n">언리얼 수신기와 파이썬 대조군 유실률 일치</span>
+      </div>
+    </div>
+    <div class="part p-next">
+      <h3>이어서</h3>
+      <a href="stageon.html">이 판단이 나온 곳 · Stage On</a>
+      <span class="why">당시 재전송 구조를 포기했던 판단이 일정 문제만이 아니었다는 것이 여기서 나옵니다.</span>
+    </div>
+      <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t4">공유기가 멀티캐스트를 무선으로 넘기지 않음</a>
+      <a href="#t5">유실의 원인이 회선이 아니었음</a>
+    </div>
+  </section>
+
   <section class="feat" id="trouble">
     <div class="feat-h">
       <span class="no"></span>
@@ -329,22 +462,71 @@ if (InOutOffset + 4 &gt; Size) return false;</pre>
       <p><b><a class="flink" href="#f4">기능 04</a> — 스레드 경계 — SPSC 락프리 큐</b></p>
       <dl class="tbl">
         <div><dt>문제</dt><dd>수신 콜백에서 액터를 직접 움직이면 <b>값이 절반만 갱신되거나 크래시</b>가 났습니다.</dd></div>
-        <div><dt>원인</dt><dd>언리얼의 <code>UObject</code>는 스레드 세이프하지 않습니다. 게임 스레드가 큐브의 위치를 읽어서 그리는 한복판에 수신 스레드가 값을 덮어 씌워서 그 결과로 <br>- 값이 절반만 갱신됨 (x는 새 값, y는 옛 값)
+        <div><dt>원인</dt><dd>언리얼의 <code>UObject</code>는 스레드 세이프하지 않습니다. 게임 스레드가 큐브의 위치를 읽어서 그리는 한복판에 수신 스레드가 값을 덮어써서 그 결과로 <br>- 값이 절반만 갱신됨 (x는 새 값, y는 옛 값)
  <br> - GC가 그 순간 그 오브젝트를 정리 중이었다면 → 이미 해제된 메모리를 건드림 → 크래시</dd></div>
-        <div><dt>해결</dt><dd>컨베이어 벨트처럼, 큐 하나를 두고 <b>올리는 쪽(수신 스레드)과 내리는 쪽(게임 스레드)을 구분했습니다.</b> <b>락은 쓰지 않았습니다.</b> 수신 스레드가 락이 풀리기를 기다리며 멈추면 그동안 소켓을 못 읽어 커널 버퍼가 차고, 결국 데이터 유실로 이어지기 때문입니다.</dd></div>
+        <div><dt>해결</dt><dd>컨베이어 벨트처럼, 큐 하나를 두고 <b>올리는 쪽(수신 스레드)과 내리는 쪽(게임 스레드)을 구분했습니다.</b> <b>락은 쓰지 않았습니다.</b> 수신 스레드가 락이 풀리기를 기다리며 멈추면 그동안 소켓을 못 읽어 커널 버퍼가 차고, 결국 데이터 유실로 이어지기 때문입니다. 생산자·소비자가 각각 하나로 확정돼 있어 <b>SPSC로 충분</b>했습니다.</dd></div>
       </dl>
+    </div>
+
+    <div class="part p-trouble" id="t4">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f6">기능 06</a> — 공유기가 멀티캐스트를 무선으로 넘기지 않음</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>Stage On에서 쓰던 그룹 주소 <code>239.1.1.1</code>로 보냈더니 노트북에 <b>한 개도 오지 않았습니다.</b>
+        같은 노트북에 유니캐스트로 직접 보내면 300개 중 300개가 정상 수신됐으므로 방화벽·서브넷 문제가 아니었습니다.</dd></div>
+        <div><dt>원인</dt><dd>공유기가 <b>IGMP 스누핑</b>으로 유선 구간과 무선 구간 사이의 <code>239.x</code> 트래픽을 걸러냅니다.
+        <code>239.0.0.0/8</code>은 RFC 2365가 <b>조직 내부용으로 규정한 대역</b>이라 밖으로 나가지 않는 것이 규격상 정상입니다.</dd></div>
+        <div><dt>해결</dt><dd>링크로컬 제어 대역인 <code>224.0.0.1</code>로 옮겨 측정했습니다. 다만 <b>이것 자체가 결과이기도 합니다</b> —
+        <b>가정용 공유기에서는 &ldquo;호스트가 받아서 관객 PC로 멀티캐스트 재전송&rdquo;이라는 설계가 기본 설정으로는 성립하지 않습니다.</b>
+        당시 재전송을 포기하고 각 PC 직접 수신으로 되돌린 판단이, 일정 문제를 떠나 구조적으로도 맞았다는 근거가 됩니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble" id="t5">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f6">기능 06</a> — 유실의 원인이 회선이 아니었음</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>인터넷 너머로 접속시키자 <b>약 25%가 유실</b>됐습니다. 그런데 보내는 양은 초당 100KB 남짓이라
+        핫스팟이 그걸 못 버틸 수준이 아니었습니다.</dd></div>
+        <div><dt>원인</dt><dd>회선을 완전히 빼고 <b>같은 기계 루프백에서 재봤더니 거기서도 유실이 났습니다.</b>
+        패킷이 물리적으로 사라질 곳이 없으니 엔진 쪽이었습니다.
+        커넥션 대역폭 상한을 바꿔가며 재니 유실이 그대로 따라 움직였습니다.
+<pre class="logbox" style="margin-top:10px"><span class="c">// 상한만 바꾸고 나머지는 동일 — 200본 양자화 60Hz</span>
+  50,000 B/s   유실 <span class="bad">55.7%</span>
+ <span class="hi">100,000 B/s</span>   유실 <span class="bad"> 8.8%</span>   <span class="c">← 언리얼 기본값</span>
+ 105,000 B/s   유실  2.4%
+ 110,000 B/s   유실 <span class="ok"> 0%</span>
+ 200,000 B/s   유실 <span class="ok"> 0%</span></pre>
+        <b>엔진 기본 상한이 100,000 B/s인데 보내려던 데이터가 100.7 KB/s였습니다.</b> 딱 그 선을 넘고 있었습니다.
+        헤더 오버헤드로 상한의 약 92%만 실제 데이터에 쓸 수 있어, 문턱을 109 KB/s로 예측하고 105k · 110k로 확인했습니다.</dd></div>
+        <div><dt>해결</dt><dd>서버 상한과 클라이언트 요청 속도를 <b>둘 다</b> 올렸습니다(한쪽만 올리면 8.8% → 6%로 그칩니다).
+        같은 회선에서 <b>25% → 0%</b>가 됐습니다.<br>
+        다만 <b>상한을 올리는 것이 근본 해법은 아닙니다.</b> 대역폭이 생기는 게 아니라 병목이 회선으로 옮겨갈 뿐이고,
+        관객 수만큼 부하가 곱해집니다. 압축하지 않은 원본은 본 56개만으로도 초당 402KB라 <b>기본 상한의 4배</b>여서,
+        설정으로는 넘길 수 없습니다. <b>압축이 먼저고 설정은 그 다음입니다.</b></dd></div>
+      </dl>
+      <p class="logcap" style="font-size:12.5px;margin-top:10px"><b>여기서 한 번 틀렸습니다</b>
+      계측 조건에 따라 유실이 8.8%와 45%로 갈리는 것을 보고 <strong>&ldquo;두 프로세스가 CPU를 다툰다&rdquo;고 단정했습니다.</strong>
+      나중에 CPU 사용량을 재보니 32코어 중 10%만 쓰고 있었고, 프레임 제한 없이 상한만 올려도 유실이 0이 됐습니다.
+      원인은 대역폭 상한 하나였고 프레임레이트는 조절 변수였습니다. <strong>재지 않고 원인을 지목하면 안 된다</strong>는 것을 여기서 배웠습니다.</p>
     </div>
   </section>
 
   <div class="close">
     <h2>범위와 한계</h2>
-    <p><b>PIE의 리슨 서버는 클라이언트와 같은 프로세스</b>라 둘 사이의 통신이 물리 네트워크를 타지 않습니다.
-    그래서 여기서 관찰된 실패는 전부 <b>엔진 내부 한계</b>(Reliable 버퍼 오버플로, 게임 스레드 정체)이고,
-    <b>실제 네트워크가 주는 왕복 지연·패킷 손실은 빠져 있습니다.</b>
-    실제 환경이라면 Reliable RPC는 ACK가 늦게 와 더 낮은 부하에서 끊기고,
-    <b>OSC의 &ldquo;유실 0&rdquo;도 유지되지 않을 것입니다.</b> </p>
+    <p><b>기능 01~04는 PIE에서 쟀습니다.</b> 리슨 서버가 클라이언트와 같은 프로세스라 통신이 물리 네트워크를 타지 않습니다.
+    그래서 거기서 관찰된 실패는 전부 <b>엔진 내부 한계</b>(Reliable 버퍼 오버플로, 게임 스레드 정체)입니다.
+    <b>그 한계를 메우려고 기능 05~06을 붙였습니다</b> — 다른 PC로, 무선으로, 마지막엔 인터넷 너머로 실제 회선을 태웠습니다.</p>
+    <p style="margin-top:9px">그래도 남는 것이 있습니다.
+    <b>관객은 1명까지만 쟀습니다.</b> 멀티캐스트와 달리 RPC 경로는 송신 부하가 관객 수에 비례하는데,
+    관객이 늘 때 호스트 업로드가 어디서 무너지는지는 보지 않았습니다.
+    <b>두 기계 사이의 지연도 못 쟀습니다</b> — 시계 원점이 달라 값이 무의미합니다.
+    무선 구간 측정은 <b>공유기 한 대 · Wi-Fi 한 종류</b>의 결과이고, 회차마다 흔들려
+    같은 조건을 시간대를 달리해 재면 값이 흩어집니다. 그래서 결론은 <b>같은 세션에서 붙여 잰 A/B</b>로만 냈습니다.</p>
     <p style="margin-top:9px"><code>NetServerMaxTickRate</code> 조작이 PIE에서 적용되지 않아 <b>틱레이트의 영향은 검증하지 못했습니다.</b>
-    본 데이터가 위치(float 3개)뿐이고 실제 모션캡처는 회전까지 보내므로, <b>부하를 실제보다 가볍게 잡았습니다.</b></p>
+    조각 개수는 Stage On 실데이터(본 56 + 표정 52 = 108값)의 <b>1~2배</b>로 맞췄지만,
+    본 하나가 위치(float 3개)뿐이라 회전까지 보내는 실제 모션캡처보다 <b>본당 데이터는 가볍습니다.</b>
+    개수는 맞춰도 바이트는 덜 실은 셈이라, 이 수치를 실제 환경의 값으로 읽어서는 안 됩니다.</p>
   </div>
 
   <div class="foot">

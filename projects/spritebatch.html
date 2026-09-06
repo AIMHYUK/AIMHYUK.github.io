@@ -170,8 +170,8 @@
           </thead>
           <tbody>
             <tr><td>드로우 콜</td><td class="n">20,000</td><td class="n">1</td><td>20,000 → 1</td></tr>
-            <tr class="me"><td>CPU 제출 시간 <b>(동적·현재)</b></td><td class="n">1.812 ms</td><td class="n">0.357 ms</td><td>약 5배 감소</td></tr>
-            <tr><td>CPU 제출 시간 <b>(정적·상한)</b></td><td class="n">2.883 ms</td><td class="n">0.001 ms</td><td>약 2,900배 감소</td></tr>
+            <tr class="me"><td>CPU 제출 시간 <b>(동적)</b></td><td class="n">1.812 ms</td><td class="n">0.357 ms</td><td>약 5배 감소</td></tr>
+            <tr><td>CPU 제출 시간 <b>(정적)</b></td><td class="n">2.883 ms</td><td class="n">0.001 ms</td><td>약 2,900배 감소</td></tr>
             <tr><td>총 프레임 시간(동적)</td><td class="n">3.236 ms</td><td class="n">2.305 ms</td><td>1.4배</td></tr>
             <tr><td>FPS(동적)</td><td class="n">309</td><td class="n">434</td><td>—</td></tr>
           </tbody>
@@ -467,6 +467,45 @@ Batched 실제 2ms 일하고 → 14ms 기다림 → <span class="bad">16.677ms</
     <p><b>&ldquo;드로우 콜 하나 안에서 바뀌는 값은 하나뿐이다.&rdquo;</b>
     상수 버퍼는 드로우 콜 단위로 고정되므로, 스프라이트마다 달라야 하는 값을 거기 두면
     <b>값을 바꿀 때마다 드로우가 늘어납니다.</b> 세 최적화는 전부 이 하나에서 나왔습니다.</p>
+
+    <div style="margin-top:16px;overflow-x:auto">
+      <svg viewBox="0 0 486 156" role="img" aria-label="상수 버퍼에 놓인 값을 정점 버퍼·아틀라스 UV·인스턴스 버퍼로 옮긴 세 최적화 구조도"
+           style="width:100%;min-width:486px;height:auto;display:block">
+        <title>드로우를 끊지 않아도 되는 곳으로 옮긴 세 가지</title>
+        <defs>
+          <marker id="d1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="#1b4dd8"></path></marker>
+        </defs>
+
+        <rect x="0" y="0" width="486" height="60" rx="9" fill="#fef3f2" stroke="#fecdc9"></rect>
+        <text x="14" y="18" font-size="11.5" font-weight="800" fill="#b42318">상수 버퍼 — 값 하나 바꾸려고 드로우를 20,000번 끊는다</text>
+        <text x="14" y="36" font-size="10" fill="#b42318" style="font-family:var(--mono)">for (i &lt; 20000) { Map(cb, sprite[i].pos); DrawIndexed(6); }</text>
+        <text x="14" y="52" font-size="9.5" fill="#b42318">Map과 Draw가 번갈아 끼어 있다 — 이 루프를 푸는 것이 아래 셋이다</text>
+
+        <path d="M80 60 L80 80" fill="none" stroke="#1b4dd8" stroke-width="1.5" marker-end="url(#d1)"></path>
+        <path d="M243 60 L243 80" fill="none" stroke="#1b4dd8" stroke-width="1.5" marker-end="url(#d1)"></path>
+        <path d="M406 60 L406 80" fill="none" stroke="#1b4dd8" stroke-width="1.5" marker-end="url(#d1)"></path>
+        <text x="162" y="76" font-size="9.5" font-weight="800" fill="#1b4dd8" text-anchor="middle">끊지 않아도 되는 곳으로</text>
+
+        <rect x="0" y="84" width="156" height="72" rx="8" fill="#f5f8ff" stroke="#cfdcfa"></rect>
+        <text x="78" y="102" font-size="10" fill="#7a838f" text-anchor="middle">위치</text>
+        <text x="78" y="118" font-size="11.5" font-weight="800" fill="#1b4dd8" text-anchor="middle">정점 버퍼</text>
+        <text x="78" y="132" font-size="9.5" fill="#3c444f" text-anchor="middle">한 버퍼에 모아 한 번에</text>
+        <text x="78" y="148" font-size="10.5" font-weight="800" fill="#0f7b4f" text-anchor="middle">드로우 20,000 → 1</text>
+
+        <rect x="165" y="84" width="156" height="72" rx="8" fill="#f5f8ff" stroke="#cfdcfa"></rect>
+        <text x="243" y="102" font-size="10" fill="#7a838f" text-anchor="middle">그림 (텍스처 교체)</text>
+        <text x="243" y="118" font-size="11.5" font-weight="800" fill="#1b4dd8" text-anchor="middle">아틀라스 UV</text>
+        <text x="243" y="132" font-size="9.5" fill="#3c444f" text-anchor="middle">한 장에 모아 좌표로 지목</text>
+        <text x="243" y="148" font-size="10.5" font-weight="800" fill="#0f7b4f" text-anchor="middle">텍스처 전환 0</text>
+
+        <rect x="330" y="84" width="156" height="72" rx="8" fill="#f5f8ff" stroke="#cfdcfa"></rect>
+        <text x="408" y="102" font-size="10" fill="#7a838f" text-anchor="middle">위치 · 크기 · 색 · UV</text>
+        <text x="408" y="118" font-size="11.5" font-weight="800" fill="#1b4dd8" text-anchor="middle">인스턴스 버퍼</text>
+        <text x="408" y="132" font-size="9.5" fill="#3c444f" text-anchor="middle">정점을 재사용해 128B → 44B</text>
+        <text x="408" y="148" font-size="10.5" font-weight="800" fill="#0f7b4f" text-anchor="middle">업로드 약 1/3</text>
+      </svg>
+    </div>
 
     <div class="tscroll" style="margin-top:14px">
       <table class="scope">

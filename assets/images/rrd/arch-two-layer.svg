@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 534" width="1060" height="534" role="img" aria-labelledby="ttl desc">
+  <title id="ttl">게임 플로우 2층 구조</title>
+  <desc id="desc">위층은 세션 내내 살아있는 GameFlowManager, 아래층은 맵마다 하나씩 생기는 PhaseManager. 두 층은 EnterStage 호출과 OnStageResult 콜백 한 쌍으로만 연결된다. 맨 아래는 페이즈별 허용 행동을 결정하는 IsAllowed 정책.</desc>
+
+  <style>
+    .s   { font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+    .m   { font-family: "Cascadia Mono", Consolas, "D2Coding", ui-monospace, monospace; }
+    .cap { font-size: 11.5px; fill: #777c82; letter-spacing: .06em; }
+    .h   { font-size: 20px;   fill: #16181a; font-weight: 700; }
+    .h2  { font-size: 15px;   fill: #16181a; font-weight: 700; }
+    .h2m { font-size: 15px;   fill: #4f5459; font-weight: 700; }
+    .tag { font-size: 11.5px; fill: #777c82; }
+    .b   { font-size: 13.5px; fill: #4f5459; }
+    .sm  { font-size: 11.5px; fill: #4f5459; }
+    .xs  { font-size: 10.5px; fill: #777c82; }
+    .lbl { font-size: 12.5px; fill: #10508f; }
+    .pil { font-size: 12px;   fill: #16181a; }
+  </style>
+
+  <rect width="1060" height="534" fill="#ffffff"/>
+
+  <!-- ── 1층: 세션 수명 ── -->
+  <text class="s cap" x="40" y="32">세션 수명 — 월드가 시작될 때 하나 생겨서, 맵이 바뀌어도 살아있다</text>
+  <rect x="40" y="44" width="980" height="104" fill="#f3f3f1" stroke="#d5d4cf"/>
+  <text class="m h"   x="64" y="80">GameFlowManager</text>
+  <text class="s tag" x="256" y="80">@Logic · 서버 권위 싱글톤</text>
+  <text class="s b"   x="64" y="108">타이틀 · 맵선택 · 스테이지 · 결과 — 메타 상태 전환</text>
+  <text class="s b"   x="64" y="130">런 진행도 · 스테이지 간 맵 이동 · 강화 인터미션</text>
+
+  <!-- ── 층간 연결 ── -->
+  <g stroke="#10508f" stroke-width="2" fill="none">
+    <path d="M320 152 L320 212"/>
+    <path d="M740 214 L740 154"/>
+  </g>
+  <path d="M320 222 L314 210 L326 210 Z" fill="#10508f"/>
+  <path d="M740 144 L734 156 L746 156 Z" fill="#10508f"/>
+  <text class="m lbl" x="334" y="180">EnterStage(n)</text>
+  <text class="s xs"  x="334" y="198">아래로 — 이 맵에서 시작해라</text>
+  <text class="m lbl" x="726" y="180" text-anchor="end">OnStageResult(won)</text>
+  <text class="s xs"  x="726" y="198" text-anchor="end">위로 — 승패가 났다</text>
+
+  <!-- ── 2층: 맵 수명 ── -->
+  <text class="s cap" x="40" y="232">맵 수명 — 맵이 로드될 때 생기고, 언로드되면 사라진다</text>
+  <rect x="40" y="242" width="980" height="190" fill="#f3f3f1" stroke="#d5d4cf"/>
+
+  <!-- 진행 중인 스테이지 -->
+  <rect x="64" y="266" width="430" height="132" fill="#ffffff" stroke="#d5d4cf"/>
+  <text class="m xs"  x="84" y="290">Stage 1 · FirstStage.map</text>
+  <text class="m h2"  x="84" y="315">PhaseManager</text>
+  <text class="s tag" x="212" y="315">@Component</text>
+
+  <g>
+    <rect x="84"  y="330" width="62"  height="26" fill="#ffffff" stroke="#10508f"/>
+    <text class="s pil" x="115" y="348" text-anchor="middle">Build</text>
+    <rect x="170" y="330" width="66"  height="26" fill="#ffffff" stroke="#10508f"/>
+    <text class="s pil" x="203" y="348" text-anchor="middle">Battle</text>
+    <rect x="260" y="330" width="92"  height="26" fill="#ffffff" stroke="#d5d4cf"/>
+    <text class="s pil" x="306" y="348" text-anchor="middle">Win / Lose</text>
+    <g stroke="#4f5459" stroke-width="1.5" fill="none">
+      <path d="M146 343 L164 343"/>
+      <path d="M236 343 L254 343"/>
+    </g>
+    <path d="M170 343 L162 339 L162 347 Z" fill="#4f5459"/>
+    <path d="M260 343 L252 339 L252 347 Z" fill="#4f5459"/>
+    <!-- 다음 웨이브 복귀 -->
+    <path d="M203 358 L203 372 L115 372 L115 360" stroke="#777c82" stroke-width="1.5" fill="none" stroke-dasharray="0"/>
+    <path d="M115 354 L110 364 L120 364 Z" fill="#777c82"/>
+  </g>
+  <text class="s xs" x="228" y="390" text-anchor="middle">웨이브 사이 Build 복귀</text>
+
+  <!-- 나머지 스테이지 -->
+  <rect x="514" y="266" width="231" height="132" fill="#ffffff" stroke="#d5d4cf"/>
+  <text class="m xs"  x="534" y="290">Stage 2 · 다른 맵</text>
+  <text class="m h2m" x="534" y="315">PhaseManager</text>
+  <text class="s xs"  x="534" y="345">Build → Battle → Win / Lose</text>
+  <text class="s xs"  x="534" y="365">이 맵의 매니저들이 여기를 구독</text>
+
+  <rect x="765" y="266" width="231" height="132" fill="#ffffff" stroke="#d5d4cf"/>
+  <text class="m xs"  x="785" y="290">Stage 3 · 다른 맵</text>
+  <text class="m h2m" x="785" y="315">PhaseManager</text>
+  <text class="s xs"  x="785" y="345">Build → Battle → Win / Lose</text>
+  <text class="s xs"  x="785" y="365">구조가 같아 배선이 그대로</text>
+
+  <text class="s sm" x="64" y="417">맵마다 같은 구조가 하나씩 — 매니저도 HUD도 “자기 맵 루트”에서 이벤트를 구독하므로, 맵이 늘어나도 배선을 고치지 않는다</text>
+
+  <!-- ── 권한 정책 단일 출처 ── -->
+  <rect x="40" y="450" width="980" height="68" fill="#f7fafd" stroke="#d5d4cf"/>
+  <rect x="40" y="450" width="4"   height="68" fill="#10508f"/>
+  <text class="m lbl" x="62" y="476" style="font-size:14px;font-weight:700">IsAllowed(phase, action)</text>
+  <text class="s sm"  x="264" y="476">페이즈별 허용 행동의 유일한 출처</text>
+  <text class="s sm"  x="62" y="502">Build → place · upgrade　｜　Battle → towerAttack · traps · wave　｜　배치 · 강화 · 타워공격 · 함정 · 웨이브가 전부 이 함수 하나를 물어본다</text>
+</svg>

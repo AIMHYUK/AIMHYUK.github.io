@@ -381,6 +381,25 @@
       </dl>
     </div>
 
+    <div class="part p-trouble" id="t2b">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f2">기능 02</a> — <code>JoinSession</code> 성공과 맵 진입은 다른 사건</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd><b>연결이 끊긴 클라이언트가 아무 화면에도 속하지 못한 채 남았습니다.</b>
+        맵은 이미 죽었는데 로비로도 돌아오지 못했습니다.</dd></div>
+        <div><dt>원인</dt><dd><code>JoinSession</code> 성공을 <b>“맵에 들어간 것”과 같은 사건으로 다뤘기 때문</b>입니다.
+        참가 성공은 <strong>세션에 자리를 잡고 접속 주소를 알아냈다</strong>는 뜻이고, 맵 진입은
+        <strong>그 주소로 접속해 맵이 열렸고 연결이 살아 있다</strong>는 뜻입니다. 둘은 다른 계층의 사건입니다.
+        그런데 성공 콜백(<code>OnMyJoinSessionComplete</code>)에서 곧바로 <code>ClientTravel</code>을 걸고 끝내,
+        <b>그 뒤에 연결이 끊기는 것을 받을 자리가 없었습니다.</b>
+        세션 쪽에서는 여전히 참가 중인데 커넥션만 죽은 상태가 됩니다.</dd></div>
+        <div><dt>해결</dt><dd>두 계층의 실패를 받는 자리를 나눴습니다.
+        <b>참가 성공 → 트래블</b>은 세션 완료 델리게이트가, <b>연결 상실 → 로비 복귀</b>는
+        <code>OnNetworkFailure</code>가 맡습니다. 위의 RPC 문제로 <strong>통보가 가지 않아도</strong>,
+        연결이 끊긴 것 자체를 감지해 클라이언트를 로비로 되돌립니다.</dd></div>
+      </dl>
+    </div>
+
     <div class="part p-trouble" id="t3">
       <h3>어려움</h3>
       <p><b><a class="flink" href="#f4">기능 04</a> — 레벨을 넘어가도 유지되는 캐릭터</b></p>

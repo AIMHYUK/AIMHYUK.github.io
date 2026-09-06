@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>에델슈타인을 지켜라 — 조준혁 포트폴리오</title>
+<link rel="stylesheet" href="../assets/portfolio.css">
+<style>
+  /* 이 페이지에만 쓰는 도표 — 전역 css 를 건드리지 않는다 */
+  .dgm { margin: 14px 0 0; }
+  .dgm img { width: 100%; height: auto; display: block; }
+  .dgm figcaption {
+    margin-top: 8px; font-size: 12.5px; line-height: 1.55; color: var(--ink-2);
+  }
+  .dgm figcaption b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">본문으로</a>
+
+<div class="top">
+  <div class="wrap top-in">
+    <a href="../index.html">← 조준혁 포트폴리오</a>
+    <span class="r">MAPLESTORY WORLDS · mLUA ·
+      <a href="https://github.com/AIMHYUK" target="_blank" rel="noreferrer">github.com/AIMHYUK</a></span>
+  </div>
+</div>
+
+<main class="wrap" id="main">
+
+  <!-- ══════ 프로젝트 개요 ══════ -->
+  <header class="ph">
+    <h1>에델슈타인을 지켜라</h1>
+    <p class="sub">레이저와 탄환을 <b>반사벽에 튕겨</b> 몰려오는 적을 막는 디펜스입니다.
+    벽마다 특성이 달라, 튕기는 순간 탄환의 성질이 바뀝니다.</p>
+
+    <dl class="facts">
+      <div><dt>장르</dt><dd>반사 디펜스</dd></div>
+      <div><dt>플랫폼 · 언어</dt><dd>MapleStory Worlds · mLua</dd></div>
+      <div><dt>규모 · 기간</dt><dd>4인 팀 (개발 2 · 기획 1 · 아트 1) · 2026.07–08</dd></div>
+      <div><dt>담당</dt><dd>게임 플로우 · 강화 데이터 구조 · 상점</dd></div>
+    </dl>
+
+    <div class="about">
+      <div>
+        <h2>어떤 게임인가</h2>
+        <p>준비 단계(Build)에 터렛과 반사벽을 배치하고, 전투 단계(Battle)에 웨이브가 들어옵니다.
+        터렛은 <b>직선으로만 쏩니다.</b> 각도를 만드는 것은 벽이고,
+        <b>어디에 어떤 벽을 놓느냐가 곧 사거리이자 공격 경로</b>가 됩니다.</p>
+        <p>제 담당은 <b>게임 진행 상태 구조</b>, <b>강화(수치·특성) 데이터 구조</b>,
+        그리고 <b>상점과 리롤</b>입니다.</p>
+        <p><b>넥슨 패스트 트랙 해커톤 「2026 메커톤」 2회차</b>에 참가해 만들었습니다.
+        기간이 짧아 구조를 먼저 세우고 콘텐츠를 얹는 순서로 갔습니다.</p>
+      </div>
+      <figure>
+        <img src="../assets/images/rrd/rrd-aim-reflect.webp" alt="빌드 단계 화면. 초록색 조준선이 반사벽에 맞고 직각으로 꺾여 나가며, 하단에 기물 상점 슬롯이 놓여 있다">
+        <figcaption>조준선이 반사벽에서 꺾입니다. 배치가 곧 공격 경로입니다.</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <!-- ══════ 기능 01 ══════ -->
+  <section class="feat" id="f1">
+    <div class="feat-h">
+      <span class="no">기능 01</span>
+      <h2>게임 플로우와 페이즈 — 상태를 두 층으로</h2>
+      <p class="one">맵이 바뀌어도 살아남아야 하는 상태와, 맵과 함께 사라져야 하는 상태를 분리했습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>위층 <code>GameFlowManager</code>는 <b>세션 내내 하나</b>입니다(<code>@Logic</code> · 서버 권위 싱글톤).
+        타이틀 · 맵선택 · 스테이지 · 결과 같은 <b>메타 상태</b>와 런 진행도, 스테이지 간 맵 이동을 가집니다.</li>
+        <li>아래층 <code>PhaseManager</code>는 <b>맵마다 하나</b>입니다(<code>@Component</code>).
+        맵이 로드될 때 생기고 언로드되면 사라지며, Build · Battle · Win/Lose를 돌립니다.
+        웨이브 사이에는 Build로 돌아옵니다.</li>
+        <li>두 층은 <b><code>EnterStage(n)</code>과 <code>OnStageResult(won)</code> 한 쌍으로만</b> 닿습니다.
+        아래로는 "이 맵에서 시작해라", 위로는 "승패가 났다" 둘뿐입니다.</li>
+        <li>페이즈별로 무엇이 허용되는지는 <code>IsAllowed(phase, action)</code>
+        <b>한 곳에서만</b> 답합니다. Build면 배치·강화, Battle이면 터렛 공격·함정·웨이브입니다.
+        호출부마다 조건문이 자라지 않습니다.</li>
+        <li>매니저도 HUD도 <b>자기 맵 루트에서 이벤트를 구독</b>합니다.
+        그래서 맵이 늘어나도 배선을 고칠 일이 없습니다.</li>
+      </ul>
+
+      <figure class="dgm">
+        <img src="../assets/images/rrd/arch-two-layer.svg" alt="게임 플로우 2층 구조 다이어그램. 위층 GameFlowManager는 세션 수명, 아래층 PhaseManager는 맵마다 하나씩 생기며, 두 층은 EnterStage와 OnStageResult 한 쌍으로만 연결된다">
+        <figcaption><b>두 층이 닿는 지점이 둘뿐인 것이 핵심입니다.</b>
+        스테이지가 늘어도 아래층은 같은 구조가 하나 더 생길 뿐이라, 위층 코드는 그대로입니다.</figcaption>
+      </figure>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/rrd/rrd-build-phase.webp" alt="Build 페이즈 화면. 하단에 배치할 기물 슬롯이 열려 있고 웨이브 시작 버튼이 초록색이다">
+          <figcaption><b>사진 1 — Build</b>배치와 강화만 허용됩니다. 웨이브 시작 버튼이 초록입니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/rrd/rrd-battle-phase.webp" alt="Battle 페이즈 화면. 적들에게 데미지 숫자가 뜨고 반사벽 주변에 이펙트가 터지며, 버튼이 웨이브 정지로 바뀌어 있다">
+          <figcaption><b>사진 2 — Battle</b>같은 버튼이 정지로 바뀝니다. 페이즈가 바뀌면 허용 행동이 통째로 갈립니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>두 층의 접점이 <b>함수 하나 · 콜백 하나</b></span>
+        <span>페이즈 정책의 출처가 <b><code>IsAllowed()</code> 한 곳</b></span>
+        <span class="n">맵을 늘려도 이벤트 배선을 고치지 않음</span>
+        <span class="n">맵 언로드 시 페이즈 상태가 같이 사라져 잔존 상태 없음</span>
+      </div>
+    </div>
+
+    <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t2">클라이언트에서 상속받은 메서드가 nil로 잡혔습니다.</a>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 02 ══════ -->
+  <section class="feat" id="f2">
+    <div class="feat-h">
+      <span class="no">기능 02</span>
+      <h2>강화 — 수치와 특성을 갈라 놓기</h2>
+      <p class="one">숫자만 오르는 강화와 행동이 바뀌는 강화는 다루는 방법이 달라야 했습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>강화 카드가 확정되면 <b>바깥에서 부르는 함수는 <code>GainUpgrade(id)</code> 하나</b>입니다.
+        카드를 뽑는 쪽은 그 효과가 무엇인지 몰라도 됩니다.</li>
+        <li><code>UpgradeApplier</code>가 라우터입니다. <b>id의 그룹과 등급을 파싱하는 유일한 자리</b>이고,
+        여기서 세 레지스트리 중 하나로 보냅니다.</li>
+        <li><b>수치</b>(<code>TDTurretUpgrade</code>) — 공격력 · 공속 · 사거리 · 오버로드.
+        같은 그룹은 <b>쌓지 않고 최고 등급 하나로 치환</b>하고, 최종 스탯 제공자를 돌려줍니다.</li>
+        <li><b>탄환 특성</b>(<code>TDProjectileTrait</code>) — 탄환의 생애에 <code>OnLaunch</code> ·
+        <code>OnReflect</code> · <code>OnHit</code> 세 훅으로 끼어듭니다.
+        그 변형 타워만 강해지는 것과 모든 타워에 행동을 주는 것을 <b>두 스코프로 분리</b>했습니다.</li>
+        <li><b>벽 특성</b>(<code>TDReflectWallTrait</code>) — 폭발 반사 · 도탄 관통 · 메소 흡수 ·
+        화염/냉각 지대. <b>벽마다 홀더 컴포넌트가 자기 특성 id를 들고</b> 있어서
+        <b>벽 모양과 특성이 서로 직교</b>합니다.</li>
+        <li>특성 객체는 <b>무상태</b>입니다. 설정과 훅 함수만 갖고 레지스트리에서 캐시해 모든 탄환이 공유하며,
+        발사마다 변하는 값은 <b>탄환 인스턴스의 <code>traitState</code></b>에 둡니다.</li>
+      </ul>
+
+      <figure class="dgm">
+        <img src="../assets/images/rrd/decorator-chain.svg" alt="강화 데코레이터 체인 다이어그램. GainUpgrade 하나가 UpgradeApplier 라우터를 거쳐 터렛 스탯, 탄환 특성, 반사벽 특성 세 레지스트리로 갈라진다">
+        <figcaption><b>입구가 하나이고 출구가 셋입니다.</b> 특성을 늘릴 때 손대는 곳은 레지스트리이고,
+        호출부와 라우터는 그대로입니다.</figcaption>
+      </figure>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/rrd/rrd-zone-laser.webp" alt="반사 경로를 따라 화염 지대가 깔린 화면">
+          <figcaption><b>사진 1 — 지대 생성</b>벽 특성이 <b>반사 경로 위에</b> 지대를 만듭니다.
+          벽 자체는 직접 피해를 주지 않습니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/rrd/rrd-shop-tooltip.webp" alt="B형 리플렉터 툴팁. 반사 경로에 냉각 지대를 생성하고 통과한 적 이동속도를 감소시키며 반사 전용이라 직접 데미지가 없다고 적혀 있다">
+          <figcaption><b>사진 2 — 특성 설명</b>"반사 전용(직접 데미지 없음)"이 벽 특성의 성격입니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>바깥 호출은 <b><code>GainUpgrade(id)</code> 하나</b></span>
+        <span>id 파싱 지점이 <b>라우터 한 곳</b></span>
+        <span class="n">특성 추가가 레지스트리 등록으로 끝남 — 호출부 수정 없음</span>
+        <span class="n">특성 객체가 무상태라 탄환마다 새로 만들지 않음</span>
+        <span class="n">벽 모양과 특성이 직교 — 조합이 곱으로 늘어남</span>
+      </div>
+    </div>
+
+    <div class="tnote">
+      <b>이 기능에서 막힌 것</b>
+      <a href="#t1">탄이 가끔 지형지물을 그냥 통과했고, 재현조차 불규칙했습니다.</a>
+    </div>
+  </section>
+
+  <!-- ══════ 기능 03 ══════ -->
+  <section class="feat" id="f3">
+    <div class="feat-h">
+      <span class="no">기능 03</span>
+      <h2>상점 — 종류가 적은 쪽이 묻히지 않게</h2>
+      <p class="one">풀에서 그냥 뽑으면 종류가 많은 반사벽이 상점을 덮습니다.</p>
+    </div>
+
+    <div class="part p-impl">
+      <h3>구현</h3>
+      <ul>
+        <li>진열 풀은 <b>20종</b>입니다 — 단발 터렛 4 · 레이저 터렛 4 · 직사각 반사벽 6 · 삼각 반사벽 6.</li>
+        <li>전체 풀에서 바로 뽑으면 <b>종류 수가 그대로 확률이 됩니다.</b>
+        터렛은 각 20%, 반사벽은 각 30%로 기울고 <b>터렛이 뜰 확률이 40%</b>에 그칩니다.</li>
+        <li>그래서 <b>카테고리를 먼저 뽑고 그 안에서 종류를 뽑는</b> 2단계 추첨으로 바꿨습니다.
+        네 카테고리가 각 25%가 되고, <b>터렛이 뜰 확률이 50%</b>로 회복됩니다.</li>
+        <li>리롤은 누를 때마다 비용이 오릅니다. 비용 차감과 슬롯 소진 판정은
+        <b>서버에서 검증</b>하고 클라이언트는 요청만 보냅니다.</li>
+      </ul>
+
+      <figure class="dgm">
+        <img src="../assets/images/rrd/shop-draw-odds.svg" alt="상점 진열 카테고리별 출현 확률 비교. 전체 풀 직접 추첨에서는 터렛이 각 20퍼센트, 반사벽이 각 30퍼센트인 반면 2단계 추첨에서는 네 카테고리가 모두 25퍼센트가 된다">
+        <figcaption><b>구조를 바꿔서 얻은 것이 아니라 추첨 순서를 한 단계 늘려서 얻었습니다.</b>
+        확률 자체는 카테고리 수로 정해지므로, 종류를 더 늘려도 카테고리별 몫은 그대로입니다.</figcaption>
+      </figure>
+    </div>
+
+    <div class="part p-shot">
+      <h3>화면</h3>
+      <div class="shots two">
+        <figure>
+          <img src="../assets/images/rrd/rrd-build-shop.webp" alt="준비 페이즈마다 갱신되는 상점 슬롯이 화면 하단에 여섯 칸 놓여 있는 화면">
+          <figcaption><b>사진 1 — 진열</b>준비 페이즈마다 갱신됩니다.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/rrd/rrd-wave2-build.webp" alt="웨이브 2의 준비 페이즈 화면. 앞 웨이브에서 배치한 기물이 남아 있다">
+          <figcaption><b>사진 2 — 다음 웨이브</b>Battle이 끝나면 Build로 돌아오고 상점이 다시 갱신됩니다.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="part p-result">
+      <h3>성과</h3>
+      <div class="res">
+        <span>터렛 출현 <b>40% → 50%</b></span>
+        <span>종류가 적은 카테고리도 <b>20% → 25%</b></span>
+        <span class="n">확률을 상수로 박지 않고 <b>추첨 단계</b>로 해결</span>
+        <span class="n">비용 차감·슬롯 소진은 서버 검증</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ 트러블슈팅 ══════ -->
+  <section class="feat" id="trouble">
+    <div class="feat-h">
+      <span class="no"></span>
+      <h2>트러블슈팅</h2>
+      <p class="one">막혔던 지점을 <b>문제 · 원인 · 해결</b> 순으로 적었습니다.</p>
+    </div>
+
+    <div class="part p-trouble" id="t1">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f2">기능 02</a> — 탄이 가끔 지형지물을 그냥 통과했습니다.</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>지형지물은 탄환이 통과하지 못하게 해 뒀는데 <b>가끔 뚫고 지나갔습니다.</b>
+        더 나빴던 것은 <b>재현이 불규칙했다는 점</b>입니다. 같은 자리에서 같은 각도로 쏴도 될 때가 있고 안 될 때가 있었습니다.</dd></div>
+        <div><dt>원인</dt><dd>지형지물과 탄환의 <b>거리가 0.001 이상일 때만 맞은 것으로 치고</b> 있었습니다.
+        그래서 <b>0.001보다 멀리 있다가 한 프레임 만에 그 안쪽으로 들어와 버리면</b>
+        그 프레임에서는 적중으로 인식하지 못하고, 다음 프레임에는 이미 지나가 있었습니다.
+        속도와 프레임 타이밍에 따라 갈리니 재현이 불규칙했던 것입니다.</dd></div>
+        <div><dt>해결</dt><dd><code>tEnter</code>와 <code>tExit</code> 두 값으로
+        <b>탄환이 지형 앞인지 안인지</b>를 계산하도록 바꿨습니다.
+        코앞이거나 이미 지형 안에 있으면 맞은 것으로 칩니다.
+        거리 임계값 하나로 판단하던 것을 <b>구간으로</b> 바꾼 셈입니다.</dd></div>
+      </dl>
+    </div>
+
+    <div class="part p-trouble" id="t2">
+      <h3>어려움</h3>
+      <p><b><a class="flink" href="#f1">기능 01</a> — 클라이언트에서 상속받은 메서드가 <code>nil</code>로 잡혔습니다.</b></p>
+      <dl class="tbl">
+        <div><dt>문제</dt><dd>서버 쪽에서는 정상인데 <b>클라이언트에서 상속받은 메서드를 부르면 <code>nil</code></b>이 나왔습니다.</dd></div>
+        <div><dt>판단</dt><dd>제 코드에서 원인을 찾지 못했고 <b>엔진 쪽 문제로 판단</b>했습니다.
+        해커톤 기간이라 원인을 끝까지 파는 대신 <b>피해 가는 쪽</b>을 골랐습니다.</dd></div>
+        <div><dt>한 것</dt><dd><b>상속을 서버 계층으로만 제한</b>하고 클라이언트는 독립적으로 구현했습니다.
+        원인을 규명한 것이 아니라 <b>우회한 것</b>이며, 그렇게 기록해 둡니다.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ══════ 마무리 ══════ -->
+  <div class="close">
+    <h2>범위와 한계</h2>
+    <p>4인 팀(개발 2 · 기획 1 · 아트 1)으로 만든 해커톤 결과물이고, 이 페이지는
+    <b>게임 플로우 · 강화 데이터 구조 · 상점</b>까지 제가 맡은 구간입니다.
+    적 AI와 웨이브 구성, 아트 리소스는 제 작업이 아닙니다.</p>
+    <p>기간이 2026.07–08로 짧아 <b>구조를 먼저 세우고 콘텐츠를 얹는</b> 순서로 갔습니다.
+    그 대가로 <b>t2의 클라이언트 상속 문제는 원인을 규명하지 못한 채 우회</b>한 상태로 남아 있습니다.</p>
+  </div>
+
+  <div class="foot">
+    <span>조준혁 · GAME CLIENT PROGRAMMER</span>
+    <a href="https://github.com/hj529ho/RiceRiceDefence" target="_blank" rel="noreferrer">GitHub</a>
+    <a href="https://www.youtube.com/watch?v=7Cz1U4wte50" target="_blank" rel="noreferrer">플레이 영상</a>
+  </div>
+
+</main>
+
+</body></html>

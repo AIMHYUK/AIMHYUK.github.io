@@ -324,3 +324,7 @@
 .scope tr.me td { font-weight: 700; }
 .scope tr.me td.n { color: var(--result); }
 .scope tr.tpl td { color: var(--ink-3); }
+
+/* 넓은 표는 페이지가 아니라 표 자신이 가로로 스크롤한다.
+   없으면 좁은 화면에서 본문 전체가 옆으로 밀린다. */
+.tscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
